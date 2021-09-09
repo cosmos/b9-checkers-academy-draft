@@ -32,10 +32,10 @@ var PieceStrings = map[Player]string{
 var NO_PIECE = Piece{NO_PLAYER, false}
 
 var StringPieces = map[string]Piece{
-	"r": Piece{RED_PLAYER, false},
-	"b": Piece{BLACK_PLAYER, false},
-	"R": Piece{RED_PLAYER, true},
-	"B": Piece{BLACK_PLAYER, true},
+	"r": {RED_PLAYER, false},
+	"b": {BLACK_PLAYER, false},
+	"R": {RED_PLAYER, true},
+	"B": {BLACK_PLAYER, true},
 	"*": NO_PIECE,
 }
 
