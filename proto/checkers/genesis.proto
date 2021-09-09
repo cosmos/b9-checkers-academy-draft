@@ -2,11 +2,13 @@ syntax = "proto3";
 package xavierlepretre.checkers.checkers;
 
 // this line is used by starport scaffolding # genesis/proto/import
+import "checkers/next_game.proto";
 
 option go_package = "github.com/xavierlepretre/checkers/x/checkers/types";
 
 // GenesisState defines the checkers module's genesis state.
 message GenesisState {
     // this line is used by starport scaffolding # genesis/proto/state
+		NextGame nextGame = 1; // this line is used by starport scaffolding # genesis/proto/stateField
     // this line is used by starport scaffolding # ibc/genesis/proto
 }
