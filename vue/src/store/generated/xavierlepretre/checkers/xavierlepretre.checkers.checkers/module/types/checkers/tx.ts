@@ -16,6 +16,9 @@ export interface MsgPlayMove {
 
 export interface MsgPlayMoveResponse {
   idValue: string
+  capturedX: number
+  capturedY: number
+  winner: string
 }
 
 export interface MsgCreateGame {
@@ -168,12 +171,21 @@ export const MsgPlayMove = {
   }
 }
 
-const baseMsgPlayMoveResponse: object = { idValue: '' }
+const baseMsgPlayMoveResponse: object = { idValue: '', capturedX: 0, capturedY: 0, winner: '' }
 
 export const MsgPlayMoveResponse = {
   encode(message: MsgPlayMoveResponse, writer: Writer = Writer.create()): Writer {
     if (message.idValue !== '') {
       writer.uint32(10).string(message.idValue)
+    }
+    if (message.capturedX !== 0) {
+      writer.uint32(16).int64(message.capturedX)
+    }
+    if (message.capturedY !== 0) {
+      writer.uint32(24).int64(message.capturedY)
+    }
+    if (message.winner !== '') {
+      writer.uint32(34).string(message.winner)
     }
     return writer
   },
@@ -187,6 +199,15 @@ export const MsgPlayMoveResponse = {
       switch (tag >>> 3) {
         case 1:
           message.idValue = reader.string()
+          break
+        case 2:
+          message.capturedX = longToNumber(reader.int64() as Long)
+          break
+        case 3:
+          message.capturedY = longToNumber(reader.int64() as Long)
+          break
+        case 4:
+          message.winner = reader.string()
           break
         default:
           reader.skipType(tag & 7)
@@ -203,12 +224,30 @@ export const MsgPlayMoveResponse = {
     } else {
       message.idValue = ''
     }
+    if (object.capturedX !== undefined && object.capturedX !== null) {
+      message.capturedX = Number(object.capturedX)
+    } else {
+      message.capturedX = 0
+    }
+    if (object.capturedY !== undefined && object.capturedY !== null) {
+      message.capturedY = Number(object.capturedY)
+    } else {
+      message.capturedY = 0
+    }
+    if (object.winner !== undefined && object.winner !== null) {
+      message.winner = String(object.winner)
+    } else {
+      message.winner = ''
+    }
     return message
   },
 
   toJSON(message: MsgPlayMoveResponse): unknown {
     const obj: any = {}
     message.idValue !== undefined && (obj.idValue = message.idValue)
+    message.capturedX !== undefined && (obj.capturedX = message.capturedX)
+    message.capturedY !== undefined && (obj.capturedY = message.capturedY)
+    message.winner !== undefined && (obj.winner = message.winner)
     return obj
   },
 
@@ -218,6 +257,21 @@ export const MsgPlayMoveResponse = {
       message.idValue = object.idValue
     } else {
       message.idValue = ''
+    }
+    if (object.capturedX !== undefined && object.capturedX !== null) {
+      message.capturedX = object.capturedX
+    } else {
+      message.capturedX = 0
+    }
+    if (object.capturedY !== undefined && object.capturedY !== null) {
+      message.capturedY = object.capturedY
+    } else {
+      message.capturedY = 0
+    }
+    if (object.winner !== undefined && object.winner !== null) {
+      message.winner = object.winner
+    } else {
+      message.winner = ''
     }
     return message
   }

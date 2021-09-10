@@ -24,6 +24,9 @@ message MsgPlayMove {
 
 message MsgPlayMoveResponse {
   string idValue = 1;
+  int64 capturedX = 2;
+  int64 capturedY = 3;
+  string winner = 4;
 }
 
 message MsgCreateGame {

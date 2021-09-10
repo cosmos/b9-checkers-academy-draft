@@ -148,11 +148,20 @@ export const MsgPlayMove = {
         return message;
     }
 };
-const baseMsgPlayMoveResponse = { idValue: '' };
+const baseMsgPlayMoveResponse = { idValue: '', capturedX: 0, capturedY: 0, winner: '' };
 export const MsgPlayMoveResponse = {
     encode(message, writer = Writer.create()) {
         if (message.idValue !== '') {
             writer.uint32(10).string(message.idValue);
+        }
+        if (message.capturedX !== 0) {
+            writer.uint32(16).int64(message.capturedX);
+        }
+        if (message.capturedY !== 0) {
+            writer.uint32(24).int64(message.capturedY);
+        }
+        if (message.winner !== '') {
+            writer.uint32(34).string(message.winner);
         }
         return writer;
     },
@@ -165,6 +174,15 @@ export const MsgPlayMoveResponse = {
             switch (tag >>> 3) {
                 case 1:
                     message.idValue = reader.string();
+                    break;
+                case 2:
+                    message.capturedX = longToNumber(reader.int64());
+                    break;
+                case 3:
+                    message.capturedY = longToNumber(reader.int64());
+                    break;
+                case 4:
+                    message.winner = reader.string();
                     break;
                 default:
                     reader.skipType(tag & 7);
@@ -181,11 +199,32 @@ export const MsgPlayMoveResponse = {
         else {
             message.idValue = '';
         }
+        if (object.capturedX !== undefined && object.capturedX !== null) {
+            message.capturedX = Number(object.capturedX);
+        }
+        else {
+            message.capturedX = 0;
+        }
+        if (object.capturedY !== undefined && object.capturedY !== null) {
+            message.capturedY = Number(object.capturedY);
+        }
+        else {
+            message.capturedY = 0;
+        }
+        if (object.winner !== undefined && object.winner !== null) {
+            message.winner = String(object.winner);
+        }
+        else {
+            message.winner = '';
+        }
         return message;
     },
     toJSON(message) {
         const obj = {};
         message.idValue !== undefined && (obj.idValue = message.idValue);
+        message.capturedX !== undefined && (obj.capturedX = message.capturedX);
+        message.capturedY !== undefined && (obj.capturedY = message.capturedY);
+        message.winner !== undefined && (obj.winner = message.winner);
         return obj;
     },
     fromPartial(object) {
@@ -195,6 +234,24 @@ export const MsgPlayMoveResponse = {
         }
         else {
             message.idValue = '';
+        }
+        if (object.capturedX !== undefined && object.capturedX !== null) {
+            message.capturedX = object.capturedX;
+        }
+        else {
+            message.capturedX = 0;
+        }
+        if (object.capturedY !== undefined && object.capturedY !== null) {
+            message.capturedY = object.capturedY;
+        }
+        else {
+            message.capturedY = 0;
+        }
+        if (object.winner !== undefined && object.winner !== null) {
+            message.winner = object.winner;
+        }
+        else {
+            message.winner = '';
         }
         return message;
     }

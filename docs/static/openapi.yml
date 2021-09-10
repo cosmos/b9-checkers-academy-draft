@@ -29487,6 +29487,14 @@ definitions:
     properties:
       idValue:
         type: string
+      capturedX:
+        type: string
+        format: int64
+      capturedY:
+        type: string
+        format: int64
+      winner:
+        type: string
   xavierlepretre.checkers.checkers.NextGame:
     type: object
     properties:

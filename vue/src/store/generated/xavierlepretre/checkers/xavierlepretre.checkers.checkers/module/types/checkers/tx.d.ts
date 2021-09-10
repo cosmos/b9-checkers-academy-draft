@@ -11,6 +11,9 @@ export interface MsgPlayMove {
 }
 export interface MsgPlayMoveResponse {
     idValue: string;
+    capturedX: number;
+    capturedY: number;
+    winner: string;
 }
 export interface MsgCreateGame {
     creator: string;
