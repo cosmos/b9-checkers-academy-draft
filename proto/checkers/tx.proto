@@ -8,10 +8,24 @@ option go_package = "github.com/xavierlepretre/checkers/x/checkers/types";
 // Msg defines the Msg service.
 service Msg {
     // this line is used by starport scaffolding # proto/tx/rpc
+  rpc PlayMove(MsgPlayMove) returns (MsgPlayMoveResponse);
   rpc CreateGame(MsgCreateGame) returns (MsgCreateGameResponse);
 }
 
 // this line is used by starport scaffolding # proto/tx/message
+message MsgPlayMove {
+  string creator = 1;
+  string idValue = 2;
+  uint64 fromX = 3;
+  uint64 fromY = 4;
+  uint64 toX = 5;
+  uint64 toY = 6;
+}
+
+message MsgPlayMoveResponse {
+  string idValue = 1;
+}
+
 message MsgCreateGame {
   string creator = 1;
   string red = 2;
