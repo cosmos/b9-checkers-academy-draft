@@ -4,6 +4,7 @@ package xavierlepretre.checkers.checkers;
 import "google/api/annotations.proto";
 import "cosmos/base/query/v1beta1/pagination.proto";
 // this line is used by starport scaffolding # 1
+import "checkers/stored_game.proto";
 import "checkers/next_game.proto";
 
 option go_package = "github.com/xavierlepretre/checkers/x/checkers/types";
@@ -11,6 +12,17 @@ option go_package = "github.com/xavierlepretre/checkers/x/checkers/types";
 // Query defines the gRPC querier service.
 service Query {
     // this line is used by starport scaffolding # 2
+
+	// Queries a storedGame by index.
+	rpc StoredGame(QueryGetStoredGameRequest) returns (QueryGetStoredGameResponse) {
+		option (google.api.http).get = "/xavierlepretre/checkers/checkers/storedGame/{index}";
+	}
+
+	// Queries a list of storedGame items.
+	rpc StoredGameAll(QueryAllStoredGameRequest) returns (QueryAllStoredGameResponse) {
+		option (google.api.http).get = "/xavierlepretre/checkers/checkers/storedGame";
+	}
+
 
 	// Queries a nextGame by index.
 	rpc NextGame(QueryGetNextGameRequest) returns (QueryGetNextGameResponse) {
@@ -20,6 +32,22 @@ service Query {
 }
 
 // this line is used by starport scaffolding # 3
+message QueryGetStoredGameRequest {
+	string index = 1;
+}
+
+message QueryGetStoredGameResponse {
+	StoredGame StoredGame = 1;
+}
+
+message QueryAllStoredGameRequest {
+	cosmos.base.query.v1beta1.PageRequest pagination = 1;
+}
+
+message QueryAllStoredGameResponse {
+	repeated StoredGame StoredGame = 1;
+	cosmos.base.query.v1beta1.PageResponse pagination = 2;
+}
 message QueryGetNextGameRequest {}
 
 message QueryGetNextGameResponse {

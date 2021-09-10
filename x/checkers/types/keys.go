@@ -28,3 +28,7 @@ func KeyPrefix(p string) []byte {
 const (
 	NextGameKey = "NextGame-value-"
 )
+
+const (
+	StoredGameKey = "StoredGame-value-"
+)
