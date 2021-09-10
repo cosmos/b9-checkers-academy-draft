@@ -1,6 +1,17 @@
 import { Reader, Writer } from 'protobufjs/minimal';
 export declare const protobufPackage = "xavierlepretre.checkers.checkers";
 /** this line is used by starport scaffolding # proto/tx/message */
+export interface MsgPlayMove {
+    creator: string;
+    idValue: string;
+    fromX: number;
+    fromY: number;
+    toX: number;
+    toY: number;
+}
+export interface MsgPlayMoveResponse {
+    idValue: string;
+}
 export interface MsgCreateGame {
     creator: string;
     red: string;
@@ -9,6 +20,20 @@ export interface MsgCreateGame {
 export interface MsgCreateGameResponse {
     idValue: string;
 }
+export declare const MsgPlayMove: {
+    encode(message: MsgPlayMove, writer?: Writer): Writer;
+    decode(input: Reader | Uint8Array, length?: number): MsgPlayMove;
+    fromJSON(object: any): MsgPlayMove;
+    toJSON(message: MsgPlayMove): unknown;
+    fromPartial(object: DeepPartial<MsgPlayMove>): MsgPlayMove;
+};
+export declare const MsgPlayMoveResponse: {
+    encode(message: MsgPlayMoveResponse, writer?: Writer): Writer;
+    decode(input: Reader | Uint8Array, length?: number): MsgPlayMoveResponse;
+    fromJSON(object: any): MsgPlayMoveResponse;
+    toJSON(message: MsgPlayMoveResponse): unknown;
+    fromPartial(object: DeepPartial<MsgPlayMoveResponse>): MsgPlayMoveResponse;
+};
 export declare const MsgCreateGame: {
     encode(message: MsgCreateGame, writer?: Writer): Writer;
     decode(input: Reader | Uint8Array, length?: number): MsgCreateGame;
@@ -26,11 +51,13 @@ export declare const MsgCreateGameResponse: {
 /** Msg defines the Msg service. */
 export interface Msg {
     /** this line is used by starport scaffolding # proto/tx/rpc */
+    PlayMove(request: MsgPlayMove): Promise<MsgPlayMoveResponse>;
     CreateGame(request: MsgCreateGame): Promise<MsgCreateGameResponse>;
 }
 export declare class MsgClientImpl implements Msg {
     private readonly rpc;
     constructor(rpc: Rpc);
+    PlayMove(request: MsgPlayMove): Promise<MsgPlayMoveResponse>;
     CreateGame(request: MsgCreateGame): Promise<MsgCreateGameResponse>;
 }
 interface Rpc {

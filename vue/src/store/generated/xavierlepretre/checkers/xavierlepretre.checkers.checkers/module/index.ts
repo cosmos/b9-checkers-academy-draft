@@ -4,10 +4,12 @@ import { StdFee } from "@cosmjs/launchpad";
 import { SigningStargateClient } from "@cosmjs/stargate";
 import { Registry, OfflineSigner, EncodeObject, DirectSecp256k1HdWallet } from "@cosmjs/proto-signing";
 import { Api } from "./rest";
+import { MsgPlayMove } from "./types/checkers/tx";
 import { MsgCreateGame } from "./types/checkers/tx";
 
 
 const types = [
+  ["/xavierlepretre.checkers.checkers.MsgPlayMove", MsgPlayMove],
   ["/xavierlepretre.checkers.checkers.MsgCreateGame", MsgCreateGame],
   
 ];
@@ -37,6 +39,7 @@ const txClient = async (wallet: OfflineSigner, { addr: addr }: TxClientOptions =
 
   return {
     signAndBroadcast: (msgs: EncodeObject[], { fee, memo }: SignAndBroadcastOptions = {fee: defaultFee, memo: ""}) => client.signAndBroadcast(address, msgs, fee,memo),
+    msgPlayMove: (data: MsgPlayMove): EncodeObject => ({ typeUrl: "/xavierlepretre.checkers.checkers.MsgPlayMove", value: data }),
     msgCreateGame: (data: MsgCreateGame): EncodeObject => ({ typeUrl: "/xavierlepretre.checkers.checkers.MsgCreateGame", value: data }),
     
   };
