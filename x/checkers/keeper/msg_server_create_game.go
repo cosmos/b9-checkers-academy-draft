@@ -16,9 +16,10 @@ func (k msgServer) CreateGame(goCtx context.Context, msg *types.MsgCreateGame) (
 	if !found {
 		panic("NextGame not found")
 	}
+	newIndex := strconv.FormatUint(nextGame.IdValue, 10)
 	newGame := types.FullGame{
 		Creator: sdk.AccAddress(msg.Creator),
-		Index:   strconv.FormatUint(nextGame.IdValue, 10),
+		Index:   newIndex,
 		Game:    *rules.New(),
 		Red:     sdk.AccAddress(msg.Red),
 		Black:   sdk.AccAddress(msg.Black),
@@ -28,5 +29,7 @@ func (k msgServer) CreateGame(goCtx context.Context, msg *types.MsgCreateGame) (
 	nextGame.IdValue++
 	k.Keeper.SetNextGame(ctx, nextGame)
 
-	return &types.MsgCreateGameResponse{}, nil
+	return &types.MsgCreateGameResponse{
+		IdValue: newIndex,
+	}, nil
 }
