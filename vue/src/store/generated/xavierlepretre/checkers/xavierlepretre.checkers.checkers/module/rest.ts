@@ -24,6 +24,8 @@ export interface CheckersMsgPlayMoveResponse {
   winner?: string;
 }
 
+export type CheckersMsgRejectGameResponse = object;
+
 export interface CheckersNextGame {
   creator?: string;
 

@@ -9,6 +9,7 @@ export interface CheckersMsgPlayMoveResponse {
     capturedY?: string;
     winner?: string;
 }
+export declare type CheckersMsgRejectGameResponse = object;
 export interface CheckersNextGame {
     creator?: string;
     /** @format uint64 */
