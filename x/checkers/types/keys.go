@@ -30,5 +30,19 @@ const (
 )
 
 const (
-	StoredGameKey = "StoredGame-value-"
+	StoredGameKey          = "StoredGame-value-"
+	StoredGameEventKey     = "NewGameCreated"
+	StoredGameEventCreator = "Creator"
+	StoredGameEventIndex   = "Index"
+	StoredGameEventRed     = "Red"
+	StoredGameEventBlack   = "Black"
+)
+
+const (
+	PlayMoveEventKey       = "MovePlayed"
+	PlayMoveEventCreator   = "Creator"
+	PlayMoveEventIdValue   = "IdValue"
+	PlayMoveEventCapturedX = "CapturedX"
+	PlayMoveEventCapturedY = "CapturedY"
+	PlayMoveEventWinner    = "Winner"
 )
