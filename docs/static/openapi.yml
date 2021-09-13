@@ -29495,6 +29495,8 @@ definitions:
         format: int64
       winner:
         type: string
+  xavierlepretre.checkers.checkers.MsgRejectGameResponse:
+    type: object
   xavierlepretre.checkers.checkers.NextGame:
     type: object
     properties:
