@@ -19167,6 +19167,8 @@ paths:
                       type: string
                     black:
                       type: string
+                    moveCount:
+                      type: string
               pagination:
                 type: object
                 properties:
@@ -19285,6 +19287,8 @@ paths:
                   red:
                     type: string
                   black:
+                    type: string
+                  moveCount:
                     type: string
         default:
           description: An unexpected error response.
@@ -29525,6 +29529,8 @@ definitions:
               type: string
             black:
               type: string
+            moveCount:
+              type: string
       pagination:
         type: object
         properties:
@@ -29579,6 +29585,8 @@ definitions:
             type: string
           black:
             type: string
+          moveCount:
+            type: string
   xavierlepretre.checkers.checkers.StoredGame:
     type: object
     properties:
@@ -29593,4 +29601,6 @@ definitions:
       red:
         type: string
       black:
+        type: string
+      moveCount:
         type: string

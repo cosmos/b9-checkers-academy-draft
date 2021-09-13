@@ -1,7 +1,7 @@
 /* eslint-disable */
 import { Writer, Reader } from 'protobufjs/minimal';
 export const protobufPackage = 'xavierlepretre.checkers.checkers';
-const baseStoredGame = { creator: '', index: '', game: '', turn: '', red: '', black: '' };
+const baseStoredGame = { creator: '', index: '', game: '', turn: '', red: '', black: '', moveCount: '' };
 export const StoredGame = {
     encode(message, writer = Writer.create()) {
         if (message.creator !== '') {
@@ -21,6 +21,9 @@ export const StoredGame = {
         }
         if (message.black !== '') {
             writer.uint32(50).string(message.black);
+        }
+        if (message.moveCount !== '') {
+            writer.uint32(58).string(message.moveCount);
         }
         return writer;
     },
@@ -48,6 +51,9 @@ export const StoredGame = {
                     break;
                 case 6:
                     message.black = reader.string();
+                    break;
+                case 7:
+                    message.moveCount = reader.string();
                     break;
                 default:
                     reader.skipType(tag & 7);
@@ -94,6 +100,12 @@ export const StoredGame = {
         else {
             message.black = '';
         }
+        if (object.moveCount !== undefined && object.moveCount !== null) {
+            message.moveCount = String(object.moveCount);
+        }
+        else {
+            message.moveCount = '';
+        }
         return message;
     },
     toJSON(message) {
@@ -104,6 +116,7 @@ export const StoredGame = {
         message.turn !== undefined && (obj.turn = message.turn);
         message.red !== undefined && (obj.red = message.red);
         message.black !== undefined && (obj.black = message.black);
+        message.moveCount !== undefined && (obj.moveCount = message.moveCount);
         return obj;
     },
     fromPartial(object) {
@@ -143,6 +156,12 @@ export const StoredGame = {
         }
         else {
             message.black = '';
+        }
+        if (object.moveCount !== undefined && object.moveCount !== null) {
+            message.moveCount = object.moveCount;
+        }
+        else {
+            message.moveCount = '';
         }
         return message;
     }

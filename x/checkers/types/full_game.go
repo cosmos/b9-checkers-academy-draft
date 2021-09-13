@@ -1,16 +1,19 @@
 package types
 
 import (
+	"strconv"
+
 	sdk "github.com/cosmos/cosmos-sdk/types"
 	"github.com/xavierlepretre/checkers/x/checkers/rules"
 )
 
 type FullGame struct {
-	Creator sdk.AccAddress
-	Index   string
-	Game    rules.Game
-	Red     sdk.AccAddress
-	Black   sdk.AccAddress
+	Creator   sdk.AccAddress
+	Index     string
+	Game      rules.Game
+	Red       sdk.AccAddress
+	Black     sdk.AccAddress
+	MoveCount uint64
 }
 
 func (fullGame *FullGame) ToStoredGame() (storedGame *StoredGame) {
@@ -20,6 +23,7 @@ func (fullGame *FullGame) ToStoredGame() (storedGame *StoredGame) {
 	storedGame.Turn = fullGame.Game.Turn.Color
 	storedGame.Red = fullGame.Red.String()
 	storedGame.Black = fullGame.Black.String()
+	storedGame.MoveCount = strconv.FormatUint(fullGame.MoveCount, 10)
 	return storedGame
 }
 
@@ -35,6 +39,7 @@ func (storedGame *StoredGame) ToFullGame() (fullGame *FullGame) {
 	fullGame.Game = *game
 	fullGame.Red, err = sdk.AccAddressFromBech32(storedGame.Red)
 	fullGame.Black, err = sdk.AccAddressFromBech32(storedGame.Black)
+	fullGame.MoveCount, err = strconv.ParseUint(storedGame.MoveCount, 10, 64)
 	if err != nil {
 		panic(err)
 	}

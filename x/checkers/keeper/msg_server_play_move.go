@@ -49,6 +49,7 @@ func (k msgServer) PlayMove(goCtx context.Context, msg *types.MsgPlayMove) (*typ
 	if moveErr != nil {
 		return nil, moveErr
 	}
+	fullGame.MoveCount++
 
 	// Save for the next play move
 	k.Keeper.SetStoredGame(ctx, *fullGame.ToStoredGame())

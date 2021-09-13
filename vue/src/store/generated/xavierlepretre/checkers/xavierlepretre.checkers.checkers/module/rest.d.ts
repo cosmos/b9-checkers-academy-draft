@@ -41,6 +41,7 @@ export interface CheckersStoredGame {
     turn?: string;
     red?: string;
     black?: string;
+    moveCount?: string;
 }
 export interface ProtobufAny {
     "@type"?: string;
