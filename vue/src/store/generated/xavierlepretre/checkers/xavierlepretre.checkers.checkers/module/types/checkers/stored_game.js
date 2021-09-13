@@ -1,7 +1,7 @@
 /* eslint-disable */
 import { Writer, Reader } from 'protobufjs/minimal';
 export const protobufPackage = 'xavierlepretre.checkers.checkers';
-const baseStoredGame = { creator: '', index: '', game: '', turn: '', red: '', black: '', moveCount: '' };
+const baseStoredGame = { creator: '', index: '', game: '', turn: '', red: '', black: '', moveCount: '', beforeId: '', afterId: '' };
 export const StoredGame = {
     encode(message, writer = Writer.create()) {
         if (message.creator !== '') {
@@ -24,6 +24,12 @@ export const StoredGame = {
         }
         if (message.moveCount !== '') {
             writer.uint32(58).string(message.moveCount);
+        }
+        if (message.beforeId !== '') {
+            writer.uint32(66).string(message.beforeId);
+        }
+        if (message.afterId !== '') {
+            writer.uint32(74).string(message.afterId);
         }
         return writer;
     },
@@ -54,6 +60,12 @@ export const StoredGame = {
                     break;
                 case 7:
                     message.moveCount = reader.string();
+                    break;
+                case 8:
+                    message.beforeId = reader.string();
+                    break;
+                case 9:
+                    message.afterId = reader.string();
                     break;
                 default:
                     reader.skipType(tag & 7);
@@ -106,6 +118,18 @@ export const StoredGame = {
         else {
             message.moveCount = '';
         }
+        if (object.beforeId !== undefined && object.beforeId !== null) {
+            message.beforeId = String(object.beforeId);
+        }
+        else {
+            message.beforeId = '';
+        }
+        if (object.afterId !== undefined && object.afterId !== null) {
+            message.afterId = String(object.afterId);
+        }
+        else {
+            message.afterId = '';
+        }
         return message;
     },
     toJSON(message) {
@@ -117,6 +141,8 @@ export const StoredGame = {
         message.red !== undefined && (obj.red = message.red);
         message.black !== undefined && (obj.black = message.black);
         message.moveCount !== undefined && (obj.moveCount = message.moveCount);
+        message.beforeId !== undefined && (obj.beforeId = message.beforeId);
+        message.afterId !== undefined && (obj.afterId = message.afterId);
         return obj;
     },
     fromPartial(object) {
@@ -162,6 +188,18 @@ export const StoredGame = {
         }
         else {
             message.moveCount = '';
+        }
+        if (object.beforeId !== undefined && object.beforeId !== null) {
+            message.beforeId = object.beforeId;
+        }
+        else {
+            message.beforeId = '';
+        }
+        if (object.afterId !== undefined && object.afterId !== null) {
+            message.afterId = object.afterId;
+        }
+        else {
+            message.afterId = '';
         }
         return message;
     }

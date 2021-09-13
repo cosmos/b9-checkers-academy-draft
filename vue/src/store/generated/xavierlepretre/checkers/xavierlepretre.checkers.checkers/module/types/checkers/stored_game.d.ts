@@ -8,6 +8,10 @@ export interface StoredGame {
     red: string;
     black: string;
     moveCount: string;
+    /** Pertains to the FIFO. Towards head. */
+    beforeId: string;
+    /** Pertains to the FIFO. Towards tail. */
+    afterId: string;
 }
 export declare const StoredGame: {
     encode(message: StoredGame, writer?: Writer): Writer;

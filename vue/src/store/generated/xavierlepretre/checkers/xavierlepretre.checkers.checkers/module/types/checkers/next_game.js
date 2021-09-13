@@ -2,7 +2,7 @@
 import * as Long from 'long';
 import { util, configure, Writer, Reader } from 'protobufjs/minimal';
 export const protobufPackage = 'xavierlepretre.checkers.checkers';
-const baseNextGame = { creator: '', idValue: 0 };
+const baseNextGame = { creator: '', idValue: 0, fifoHead: '', fifoTail: '' };
 export const NextGame = {
     encode(message, writer = Writer.create()) {
         if (message.creator !== '') {
@@ -10,6 +10,12 @@ export const NextGame = {
         }
         if (message.idValue !== 0) {
             writer.uint32(16).uint64(message.idValue);
+        }
+        if (message.fifoHead !== '') {
+            writer.uint32(26).string(message.fifoHead);
+        }
+        if (message.fifoTail !== '') {
+            writer.uint32(34).string(message.fifoTail);
         }
         return writer;
     },
@@ -25,6 +31,12 @@ export const NextGame = {
                     break;
                 case 2:
                     message.idValue = longToNumber(reader.uint64());
+                    break;
+                case 3:
+                    message.fifoHead = reader.string();
+                    break;
+                case 4:
+                    message.fifoTail = reader.string();
                     break;
                 default:
                     reader.skipType(tag & 7);
@@ -47,12 +59,26 @@ export const NextGame = {
         else {
             message.idValue = 0;
         }
+        if (object.fifoHead !== undefined && object.fifoHead !== null) {
+            message.fifoHead = String(object.fifoHead);
+        }
+        else {
+            message.fifoHead = '';
+        }
+        if (object.fifoTail !== undefined && object.fifoTail !== null) {
+            message.fifoTail = String(object.fifoTail);
+        }
+        else {
+            message.fifoTail = '';
+        }
         return message;
     },
     toJSON(message) {
         const obj = {};
         message.creator !== undefined && (obj.creator = message.creator);
         message.idValue !== undefined && (obj.idValue = message.idValue);
+        message.fifoHead !== undefined && (obj.fifoHead = message.fifoHead);
+        message.fifoTail !== undefined && (obj.fifoTail = message.fifoTail);
         return obj;
     },
     fromPartial(object) {
@@ -68,6 +94,18 @@ export const NextGame = {
         }
         else {
             message.idValue = 0;
+        }
+        if (object.fifoHead !== undefined && object.fifoHead !== null) {
+            message.fifoHead = object.fifoHead;
+        }
+        else {
+            message.fifoHead = '';
+        }
+        if (object.fifoTail !== undefined && object.fifoTail !== null) {
+            message.fifoTail = object.fifoTail;
+        }
+        else {
+            message.fifoTail = '';
         }
         return message;
     }

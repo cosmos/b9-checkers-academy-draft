@@ -30,6 +30,10 @@ const (
 )
 
 const (
+	NoFifoIdKey = "-1"
+)
+
+const (
 	StoredGameKey          = "StoredGame-value-"
 	StoredGameEventKey     = "NewGameCreated"
 	StoredGameEventCreator = "Creator"

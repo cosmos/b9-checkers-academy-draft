@@ -51,8 +51,17 @@ func (k msgServer) PlayMove(goCtx context.Context, msg *types.MsgPlayMove) (*typ
 	}
 	fullGame.MoveCount++
 
+	// Send to the back of the FIFO
+	storedGame = *fullGame.ToStoredGame()
+	nextGame, found := k.Keeper.GetNextGame(ctx)
+	if !found {
+		panic("NextGame not found")
+	}
+	k.Keeper.SendToFifoTail(ctx, &storedGame, &nextGame)
+
 	// Save for the next play move
-	k.Keeper.SetStoredGame(ctx, *fullGame.ToStoredGame())
+	k.Keeper.SetStoredGame(ctx, storedGame)
+	k.Keeper.SetNextGame(ctx, nextGame)
 
 	// What to emit
 	ctx.EventManager().EmitEvent(

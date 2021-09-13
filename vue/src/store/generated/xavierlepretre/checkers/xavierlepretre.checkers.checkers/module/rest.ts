@@ -31,6 +31,8 @@ export interface CheckersNextGame {
 
   /** @format uint64 */
   idValue?: string;
+  fifoHead?: string;
+  fifoTail?: string;
 }
 
 export interface CheckersQueryAllStoredGameResponse {
@@ -64,6 +66,8 @@ export interface CheckersStoredGame {
   red?: string;
   black?: string;
   moveCount?: string;
+  beforeId?: string;
+  afterId?: string;
 }
 
 export interface ProtobufAny {

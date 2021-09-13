@@ -8,4 +8,6 @@ import "gogoproto/gogo.proto";
 message NextGame {
   string creator = 1;
   uint64 idValue = 2; 
+  string fifoHead = 3;
+  string fifoTail = 4;
 }

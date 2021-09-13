@@ -14,6 +14,8 @@ type FullGame struct {
 	Red       sdk.AccAddress
 	Black     sdk.AccAddress
 	MoveCount uint64
+	BeforeId  string
+	AfterId   string
 }
 
 func (fullGame *FullGame) ToStoredGame() (storedGame *StoredGame) {
@@ -24,6 +26,8 @@ func (fullGame *FullGame) ToStoredGame() (storedGame *StoredGame) {
 	storedGame.Red = fullGame.Red.String()
 	storedGame.Black = fullGame.Black.String()
 	storedGame.MoveCount = strconv.FormatUint(fullGame.MoveCount, 10)
+	storedGame.BeforeId = fullGame.BeforeId
+	storedGame.AfterId = fullGame.BeforeId
 	return storedGame
 }
 
@@ -40,6 +44,8 @@ func (storedGame *StoredGame) ToFullGame() (fullGame *FullGame) {
 	fullGame.Red, err = sdk.AccAddressFromBech32(storedGame.Red)
 	fullGame.Black, err = sdk.AccAddressFromBech32(storedGame.Black)
 	fullGame.MoveCount, err = strconv.ParseUint(storedGame.MoveCount, 10, 64)
+	fullGame.BeforeId = storedGame.BeforeId
+	fullGame.BeforeId = storedGame.AfterId
 	if err != nil {
 		panic(err)
 	}

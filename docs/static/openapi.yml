@@ -19120,6 +19120,10 @@ paths:
                   idValue:
                     type: string
                     format: uint64
+                  fifoHead:
+                    type: string
+                  fifoTail:
+                    type: string
         default:
           description: An unexpected error response.
           schema:
@@ -19168,6 +19172,10 @@ paths:
                     black:
                       type: string
                     moveCount:
+                      type: string
+                    beforeId:
+                      type: string
+                    afterId:
                       type: string
               pagination:
                 type: object
@@ -19289,6 +19297,10 @@ paths:
                   black:
                     type: string
                   moveCount:
+                    type: string
+                  beforeId:
+                    type: string
+                  afterId:
                     type: string
         default:
           description: An unexpected error response.
@@ -29509,6 +29521,10 @@ definitions:
       idValue:
         type: string
         format: uint64
+      fifoHead:
+        type: string
+      fifoTail:
+        type: string
   xavierlepretre.checkers.checkers.QueryAllStoredGameResponse:
     type: object
     properties:
@@ -29530,6 +29546,10 @@ definitions:
             black:
               type: string
             moveCount:
+              type: string
+            beforeId:
+              type: string
+            afterId:
               type: string
       pagination:
         type: object
@@ -29567,6 +29587,10 @@ definitions:
           idValue:
             type: string
             format: uint64
+          fifoHead:
+            type: string
+          fifoTail:
+            type: string
   xavierlepretre.checkers.checkers.QueryGetStoredGameResponse:
     type: object
     properties:
@@ -29587,6 +29611,10 @@ definitions:
             type: string
           moveCount:
             type: string
+          beforeId:
+            type: string
+          afterId:
+            type: string
   xavierlepretre.checkers.checkers.StoredGame:
     type: object
     properties:
@@ -29603,4 +29631,8 @@ definitions:
       black:
         type: string
       moveCount:
+        type: string
+      beforeId:
+        type: string
+      afterId:
         type: string
