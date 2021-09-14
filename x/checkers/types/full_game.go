@@ -2,6 +2,7 @@ package types
 
 import (
 	"strconv"
+	"time"
 
 	sdk "github.com/cosmos/cosmos-sdk/types"
 	"github.com/xavierlepretre/checkers/x/checkers/rules"
@@ -16,6 +17,7 @@ type FullGame struct {
 	MoveCount uint64
 	BeforeId  string
 	AfterId   string
+	Deadline  time.Time
 }
 
 func (fullGame *FullGame) ToStoredGame() (storedGame *StoredGame) {
@@ -28,6 +30,7 @@ func (fullGame *FullGame) ToStoredGame() (storedGame *StoredGame) {
 	storedGame.MoveCount = strconv.FormatUint(fullGame.MoveCount, 10)
 	storedGame.BeforeId = fullGame.BeforeId
 	storedGame.AfterId = fullGame.BeforeId
+	storedGame.Deadline = fullGame.Deadline.UTC().Format(DeadlineLayout)
 	return storedGame
 }
 
@@ -45,7 +48,8 @@ func (storedGame *StoredGame) ToFullGame() (fullGame *FullGame) {
 	fullGame.Black, err = sdk.AccAddressFromBech32(storedGame.Black)
 	fullGame.MoveCount, err = strconv.ParseUint(storedGame.MoveCount, 10, 64)
 	fullGame.BeforeId = storedGame.BeforeId
-	fullGame.BeforeId = storedGame.AfterId
+	fullGame.AfterId = storedGame.AfterId
+	fullGame.Deadline, err = time.Parse(DeadlineLayout, storedGame.Deadline)
 	if err != nil {
 		panic(err)
 	}

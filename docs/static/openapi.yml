@@ -19177,6 +19177,8 @@ paths:
                       type: string
                     afterId:
                       type: string
+                    deadline:
+                      type: string
               pagination:
                 type: object
                 properties:
@@ -19301,6 +19303,8 @@ paths:
                   beforeId:
                     type: string
                   afterId:
+                    type: string
+                  deadline:
                     type: string
         default:
           description: An unexpected error response.
@@ -29551,6 +29555,8 @@ definitions:
               type: string
             afterId:
               type: string
+            deadline:
+              type: string
       pagination:
         type: object
         properties:
@@ -29615,6 +29621,8 @@ definitions:
             type: string
           afterId:
             type: string
+          deadline:
+            type: string
   xavierlepretre.checkers.checkers.StoredGame:
     type: object
     properties:
@@ -29635,4 +29643,6 @@ definitions:
       beforeId:
         type: string
       afterId:
+        type: string
+      deadline:
         type: string

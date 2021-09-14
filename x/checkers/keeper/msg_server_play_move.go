@@ -50,6 +50,7 @@ func (k msgServer) PlayMove(goCtx context.Context, msg *types.MsgPlayMove) (*typ
 		return nil, moveErr
 	}
 	fullGame.MoveCount++
+	fullGame.Deadline = ctx.BlockTime().Add(types.MaxTurnDurationInSeconds)
 
 	// Send to the back of the FIFO
 	storedGame = *fullGame.ToStoredGame()

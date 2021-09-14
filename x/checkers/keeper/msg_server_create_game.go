@@ -11,18 +11,19 @@ import (
 
 func (k msgServer) CreateGame(goCtx context.Context, msg *types.MsgCreateGame) (*types.MsgCreateGameResponse, error) {
 	ctx := sdk.UnwrapSDKContext(goCtx)
-
+	ctx.BlockTime()
 	nextGame, found := k.Keeper.GetNextGame(ctx)
 	if !found {
 		panic("NextGame not found")
 	}
 	newIndex := strconv.FormatUint(nextGame.IdValue, 10)
 	newGame := types.FullGame{
-		Creator: sdk.AccAddress(msg.Creator),
-		Index:   newIndex,
-		Game:    *rules.New(),
-		Red:     sdk.AccAddress(msg.Red),
-		Black:   sdk.AccAddress(msg.Black),
+		Creator:  sdk.AccAddress(msg.Creator),
+		Index:    newIndex,
+		Game:     *rules.New(),
+		Red:      sdk.AccAddress(msg.Red),
+		Black:    sdk.AccAddress(msg.Black),
+		Deadline: ctx.BlockTime().Add(types.MaxTurnDurationInSeconds),
 	}
 	storedGame := newGame.ToStoredGame()
 	k.Keeper.SendToFifoTail(ctx, storedGame, &nextGame)
