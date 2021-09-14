@@ -36,6 +36,9 @@ func (k msgServer) RejectGame(goCtx context.Context, msg *types.MsgRejectGame) (
 		return nil, errors.New("Message creator is not a player")
 	}
 
+	// Refund wager to black player if red rejects after black played
+	k.Keeper.MustRefundWager(ctx, fullGame)
+
 	// Remove from the FIFO
 	nextGame, found := k.Keeper.GetNextGame(ctx)
 	if !found {

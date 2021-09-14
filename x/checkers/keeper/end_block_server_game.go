@@ -30,20 +30,43 @@ func (k Keeper) ForfeitExpiredGames(goCtx context.Context) {
 		if !found {
 			panic("Fifo head game not found " + nextGame.FifoHead)
 		}
-		if storedGame.ToFullGame().Deadline.Before(ctx.BlockTime()) {
+		deadline, err := storedGame.GetDeadlineAsTime()
+		if err != nil {
+			panic(err)
+		}
+		if deadline.Before(ctx.BlockTime()) {
 			// Game is past deadline
-			storedGame.Winner, found = opponents[storedGame.Turn]
-			if !found {
-				panic("Could not find opponent of " + storedGame.Turn)
-			}
 			k.RemoveFromFifo(ctx, &storedGame, &nextGame)
-			k.SetStoredGame(ctx, storedGame)
-			ctx.EventManager().EmitEvent(
-				sdk.NewEvent(types.ForfeitGameEventKey,
-					sdk.NewAttribute(types.ForfeitGameEventIdValue, storedGameId),
-					sdk.NewAttribute(types.ForfeitGameEventWinner, storedGame.Winner),
-				),
-			)
+			fullGame := storedGame.ToFullGame()
+
+			if fullGame.MoveCount == 0 {
+				// No point in keeping a game that was never played
+				k.RemoveStoredGame(ctx, storedGameId)
+				ctx.EventManager().EmitEvent(
+					sdk.NewEvent(types.ForfeitGameEventKey,
+						sdk.NewAttribute(types.ForfeitGameEventIdValue, storedGameId),
+						sdk.NewAttribute(types.ForfeitGameEventWinner, rules.NO_PLAYER.Color),
+					),
+				)
+			} else {
+				fullGame.Winner, found = opponents[storedGame.Turn]
+				if !found {
+					panic("Could not find opponent of " + storedGame.Turn)
+				}
+				if fullGame.MoveCount <= 1 {
+					k.MustRefundWager(ctx, fullGame)
+				} else {
+					k.MustPayWinnings(ctx, fullGame)
+				}
+				storedGame = *fullGame.ToStoredGame()
+				k.SetStoredGame(ctx, storedGame)
+				ctx.EventManager().EmitEvent(
+					sdk.NewEvent(types.ForfeitGameEventKey,
+						sdk.NewAttribute(types.ForfeitGameEventIdValue, storedGameId),
+						sdk.NewAttribute(types.ForfeitGameEventWinner, storedGame.Winner),
+					),
+				)
+			}
 			// Move along FIFO
 			storedGameId = nextGame.FifoHead
 		} else {

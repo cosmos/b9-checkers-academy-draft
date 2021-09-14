@@ -40,6 +40,12 @@ func (k msgServer) PlayMove(goCtx context.Context, msg *types.MsgPlayMove) (*typ
 		return nil, errors.New("Player tried to play out of turn")
 	}
 
+	// Make the player pay the wager at the beginning
+	err := k.Keeper.CollectWager(ctx, fullGame)
+	if err != nil {
+		return nil, err
+	}
+
 	// Do it
 	captured, moveErr := fullGame.Game.Move(
 		rules.Pos{
@@ -68,6 +74,9 @@ func (k msgServer) PlayMove(goCtx context.Context, msg *types.MsgPlayMove) (*typ
 		k.Keeper.SendToFifoTail(ctx, &storedGame, &nextGame)
 	} else {
 		k.Keeper.RemoveFromFifo(ctx, &storedGame, &nextGame)
+
+		// Pay the winnings to the winner
+		k.Keeper.MustPayWinnings(ctx, fullGame)
 	}
 
 	// Save for the next play move

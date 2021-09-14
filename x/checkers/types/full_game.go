@@ -19,7 +19,19 @@ type FullGame struct {
 	AfterId   string
 	Deadline  time.Time
 	Winner    string
-	Wager     uint64
+	Wager     sdk.Coin
+}
+
+func (fullgame *FullGame) GetPlayerAddress(color string) (address sdk.AccAddress, found bool) {
+	address, found = map[string]sdk.AccAddress{
+		rules.RED_PLAYER.Color:   fullgame.Red,
+		rules.BLACK_PLAYER.Color: fullgame.Black,
+	}[color]
+	return address, found
+}
+
+func (fullGame *FullGame) GetWinnerAddress() (address sdk.AccAddress, found bool) {
+	return fullGame.GetPlayerAddress(fullGame.Winner)
 }
 
 func (fullGame *FullGame) ToStoredGame() (storedGame *StoredGame) {
@@ -34,8 +46,13 @@ func (fullGame *FullGame) ToStoredGame() (storedGame *StoredGame) {
 	storedGame.AfterId = fullGame.BeforeId
 	storedGame.Deadline = fullGame.Deadline.UTC().Format(DeadlineLayout)
 	storedGame.Winner = fullGame.Winner
-	storedGame.Wager = fullGame.Wager
+	storedGame.Wager = fullGame.Wager.Amount.Uint64()
 	return storedGame
+}
+
+func (storedGame *StoredGame) GetDeadlineAsTime() (deadline time.Time, err error) {
+	deadline, err = time.Parse(DeadlineLayout, storedGame.Deadline)
+	return deadline, err
 }
 
 func (storedGame *StoredGame) ToFullGame() (fullGame *FullGame) {
@@ -53,9 +70,9 @@ func (storedGame *StoredGame) ToFullGame() (fullGame *FullGame) {
 	fullGame.MoveCount, err = strconv.ParseUint(storedGame.MoveCount, 10, 64)
 	fullGame.BeforeId = storedGame.BeforeId
 	fullGame.AfterId = storedGame.AfterId
-	fullGame.Deadline, err = time.Parse(DeadlineLayout, storedGame.Deadline)
+	fullGame.Deadline, err = storedGame.GetDeadlineAsTime()
 	fullGame.Winner = storedGame.Winner
-	fullGame.Wager = storedGame.Wager
+	fullGame.Wager = sdk.NewCoin(sdk.DefaultBondDenom, sdk.NewInt(int64(storedGame.Wager)))
 	if err != nil {
 		panic(err)
 	}
