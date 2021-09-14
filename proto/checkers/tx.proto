@@ -42,6 +42,7 @@ message MsgCreateGame {
   string creator = 1;
   string red = 2;
   string black = 3;
+  uint64 wager = 4;
 }
 
 message MsgCreateGameResponse {
