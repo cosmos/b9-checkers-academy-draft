@@ -19,6 +19,11 @@ func (k msgServer) PlayMove(goCtx context.Context, msg *types.MsgPlayMove) (*typ
 		return nil, errors.New("Game not found " + msg.IdValue)
 	}
 
+	// Is the game already won? Can happen when it is forfeited.
+	if storedGame.Winner != rules.NO_PLAYER.Color {
+		return nil, errors.New("Game is already finished")
+	}
+
 	// Is it an expected player?
 	var player rules.Player
 	if strings.Compare(storedGame.Red, msg.Creator) == 0 {
@@ -51,14 +56,19 @@ func (k msgServer) PlayMove(goCtx context.Context, msg *types.MsgPlayMove) (*typ
 	}
 	fullGame.MoveCount++
 	fullGame.Deadline = ctx.BlockTime().Add(types.MaxTurnDurationInSeconds)
+	fullGame.Winner = fullGame.Game.Winner().Color
 
-	// Send to the back of the FIFO
+	// Remove from or send to the back of the FIFO
 	storedGame = *fullGame.ToStoredGame()
 	nextGame, found := k.Keeper.GetNextGame(ctx)
 	if !found {
 		panic("NextGame not found")
 	}
-	k.Keeper.SendToFifoTail(ctx, &storedGame, &nextGame)
+	if storedGame.Winner == rules.NO_PLAYER.Color {
+		k.Keeper.SendToFifoTail(ctx, &storedGame, &nextGame)
+	} else {
+		k.Keeper.RemoveFromFifo(ctx, &storedGame, &nextGame)
+	}
 
 	// Save for the next play move
 	k.Keeper.SetStoredGame(ctx, storedGame)
@@ -71,7 +81,7 @@ func (k msgServer) PlayMove(goCtx context.Context, msg *types.MsgPlayMove) (*typ
 			sdk.NewAttribute(types.PlayMoveEventIdValue, msg.IdValue),
 			sdk.NewAttribute(types.PlayMoveEventCapturedX, strconv.FormatInt(int64(captured.X), 10)),
 			sdk.NewAttribute(types.PlayMoveEventCapturedY, strconv.FormatInt(int64(captured.Y), 10)),
-			sdk.NewAttribute(types.PlayMoveEventWinner, fullGame.Game.Winner().Color),
+			sdk.NewAttribute(types.PlayMoveEventWinner, fullGame.Winner),
 		),
 	)
 
@@ -80,6 +90,6 @@ func (k msgServer) PlayMove(goCtx context.Context, msg *types.MsgPlayMove) (*typ
 		IdValue:   msg.IdValue,
 		CapturedX: int64(captured.X),
 		CapturedY: int64(captured.Y),
-		Winner:    fullGame.Game.Winner().Color,
+		Winner:    fullGame.Winner,
 	}, nil
 }

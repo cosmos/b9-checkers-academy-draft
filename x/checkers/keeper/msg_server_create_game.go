@@ -24,6 +24,7 @@ func (k msgServer) CreateGame(goCtx context.Context, msg *types.MsgCreateGame) (
 		Red:      sdk.AccAddress(msg.Red),
 		Black:    sdk.AccAddress(msg.Black),
 		Deadline: ctx.BlockTime().Add(types.MaxTurnDurationInSeconds),
+		Winner:   rules.NO_PLAYER.Color,
 	}
 	storedGame := newGame.ToStoredGame()
 	k.Keeper.SendToFifoTail(ctx, storedGame, &nextGame)

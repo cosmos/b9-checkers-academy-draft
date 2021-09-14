@@ -16,4 +16,5 @@ message StoredGame {
   string beforeId = 8; // Pertains to the FIFO. Towards head.
   string afterId = 9; // Pertains to the FIFO. Towards tail.
   string deadline = 10;
+  string winner = 11;
 }

@@ -16,9 +16,22 @@ export interface StoredGame {
   /** Pertains to the FIFO. Towards tail. */
   afterId: string
   deadline: string
+  winner: string
 }
 
-const baseStoredGame: object = { creator: '', index: '', game: '', turn: '', red: '', black: '', moveCount: '', beforeId: '', afterId: '', deadline: '' }
+const baseStoredGame: object = {
+  creator: '',
+  index: '',
+  game: '',
+  turn: '',
+  red: '',
+  black: '',
+  moveCount: '',
+  beforeId: '',
+  afterId: '',
+  deadline: '',
+  winner: ''
+}
 
 export const StoredGame = {
   encode(message: StoredGame, writer: Writer = Writer.create()): Writer {
@@ -51,6 +64,9 @@ export const StoredGame = {
     }
     if (message.deadline !== '') {
       writer.uint32(82).string(message.deadline)
+    }
+    if (message.winner !== '') {
+      writer.uint32(90).string(message.winner)
     }
     return writer
   },
@@ -91,6 +107,9 @@ export const StoredGame = {
           break
         case 10:
           message.deadline = reader.string()
+          break
+        case 11:
+          message.winner = reader.string()
           break
         default:
           reader.skipType(tag & 7)
@@ -152,6 +171,11 @@ export const StoredGame = {
     } else {
       message.deadline = ''
     }
+    if (object.winner !== undefined && object.winner !== null) {
+      message.winner = String(object.winner)
+    } else {
+      message.winner = ''
+    }
     return message
   },
 
@@ -167,6 +191,7 @@ export const StoredGame = {
     message.beforeId !== undefined && (obj.beforeId = message.beforeId)
     message.afterId !== undefined && (obj.afterId = message.afterId)
     message.deadline !== undefined && (obj.deadline = message.deadline)
+    message.winner !== undefined && (obj.winner = message.winner)
     return obj
   },
 
@@ -221,6 +246,11 @@ export const StoredGame = {
       message.deadline = object.deadline
     } else {
       message.deadline = ''
+    }
+    if (object.winner !== undefined && object.winner !== null) {
+      message.winner = object.winner
+    } else {
+      message.winner = ''
     }
     return message
   }

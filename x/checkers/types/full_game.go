@@ -18,6 +18,7 @@ type FullGame struct {
 	BeforeId  string
 	AfterId   string
 	Deadline  time.Time
+	Winner    string
 }
 
 func (fullGame *FullGame) ToStoredGame() (storedGame *StoredGame) {
@@ -31,6 +32,7 @@ func (fullGame *FullGame) ToStoredGame() (storedGame *StoredGame) {
 	storedGame.BeforeId = fullGame.BeforeId
 	storedGame.AfterId = fullGame.BeforeId
 	storedGame.Deadline = fullGame.Deadline.UTC().Format(DeadlineLayout)
+	storedGame.Winner = fullGame.Winner
 	return storedGame
 }
 
@@ -50,6 +52,7 @@ func (storedGame *StoredGame) ToFullGame() (fullGame *FullGame) {
 	fullGame.BeforeId = storedGame.BeforeId
 	fullGame.AfterId = storedGame.AfterId
 	fullGame.Deadline, err = time.Parse(DeadlineLayout, storedGame.Deadline)
+	fullGame.Winner = storedGame.Winner
 	if err != nil {
 		panic(err)
 	}
