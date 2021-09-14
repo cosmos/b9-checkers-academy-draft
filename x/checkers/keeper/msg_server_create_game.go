@@ -34,6 +34,8 @@ func (k msgServer) CreateGame(goCtx context.Context, msg *types.MsgCreateGame) (
 	nextGame.IdValue++
 	k.Keeper.SetNextGame(ctx, nextGame)
 
+	ctx.GasMeter().ConsumeGas(types.CreateGameGas, "Create game")
+
 	// What to emit
 	ctx.EventManager().EmitEvent(
 		sdk.NewEvent(types.StoredGameEventKey,
