@@ -1,4 +1,4 @@
-package checkers
+package rules
 
 import (
 	"bytes"
