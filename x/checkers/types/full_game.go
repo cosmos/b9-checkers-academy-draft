@@ -2,7 +2,7 @@ package types
 
 import (
 	sdk "github.com/cosmos/cosmos-sdk/types"
-	rules "github.com/xavierlepretre/checkers/x/checkers/rules"
+	"github.com/xavierlepretre/checkers/x/checkers/rules"
 )
 
 type FullGame struct {
