@@ -14,6 +14,7 @@ export interface QueryCanPlayMoveRequest {
 }
 export interface QueryCanPlayMoveResponse {
     possible: boolean;
+    reason: string;
 }
 export interface QueryGetStoredGameRequest {
     index: string;
