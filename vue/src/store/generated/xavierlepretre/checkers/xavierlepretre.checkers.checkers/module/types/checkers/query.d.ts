@@ -4,6 +4,17 @@ import { PageRequest, PageResponse } from '../cosmos/base/query/v1beta1/paginati
 import { NextGame } from '../checkers/next_game';
 export declare const protobufPackage = "xavierlepretre.checkers.checkers";
 /** this line is used by starport scaffolding # 3 */
+export interface QueryCanPlayMoveRequest {
+    idValue: string;
+    player: string;
+    fromX: number;
+    fromY: number;
+    toX: number;
+    toY: number;
+}
+export interface QueryCanPlayMoveResponse {
+    possible: boolean;
+}
 export interface QueryGetStoredGameRequest {
     index: string;
 }
@@ -22,6 +33,20 @@ export interface QueryGetNextGameRequest {
 export interface QueryGetNextGameResponse {
     NextGame: NextGame | undefined;
 }
+export declare const QueryCanPlayMoveRequest: {
+    encode(message: QueryCanPlayMoveRequest, writer?: Writer): Writer;
+    decode(input: Reader | Uint8Array, length?: number): QueryCanPlayMoveRequest;
+    fromJSON(object: any): QueryCanPlayMoveRequest;
+    toJSON(message: QueryCanPlayMoveRequest): unknown;
+    fromPartial(object: DeepPartial<QueryCanPlayMoveRequest>): QueryCanPlayMoveRequest;
+};
+export declare const QueryCanPlayMoveResponse: {
+    encode(message: QueryCanPlayMoveResponse, writer?: Writer): Writer;
+    decode(input: Reader | Uint8Array, length?: number): QueryCanPlayMoveResponse;
+    fromJSON(object: any): QueryCanPlayMoveResponse;
+    toJSON(message: QueryCanPlayMoveResponse): unknown;
+    fromPartial(object: DeepPartial<QueryCanPlayMoveResponse>): QueryCanPlayMoveResponse;
+};
 export declare const QueryGetStoredGameRequest: {
     encode(message: QueryGetStoredGameRequest, writer?: Writer): Writer;
     decode(input: Reader | Uint8Array, length?: number): QueryGetStoredGameRequest;
@@ -66,6 +91,8 @@ export declare const QueryGetNextGameResponse: {
 };
 /** Query defines the gRPC querier service. */
 export interface Query {
+    /** Queries a list of canPlayMove items. */
+    CanPlayMove(request: QueryCanPlayMoveRequest): Promise<QueryCanPlayMoveResponse>;
     /** Queries a storedGame by index. */
     StoredGame(request: QueryGetStoredGameRequest): Promise<QueryGetStoredGameResponse>;
     /** Queries a list of storedGame items. */
@@ -76,6 +103,7 @@ export interface Query {
 export declare class QueryClientImpl implements Query {
     private readonly rpc;
     constructor(rpc: Rpc);
+    CanPlayMove(request: QueryCanPlayMoveRequest): Promise<QueryCanPlayMoveResponse>;
     StoredGame(request: QueryGetStoredGameRequest): Promise<QueryGetStoredGameResponse>;
     StoredGameAll(request: QueryAllStoredGameRequest): Promise<QueryAllStoredGameResponse>;
     NextGame(request: QueryGetNextGameRequest): Promise<QueryGetNextGameResponse>;

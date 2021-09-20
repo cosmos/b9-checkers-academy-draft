@@ -37,6 +37,7 @@ function getStructure(template) {
 }
 const getDefaultState = () => {
     return {
+        CanPlayMove: {},
         StoredGame: {},
         StoredGameAll: {},
         NextGame: {},
@@ -67,6 +68,12 @@ export default {
         }
     },
     getters: {
+        getCanPlayMove: (state) => (params = { params: {} }) => {
+            if (!params.query) {
+                params.query = null;
+            }
+            return state.CanPlayMove[JSON.stringify(params)] ?? {};
+        },
         getStoredGame: (state) => (params = { params: {} }) => {
             if (!params.query) {
                 params.query = null;
@@ -114,6 +121,23 @@ export default {
                 }
             });
         },
+        async QueryCanPlayMove({ commit, rootGetters, getters }, { options: { subscribe, all } = { subscribe: false, all: false }, params: { ...key }, query = null }) {
+            try {
+                const queryClient = await initQueryClient(rootGetters);
+                let value = (await queryClient.queryCanPlayMove(query)).data;
+                while (all && value.pagination && value.pagination.nextKey != null) {
+                    let next_values = (await queryClient.queryCanPlayMove({ ...query, 'pagination.key': value.pagination.nextKey })).data;
+                    value = mergeResults(value, next_values);
+                }
+                commit('QUERY', { query: 'CanPlayMove', key: { params: { ...key }, query }, value });
+                if (subscribe)
+                    commit('SUBSCRIBE', { action: 'QueryCanPlayMove', payload: { options: { all }, params: { ...key }, query } });
+                return getters['getCanPlayMove']({ params: { ...key }, query }) ?? {};
+            }
+            catch (e) {
+                throw new SpVuexError('QueryClient:QueryCanPlayMove', 'API Node Unavailable. Could not perform query: ' + e.message);
+            }
+        },
         async QueryStoredGame({ commit, rootGetters, getters }, { options: { subscribe, all } = { subscribe: false, all: false }, params: { ...key }, query = null }) {
             try {
                 const queryClient = await initQueryClient(rootGetters);
@@ -157,6 +181,23 @@ export default {
                 throw new SpVuexError('QueryClient:QueryNextGame', 'API Node Unavailable. Could not perform query: ' + e.message);
             }
         },
+        async sendMsgPlayMove({ rootGetters }, { value, fee = [], memo = '' }) {
+            try {
+                const txClient = await initTxClient(rootGetters);
+                const msg = await txClient.msgPlayMove(value);
+                const result = await txClient.signAndBroadcast([msg], { fee: { amount: fee,
+                        gas: "200000" }, memo });
+                return result;
+            }
+            catch (e) {
+                if (e == MissingWalletError) {
+                    throw new SpVuexError('TxClient:MsgPlayMove:Init', 'Could not initialize signing client. Wallet is required.');
+                }
+                else {
+                    throw new SpVuexError('TxClient:MsgPlayMove:Send', 'Could not broadcast Tx: ' + e.message);
+                }
+            }
+        },
         async sendMsgCreateGame({ rootGetters }, { value, fee = [], memo = '' }) {
             try {
                 const txClient = await initTxClient(rootGetters);
@@ -191,20 +232,18 @@ export default {
                 }
             }
         },
-        async sendMsgPlayMove({ rootGetters }, { value, fee = [], memo = '' }) {
+        async MsgPlayMove({ rootGetters }, { value }) {
             try {
                 const txClient = await initTxClient(rootGetters);
                 const msg = await txClient.msgPlayMove(value);
-                const result = await txClient.signAndBroadcast([msg], { fee: { amount: fee,
-                        gas: "200000" }, memo });
-                return result;
+                return msg;
             }
             catch (e) {
                 if (e == MissingWalletError) {
                     throw new SpVuexError('TxClient:MsgPlayMove:Init', 'Could not initialize signing client. Wallet is required.');
                 }
                 else {
-                    throw new SpVuexError('TxClient:MsgPlayMove:Send', 'Could not broadcast Tx: ' + e.message);
+                    throw new SpVuexError('TxClient:MsgPlayMove:Create', 'Could not create message: ' + e.message);
                 }
             }
         },
@@ -235,21 +274,6 @@ export default {
                 }
                 else {
                     throw new SpVuexError('TxClient:MsgRejectGame:Create', 'Could not create message: ' + e.message);
-                }
-            }
-        },
-        async MsgPlayMove({ rootGetters }, { value }) {
-            try {
-                const txClient = await initTxClient(rootGetters);
-                const msg = await txClient.msgPlayMove(value);
-                return msg;
-            }
-            catch (e) {
-                if (e == MissingWalletError) {
-                    throw new SpVuexError('TxClient:MsgPlayMove:Init', 'Could not initialize signing client. Wallet is required.');
-                }
-                else {
-                    throw new SpVuexError('TxClient:MsgPlayMove:Create', 'Could not create message: ' + e.message);
                 }
             }
         },

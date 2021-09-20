@@ -50,6 +50,10 @@ export interface CheckersQueryAllStoredGameResponse {
   pagination?: V1Beta1PageResponse;
 }
 
+export interface CheckersQueryCanPlayMoveResponse {
+  possible?: boolean;
+}
+
 export interface CheckersQueryGetNextGameResponse {
   NextGame?: CheckersNextGame;
 }
@@ -338,6 +342,26 @@ export class HttpClient<SecurityDataType = unknown> {
  * @version version not set
  */
 export class Api<SecurityDataType extends unknown> extends HttpClient<SecurityDataType> {
+  /**
+   * No description
+   *
+   * @tags Query
+   * @name QueryCanPlayMove
+   * @summary Queries a list of canPlayMove items.
+   * @request GET:/xavierlepretre/checkers/checkers/canPlayMove
+   */
+  queryCanPlayMove = (
+    query?: { idValue?: string; player?: string; fromX?: string; fromY?: string; toX?: string; toY?: string },
+    params: RequestParams = {},
+  ) =>
+    this.request<CheckersQueryCanPlayMoveResponse, RpcStatus>({
+      path: `/xavierlepretre/checkers/checkers/canPlayMove`,
+      method: "GET",
+      query: query,
+      format: "json",
+      ...params,
+    });
+
   /**
    * No description
    *

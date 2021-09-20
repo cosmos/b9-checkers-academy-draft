@@ -1,9 +1,207 @@
 /* eslint-disable */
-import { Reader, Writer } from 'protobufjs/minimal';
+import { Reader, util, configure, Writer } from 'protobufjs/minimal';
+import * as Long from 'long';
 import { StoredGame } from '../checkers/stored_game';
 import { PageRequest, PageResponse } from '../cosmos/base/query/v1beta1/pagination';
 import { NextGame } from '../checkers/next_game';
 export const protobufPackage = 'xavierlepretre.checkers.checkers';
+const baseQueryCanPlayMoveRequest = { idValue: '', player: '', fromX: 0, fromY: 0, toX: 0, toY: 0 };
+export const QueryCanPlayMoveRequest = {
+    encode(message, writer = Writer.create()) {
+        if (message.idValue !== '') {
+            writer.uint32(10).string(message.idValue);
+        }
+        if (message.player !== '') {
+            writer.uint32(18).string(message.player);
+        }
+        if (message.fromX !== 0) {
+            writer.uint32(24).uint64(message.fromX);
+        }
+        if (message.fromY !== 0) {
+            writer.uint32(32).uint64(message.fromY);
+        }
+        if (message.toX !== 0) {
+            writer.uint32(40).uint64(message.toX);
+        }
+        if (message.toY !== 0) {
+            writer.uint32(48).uint64(message.toY);
+        }
+        return writer;
+    },
+    decode(input, length) {
+        const reader = input instanceof Uint8Array ? new Reader(input) : input;
+        let end = length === undefined ? reader.len : reader.pos + length;
+        const message = { ...baseQueryCanPlayMoveRequest };
+        while (reader.pos < end) {
+            const tag = reader.uint32();
+            switch (tag >>> 3) {
+                case 1:
+                    message.idValue = reader.string();
+                    break;
+                case 2:
+                    message.player = reader.string();
+                    break;
+                case 3:
+                    message.fromX = longToNumber(reader.uint64());
+                    break;
+                case 4:
+                    message.fromY = longToNumber(reader.uint64());
+                    break;
+                case 5:
+                    message.toX = longToNumber(reader.uint64());
+                    break;
+                case 6:
+                    message.toY = longToNumber(reader.uint64());
+                    break;
+                default:
+                    reader.skipType(tag & 7);
+                    break;
+            }
+        }
+        return message;
+    },
+    fromJSON(object) {
+        const message = { ...baseQueryCanPlayMoveRequest };
+        if (object.idValue !== undefined && object.idValue !== null) {
+            message.idValue = String(object.idValue);
+        }
+        else {
+            message.idValue = '';
+        }
+        if (object.player !== undefined && object.player !== null) {
+            message.player = String(object.player);
+        }
+        else {
+            message.player = '';
+        }
+        if (object.fromX !== undefined && object.fromX !== null) {
+            message.fromX = Number(object.fromX);
+        }
+        else {
+            message.fromX = 0;
+        }
+        if (object.fromY !== undefined && object.fromY !== null) {
+            message.fromY = Number(object.fromY);
+        }
+        else {
+            message.fromY = 0;
+        }
+        if (object.toX !== undefined && object.toX !== null) {
+            message.toX = Number(object.toX);
+        }
+        else {
+            message.toX = 0;
+        }
+        if (object.toY !== undefined && object.toY !== null) {
+            message.toY = Number(object.toY);
+        }
+        else {
+            message.toY = 0;
+        }
+        return message;
+    },
+    toJSON(message) {
+        const obj = {};
+        message.idValue !== undefined && (obj.idValue = message.idValue);
+        message.player !== undefined && (obj.player = message.player);
+        message.fromX !== undefined && (obj.fromX = message.fromX);
+        message.fromY !== undefined && (obj.fromY = message.fromY);
+        message.toX !== undefined && (obj.toX = message.toX);
+        message.toY !== undefined && (obj.toY = message.toY);
+        return obj;
+    },
+    fromPartial(object) {
+        const message = { ...baseQueryCanPlayMoveRequest };
+        if (object.idValue !== undefined && object.idValue !== null) {
+            message.idValue = object.idValue;
+        }
+        else {
+            message.idValue = '';
+        }
+        if (object.player !== undefined && object.player !== null) {
+            message.player = object.player;
+        }
+        else {
+            message.player = '';
+        }
+        if (object.fromX !== undefined && object.fromX !== null) {
+            message.fromX = object.fromX;
+        }
+        else {
+            message.fromX = 0;
+        }
+        if (object.fromY !== undefined && object.fromY !== null) {
+            message.fromY = object.fromY;
+        }
+        else {
+            message.fromY = 0;
+        }
+        if (object.toX !== undefined && object.toX !== null) {
+            message.toX = object.toX;
+        }
+        else {
+            message.toX = 0;
+        }
+        if (object.toY !== undefined && object.toY !== null) {
+            message.toY = object.toY;
+        }
+        else {
+            message.toY = 0;
+        }
+        return message;
+    }
+};
+const baseQueryCanPlayMoveResponse = { possible: false };
+export const QueryCanPlayMoveResponse = {
+    encode(message, writer = Writer.create()) {
+        if (message.possible === true) {
+            writer.uint32(8).bool(message.possible);
+        }
+        return writer;
+    },
+    decode(input, length) {
+        const reader = input instanceof Uint8Array ? new Reader(input) : input;
+        let end = length === undefined ? reader.len : reader.pos + length;
+        const message = { ...baseQueryCanPlayMoveResponse };
+        while (reader.pos < end) {
+            const tag = reader.uint32();
+            switch (tag >>> 3) {
+                case 1:
+                    message.possible = reader.bool();
+                    break;
+                default:
+                    reader.skipType(tag & 7);
+                    break;
+            }
+        }
+        return message;
+    },
+    fromJSON(object) {
+        const message = { ...baseQueryCanPlayMoveResponse };
+        if (object.possible !== undefined && object.possible !== null) {
+            message.possible = Boolean(object.possible);
+        }
+        else {
+            message.possible = false;
+        }
+        return message;
+    },
+    toJSON(message) {
+        const obj = {};
+        message.possible !== undefined && (obj.possible = message.possible);
+        return obj;
+    },
+    fromPartial(object) {
+        const message = { ...baseQueryCanPlayMoveResponse };
+        if (object.possible !== undefined && object.possible !== null) {
+            message.possible = object.possible;
+        }
+        else {
+            message.possible = false;
+        }
+        return message;
+    }
+};
 const baseQueryGetStoredGameRequest = { index: '' };
 export const QueryGetStoredGameRequest = {
     encode(message, writer = Writer.create()) {
@@ -320,6 +518,11 @@ export class QueryClientImpl {
     constructor(rpc) {
         this.rpc = rpc;
     }
+    CanPlayMove(request) {
+        const data = QueryCanPlayMoveRequest.encode(request).finish();
+        const promise = this.rpc.request('xavierlepretre.checkers.checkers.Query', 'CanPlayMove', data);
+        return promise.then((data) => QueryCanPlayMoveResponse.decode(new Reader(data)));
+    }
     StoredGame(request) {
         const data = QueryGetStoredGameRequest.encode(request).finish();
         const promise = this.rpc.request('xavierlepretre.checkers.checkers.Query', 'StoredGame', data);
@@ -335,4 +538,25 @@ export class QueryClientImpl {
         const promise = this.rpc.request('xavierlepretre.checkers.checkers.Query', 'NextGame', data);
         return promise.then((data) => QueryGetNextGameResponse.decode(new Reader(data)));
     }
+}
+var globalThis = (() => {
+    if (typeof globalThis !== 'undefined')
+        return globalThis;
+    if (typeof self !== 'undefined')
+        return self;
+    if (typeof window !== 'undefined')
+        return window;
+    if (typeof global !== 'undefined')
+        return global;
+    throw 'Unable to locate global object';
+})();
+function longToNumber(long) {
+    if (long.gt(Number.MAX_SAFE_INTEGER)) {
+        throw new globalThis.Error('Value is larger than Number.MAX_SAFE_INTEGER');
+    }
+    return long.toNumber();
+}
+if (util.Long !== Long) {
+    util.Long = Long;
+    configure();
 }
