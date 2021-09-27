@@ -19,6 +19,8 @@ export interface StoredGame {
   deadline: string
   winner: string
   wager: number
+  /** Denomination of the wager. */
+  token: string
 }
 
 const baseStoredGame: object = {
@@ -33,7 +35,8 @@ const baseStoredGame: object = {
   afterId: '',
   deadline: '',
   winner: '',
-  wager: 0
+  wager: 0,
+  token: ''
 }
 
 export const StoredGame = {
@@ -73,6 +76,9 @@ export const StoredGame = {
     }
     if (message.wager !== 0) {
       writer.uint32(96).uint64(message.wager)
+    }
+    if (message.token !== '') {
+      writer.uint32(106).string(message.token)
     }
     return writer
   },
@@ -119,6 +125,9 @@ export const StoredGame = {
           break
         case 12:
           message.wager = longToNumber(reader.uint64() as Long)
+          break
+        case 13:
+          message.token = reader.string()
           break
         default:
           reader.skipType(tag & 7)
@@ -190,6 +199,11 @@ export const StoredGame = {
     } else {
       message.wager = 0
     }
+    if (object.token !== undefined && object.token !== null) {
+      message.token = String(object.token)
+    } else {
+      message.token = ''
+    }
     return message
   },
 
@@ -207,6 +221,7 @@ export const StoredGame = {
     message.deadline !== undefined && (obj.deadline = message.deadline)
     message.winner !== undefined && (obj.winner = message.winner)
     message.wager !== undefined && (obj.wager = message.wager)
+    message.token !== undefined && (obj.token = message.token)
     return obj
   },
 
@@ -271,6 +286,11 @@ export const StoredGame = {
       message.wager = object.wager
     } else {
       message.wager = 0
+    }
+    if (object.token !== undefined && object.token !== null) {
+      message.token = object.token
+    } else {
+      message.token = ''
     }
     return message
   }

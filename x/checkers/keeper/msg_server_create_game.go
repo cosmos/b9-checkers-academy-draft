@@ -25,7 +25,7 @@ func (k msgServer) CreateGame(goCtx context.Context, msg *types.MsgCreateGame) (
 		Black:    sdk.AccAddress(msg.Black),
 		Deadline: ctx.BlockTime().Add(types.MaxTurnDurationInSeconds),
 		Winner:   rules.NO_PLAYER.Color,
-		Wager:    sdk.NewCoin(sdk.DefaultBondDenom, sdk.NewInt(int64(msg.Wager))),
+		Wager:    sdk.NewCoin(msg.Token, sdk.NewInt(int64(msg.Wager))),
 	}
 	storedGame := newGame.ToStoredGame()
 	k.Keeper.SendToFifoTail(ctx, storedGame, &nextGame)
@@ -44,6 +44,7 @@ func (k msgServer) CreateGame(goCtx context.Context, msg *types.MsgCreateGame) (
 			sdk.NewAttribute(types.StoredGameEventRed, msg.Red),
 			sdk.NewAttribute(types.StoredGameEventBlack, msg.Black),
 			sdk.NewAttribute(types.StoredGameEventWager, strconv.FormatUint(msg.Wager, 10)),
+			sdk.NewAttribute(types.StoredGameEventToken, msg.Token),
 		),
 	)
 

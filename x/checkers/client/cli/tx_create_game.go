@@ -14,9 +14,9 @@ var _ = strconv.Itoa(0)
 
 func CmdCreateGame() *cobra.Command {
 	cmd := &cobra.Command{
-		Use:   "create-game [red] [black] [wager]",
+		Use:   "create-game [red] [black] [wager] [token]",
 		Short: "Broadcast message createGame",
-		Args:  cobra.ExactArgs(3),
+		Args:  cobra.ExactArgs(4),
 		RunE: func(cmd *cobra.Command, args []string) error {
 			argsRed := string(args[0])
 			argsBlack := string(args[1])
@@ -24,13 +24,14 @@ func CmdCreateGame() *cobra.Command {
 			if err != nil {
 				return err
 			}
+			argsToken := string(args[3])
 
 			clientCtx, err := client.GetClientTxContext(cmd)
 			if err != nil {
 				return err
 			}
 
-			msg := types.NewMsgCreateGame(clientCtx.GetFromAddress().String(), string(argsRed), string(argsBlack), uint64(argsWager))
+			msg := types.NewMsgCreateGame(clientCtx.GetFromAddress().String(), string(argsRed), string(argsBlack), uint64(argsWager), string(argsToken))
 			if err := msg.ValidateBasic(); err != nil {
 				return err
 			}

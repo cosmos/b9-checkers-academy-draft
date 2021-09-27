@@ -15,6 +15,8 @@ export interface StoredGame {
     deadline: string;
     winner: string;
     wager: number;
+    /** Denomination of the wager. */
+    token: string;
 }
 export declare const StoredGame: {
     encode(message: StoredGame, writer?: Writer): Writer;

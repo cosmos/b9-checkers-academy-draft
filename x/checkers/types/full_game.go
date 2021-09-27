@@ -47,6 +47,7 @@ func (fullGame *FullGame) ToStoredGame() (storedGame *StoredGame) {
 	storedGame.Deadline = fullGame.Deadline.UTC().Format(DeadlineLayout)
 	storedGame.Winner = fullGame.Winner
 	storedGame.Wager = fullGame.Wager.Amount.Uint64()
+	storedGame.Token = fullGame.Wager.Denom
 	return storedGame
 }
 
@@ -72,7 +73,7 @@ func (storedGame *StoredGame) ToFullGame() (fullGame *FullGame) {
 	fullGame.AfterId = storedGame.AfterId
 	fullGame.Deadline, err = storedGame.GetDeadlineAsTime()
 	fullGame.Winner = storedGame.Winner
-	fullGame.Wager = sdk.NewCoin(sdk.DefaultBondDenom, sdk.NewInt(int64(storedGame.Wager)))
+	fullGame.Wager = sdk.NewCoin(storedGame.Token, sdk.NewInt(int64(storedGame.Wager)))
 	if err != nil {
 		panic(err)
 	}

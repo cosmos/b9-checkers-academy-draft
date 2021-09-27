@@ -19247,6 +19247,8 @@ paths:
                     wager:
                       type: string
                       format: uint64
+                    token:
+                      type: string
               pagination:
                 type: object
                 properties:
@@ -19379,6 +19381,8 @@ paths:
                   wager:
                     type: string
                     format: uint64
+                  token:
+                    type: string
         default:
           description: An unexpected error response.
           schema:
@@ -29635,6 +29639,8 @@ definitions:
             wager:
               type: string
               format: uint64
+            token:
+              type: string
       pagination:
         type: object
         properties:
@@ -29713,6 +29719,8 @@ definitions:
           wager:
             type: string
             format: uint64
+          token:
+            type: string
   xavierlepretre.checkers.checkers.StoredGame:
     type: object
     properties:
@@ -29741,3 +29749,5 @@ definitions:
       wager:
         type: string
         format: uint64
+      token:
+        type: string
