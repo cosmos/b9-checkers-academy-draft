@@ -37,7 +37,7 @@ func (k msgServer) RejectGame(goCtx context.Context, msg *types.MsgRejectGame) (
 	}
 
 	// Refund wager to black player if red rejects after black played
-	k.Keeper.MustRefundWager(ctx, fullGame)
+	k.Keeper.MustRefundWager(ctx, &fullGame)
 
 	// Remove from the FIFO
 	nextGame, found := k.Keeper.GetNextGame(ctx)
