@@ -2,6 +2,7 @@ package keeper
 
 import (
 	"context"
+	"errors"
 	"strconv"
 
 	sdk "github.com/cosmos/cosmos-sdk/types"
@@ -17,12 +18,24 @@ func (k msgServer) CreateGame(goCtx context.Context, msg *types.MsgCreateGame) (
 		panic("NextGame not found")
 	}
 	newIndex := strconv.FormatUint(nextGame.IdValue, 10)
+	creator, err := sdk.AccAddressFromBech32(msg.Creator)
+	if err != nil {
+		return nil, errors.New("Creator is a malformed address")
+	}
+	red, err := sdk.AccAddressFromBech32(msg.Red)
+	if err != nil {
+		return nil, errors.New("Red is a malformed address")
+	}
+	black, err := sdk.AccAddressFromBech32(msg.Black)
+	if err != nil {
+		return nil, errors.New("Black is a malformed address")
+	}
 	newGame := types.FullGame{
-		Creator: sdk.AccAddress(msg.Creator),
+		Creator: creator,
 		Index:   newIndex,
 		Game:    *rules.New(),
-		Red:     sdk.AccAddress(msg.Red),
-		Black:   sdk.AccAddress(msg.Black),
+		Red:     red,
+		Black:   black,
 	}
 	k.Keeper.SetStoredGame(ctx, newGame.ToStoredGame())
 
