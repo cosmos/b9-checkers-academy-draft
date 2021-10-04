@@ -2,7 +2,7 @@ package types
 
 import (
 	sdk "github.com/cosmos/cosmos-sdk/types"
-	rules "github.com/xavierlepretre/checkers/x/checkers/rules"
+	"github.com/xavierlepretre/checkers/x/checkers/rules"
 )
 
 type FullGame struct {
@@ -13,30 +13,42 @@ type FullGame struct {
 	Black   sdk.AccAddress
 }
 
-func (fullGame *FullGame) ToStoredGame() (storedGame *StoredGame) {
-	storedGame.Creator = fullGame.Creator.String()
-	storedGame.Index = fullGame.Index
-	storedGame.Game = fullGame.Game.String()
-	storedGame.Turn = fullGame.Game.Turn.Color
-	storedGame.Red = fullGame.Red.String()
-	storedGame.Black = fullGame.Black.String()
-	return storedGame
+func (fullGame FullGame) ToStoredGame() StoredGame {
+	return StoredGame{
+		Creator: fullGame.Creator.String(),
+		Index:   fullGame.Index,
+		Game:    fullGame.Game.String(),
+		Turn:    fullGame.Game.Turn.Color,
+		Red:     fullGame.Red.String(),
+		Black:   fullGame.Black.String(),
+	}
 }
 
-func (storedGame *StoredGame) ToFullGame() (fullGame *FullGame) {
-	var err error
-	fullGame.Creator, err = sdk.AccAddressFromBech32(storedGame.Creator)
-	fullGame.Index = storedGame.Index
-	var game *rules.Game
-	game, err = rules.Parse(storedGame.Game)
-	game.Turn = rules.Player{
-		Color: storedGame.Turn,
-	}
-	fullGame.Game = *game
-	fullGame.Red, err = sdk.AccAddressFromBech32(storedGame.Red)
-	fullGame.Black, err = sdk.AccAddressFromBech32(storedGame.Black)
+func (storedGame StoredGame) ToFullGame() (fullGame FullGame) {
+	creator, err := sdk.AccAddressFromBech32(storedGame.Creator)
 	if err != nil {
 		panic(err)
 	}
-	return fullGame
+	game, err := rules.Parse(storedGame.Game)
+	if err != nil {
+		panic(err)
+	}
+	game.Turn = rules.Player{
+		Color: storedGame.Turn,
+	}
+	red, err := sdk.AccAddressFromBech32(storedGame.Red)
+	if err != nil {
+		panic(err)
+	}
+	black, err := sdk.AccAddressFromBech32(storedGame.Black)
+	if err != nil {
+		panic(err)
+	}
+	return FullGame{
+		Creator: creator,
+		Index:   storedGame.Index,
+		Game:    *game,
+		Red:     red,
+		Black:   black,
+	}
 }
