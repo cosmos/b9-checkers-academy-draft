@@ -25,8 +25,8 @@ func (k msgServer) CreateGame(goCtx context.Context, msg *types.MsgCreateGame) (
 		Black:   sdk.AccAddress(msg.Black),
 	}
 	storedGame := newGame.ToStoredGame()
-	k.Keeper.SendToFifoTail(ctx, storedGame, &nextGame)
-	k.Keeper.SetStoredGame(ctx, *storedGame)
+	k.Keeper.SendToFifoTail(ctx, &storedGame, &nextGame)
+	k.Keeper.SetStoredGame(ctx, storedGame)
 
 	nextGame.IdValue++
 	k.Keeper.SetNextGame(ctx, nextGame)
