@@ -59,7 +59,7 @@ func (k msgServer) PlayMove(goCtx context.Context, msg *types.MsgPlayMove) (*typ
 	fullGame.Winner = fullGame.Game.Winner().Color
 
 	// Remove from or send to the back of the FIFO
-	storedGame = *fullGame.ToStoredGame()
+	storedGame = fullGame.ToStoredGame()
 	nextGame, found := k.Keeper.GetNextGame(ctx)
 	if !found {
 		panic("NextGame not found")

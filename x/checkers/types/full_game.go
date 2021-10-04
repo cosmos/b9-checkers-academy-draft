@@ -21,40 +21,60 @@ type FullGame struct {
 	Winner    string
 }
 
-func (fullGame *FullGame) ToStoredGame() (storedGame *StoredGame) {
-	storedGame.Creator = fullGame.Creator.String()
-	storedGame.Index = fullGame.Index
-	storedGame.Game = fullGame.Game.String()
-	storedGame.Turn = fullGame.Game.Turn.Color
-	storedGame.Red = fullGame.Red.String()
-	storedGame.Black = fullGame.Black.String()
-	storedGame.MoveCount = strconv.FormatUint(fullGame.MoveCount, 10)
-	storedGame.BeforeId = fullGame.BeforeId
-	storedGame.AfterId = fullGame.BeforeId
-	storedGame.Deadline = fullGame.Deadline.UTC().Format(DeadlineLayout)
-	storedGame.Winner = fullGame.Winner
-	return storedGame
+func (fullGame FullGame) ToStoredGame() StoredGame {
+	return StoredGame{
+		Creator:   fullGame.Creator.String(),
+		Index:     fullGame.Index,
+		Game:      fullGame.Game.String(),
+		Turn:      fullGame.Game.Turn.Color,
+		Red:       fullGame.Red.String(),
+		Black:     fullGame.Black.String(),
+		MoveCount: strconv.FormatUint(fullGame.MoveCount, 10),
+		BeforeId:  fullGame.BeforeId,
+		AfterId:   fullGame.BeforeId,
+		Deadline:  fullGame.Deadline.UTC().Format(DeadlineLayout),
+		Winner:    fullGame.Winner,
+	}
 }
 
-func (storedGame *StoredGame) ToFullGame() (fullGame *FullGame) {
-	var err error
-	fullGame.Creator, err = sdk.AccAddressFromBech32(storedGame.Creator)
-	fullGame.Index = storedGame.Index
-	var game *rules.Game
-	game, err = rules.Parse(storedGame.Game)
-	game.Turn = rules.Player{
-		Color: storedGame.Turn,
-	}
-	fullGame.Game = *game
-	fullGame.Red, err = sdk.AccAddressFromBech32(storedGame.Red)
-	fullGame.Black, err = sdk.AccAddressFromBech32(storedGame.Black)
-	fullGame.MoveCount, err = strconv.ParseUint(storedGame.MoveCount, 10, 64)
-	fullGame.BeforeId = storedGame.BeforeId
-	fullGame.AfterId = storedGame.AfterId
-	fullGame.Deadline, err = time.Parse(DeadlineLayout, storedGame.Deadline)
-	fullGame.Winner = storedGame.Winner
+func (storedGame StoredGame) ToFullGame() (fullGame FullGame) {
+	creator, err := sdk.AccAddressFromBech32(storedGame.Creator)
 	if err != nil {
 		panic(err)
 	}
-	return fullGame
+	game, err := rules.Parse(storedGame.Game)
+	if err != nil {
+		panic(err)
+	}
+	game.Turn = rules.Player{
+		Color: storedGame.Turn,
+	}
+	red, err := sdk.AccAddressFromBech32(storedGame.Red)
+	if err != nil {
+		panic(err)
+	}
+	black, err := sdk.AccAddressFromBech32(storedGame.Black)
+	if err != nil {
+		panic(err)
+	}
+	moveCount, err := strconv.ParseUint(storedGame.MoveCount, 10, 64)
+	if err != nil {
+		panic(err)
+	}
+	deadline, err := time.Parse(DeadlineLayout, storedGame.Deadline)
+	if err != nil {
+		panic(err)
+	}
+	return FullGame{
+		Creator:   creator,
+		Index:     storedGame.Index,
+		Game:      *game,
+		Red:       red,
+		Black:     black,
+		MoveCount: moveCount,
+		BeforeId:  storedGame.BeforeId,
+		AfterId:   storedGame.AfterId,
+		Deadline:  deadline,
+		Winner:    storedGame.Winner,
+	}
 }
