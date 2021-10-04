@@ -31,7 +31,9 @@ func (k msgServer) CreateGame(goCtx context.Context, msg *types.MsgCreateGame) (
 
 	// What to emit
 	ctx.EventManager().EmitEvent(
-		sdk.NewEvent(types.StoredGameEventKey,
+		sdk.NewEvent(sdk.EventTypeMessage,
+			sdk.NewAttribute(sdk.AttributeKeyModule, types.ModuleName),
+			sdk.NewAttribute(sdk.AttributeKeyAction, types.StoredGameEventKey),
 			sdk.NewAttribute(types.StoredGameEventCreator, msg.Creator),
 			sdk.NewAttribute(types.StoredGameEventIndex, newIndex),
 			sdk.NewAttribute(types.StoredGameEventRed, msg.Red),
