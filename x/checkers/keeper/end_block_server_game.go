@@ -54,11 +54,11 @@ func (k Keeper) ForfeitExpiredGames(goCtx context.Context) {
 					panic("Could not find opponent of " + storedGame.Turn)
 				}
 				if fullGame.MoveCount <= 1 {
-					k.MustRefundWager(ctx, fullGame)
+					k.MustRefundWager(ctx, &fullGame)
 				} else {
-					k.MustPayWinnings(ctx, fullGame)
+					k.MustPayWinnings(ctx, &fullGame)
 				}
-				storedGame = *fullGame.ToStoredGame()
+				storedGame = fullGame.ToStoredGame()
 				k.SetStoredGame(ctx, storedGame)
 				ctx.EventManager().EmitEvent(
 					sdk.NewEvent(types.ForfeitGameEventKey,

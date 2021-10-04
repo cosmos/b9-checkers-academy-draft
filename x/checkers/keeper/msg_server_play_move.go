@@ -41,7 +41,7 @@ func (k msgServer) PlayMove(goCtx context.Context, msg *types.MsgPlayMove) (*typ
 	}
 
 	// Make the player pay the wager at the beginning
-	err := k.Keeper.CollectWager(ctx, fullGame)
+	err := k.Keeper.CollectWager(ctx, &fullGame)
 	if err != nil {
 		return nil, err
 	}
@@ -65,7 +65,7 @@ func (k msgServer) PlayMove(goCtx context.Context, msg *types.MsgPlayMove) (*typ
 	fullGame.Winner = fullGame.Game.Winner().Color
 
 	// Remove from or send to the back of the FIFO
-	storedGame = *fullGame.ToStoredGame()
+	storedGame = fullGame.ToStoredGame()
 	nextGame, found := k.Keeper.GetNextGame(ctx)
 	if !found {
 		panic("NextGame not found")
@@ -76,7 +76,7 @@ func (k msgServer) PlayMove(goCtx context.Context, msg *types.MsgPlayMove) (*typ
 		k.Keeper.RemoveFromFifo(ctx, &storedGame, &nextGame)
 
 		// Pay the winnings to the winner
-		k.Keeper.MustPayWinnings(ctx, fullGame)
+		k.Keeper.MustPayWinnings(ctx, &fullGame)
 	}
 
 	// Save for the next play move
