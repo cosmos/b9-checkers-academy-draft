@@ -51,7 +51,7 @@ func (k msgServer) PlayMove(goCtx context.Context, msg *types.MsgPlayMove) (*typ
 	}
 
 	// Save for the next play move
-	k.Keeper.SetStoredGame(ctx, *fullGame.ToStoredGame())
+	k.Keeper.SetStoredGame(ctx, fullGame.ToStoredGame())
 
 	// What to emit
 	ctx.EventManager().EmitEvent(
