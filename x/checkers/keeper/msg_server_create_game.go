@@ -28,8 +28,8 @@ func (k msgServer) CreateGame(goCtx context.Context, msg *types.MsgCreateGame) (
 		Wager:    sdk.NewCoin(msg.Token, sdk.NewInt(int64(msg.Wager))),
 	}
 	storedGame := newGame.ToStoredGame()
-	k.Keeper.SendToFifoTail(ctx, storedGame, &nextGame)
-	k.Keeper.SetStoredGame(ctx, *storedGame)
+	k.Keeper.SendToFifoTail(ctx, &storedGame, &nextGame)
+	k.Keeper.SetStoredGame(ctx, storedGame)
 
 	nextGame.IdValue++
 	k.Keeper.SetNextGame(ctx, nextGame)
