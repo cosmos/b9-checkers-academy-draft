@@ -26,8 +26,8 @@ func (k msgServer) CreateGame(goCtx context.Context, msg *types.MsgCreateGame) (
 		Deadline: ctx.BlockTime().Add(types.MaxTurnDurationInSeconds),
 	}
 	storedGame := newGame.ToStoredGame()
-	k.Keeper.SendToFifoTail(ctx, storedGame, &nextGame)
-	k.Keeper.SetStoredGame(ctx, *storedGame)
+	k.Keeper.SendToFifoTail(ctx, &storedGame, &nextGame)
+	k.Keeper.SetStoredGame(ctx, storedGame)
 
 	nextGame.IdValue++
 	k.Keeper.SetNextGame(ctx, nextGame)
