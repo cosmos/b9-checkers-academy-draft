@@ -26,11 +26,20 @@ func (fullGame FullGame) ToStoredGame() StoredGame {
 
 func (storedGame StoredGame) ToFullGame() (fullGame FullGame) {
 	creator, err := sdk.AccAddressFromBech32(storedGame.Creator)
+	if err != nil {
+		panic(err)
+	}
 	game, err := rules.Parse(storedGame.Game)
+	if err != nil {
+		panic(err)
+	}
 	game.Turn = rules.Player{
 		Color: storedGame.Turn,
 	}
 	red, err := sdk.AccAddressFromBech32(storedGame.Red)
+	if err != nil {
+		panic(err)
+	}
 	black, err := sdk.AccAddressFromBech32(storedGame.Black)
 	if err != nil {
 		panic(err)
