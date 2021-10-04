@@ -55,7 +55,9 @@ func (k msgServer) PlayMove(goCtx context.Context, msg *types.MsgPlayMove) (*typ
 
 	// What to emit
 	ctx.EventManager().EmitEvent(
-		sdk.NewEvent(types.PlayMoveEventKey,
+		sdk.NewEvent(sdk.EventTypeMessage,
+			sdk.NewAttribute(sdk.AttributeKeyModule, types.ModuleName),
+			sdk.NewAttribute(sdk.AttributeKeyAction, types.PlayMoveEventKey),
 			sdk.NewAttribute(types.PlayMoveEventCreator, msg.Creator),
 			sdk.NewAttribute(types.PlayMoveEventIdValue, msg.IdValue),
 			sdk.NewAttribute(types.PlayMoveEventCapturedX, strconv.FormatInt(int64(captured.X), 10)),
