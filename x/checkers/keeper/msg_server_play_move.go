@@ -2,11 +2,11 @@ package keeper
 
 import (
 	"context"
-	"errors"
 	"strconv"
 	"strings"
 
 	sdk "github.com/cosmos/cosmos-sdk/types"
+	sdkerrors "github.com/cosmos/cosmos-sdk/types/errors"
 	rules "github.com/xavierlepretre/checkers/x/checkers/rules"
 	"github.com/xavierlepretre/checkers/x/checkers/types"
 )
@@ -16,12 +16,12 @@ func (k msgServer) PlayMove(goCtx context.Context, msg *types.MsgPlayMove) (*typ
 
 	storedGame, found := k.Keeper.GetStoredGame(ctx, msg.IdValue)
 	if !found {
-		return nil, errors.New("Game not found " + msg.IdValue)
+		return nil, sdkerrors.Wrapf(types.ErrGameNotFound, "game not found %s", msg.IdValue)
 	}
 
 	// Is the game already won? Can happen when it is forfeited.
 	if storedGame.Winner != rules.NO_PLAYER.Color {
-		return nil, errors.New("Game is already finished")
+		return nil, types.ErrGameFinished
 	}
 
 	// Is it an expected player?
@@ -31,13 +31,13 @@ func (k msgServer) PlayMove(goCtx context.Context, msg *types.MsgPlayMove) (*typ
 	} else if strings.Compare(storedGame.Black, msg.Creator) == 0 {
 		player = rules.BLACK_PLAYER
 	} else {
-		return nil, errors.New("Message creator is not a player")
+		return nil, types.ErrCreatorNotPlayer
 	}
 
 	// Is it the player's turn?
 	fullGame := storedGame.ToFullGame()
 	if !fullGame.Game.TurnIs(player) {
-		return nil, errors.New("Player tried to play out of turn")
+		return nil, types.ErrNotPlayerTurn
 	}
 
 	// Make the player pay the wager at the beginning
@@ -58,7 +58,7 @@ func (k msgServer) PlayMove(goCtx context.Context, msg *types.MsgPlayMove) (*typ
 		},
 	)
 	if moveErr != nil {
-		return nil, moveErr
+		return nil, sdkerrors.Wrapf(types.ErrWrongMove, "wrong move: %s", moveErr.Error())
 	}
 	fullGame.MoveCount++
 	fullGame.Deadline = ctx.BlockTime().Add(types.MaxTurnDurationInSeconds)
@@ -87,7 +87,9 @@ func (k msgServer) PlayMove(goCtx context.Context, msg *types.MsgPlayMove) (*typ
 
 	// What to emit
 	ctx.EventManager().EmitEvent(
-		sdk.NewEvent(types.PlayMoveEventKey,
+		sdk.NewEvent(sdk.EventTypeMessage,
+			sdk.NewAttribute(sdk.AttributeKeyModule, types.ModuleName),
+			sdk.NewAttribute(sdk.AttributeKeyAction, types.PlayMoveEventKey),
 			sdk.NewAttribute(types.PlayMoveEventCreator, msg.Creator),
 			sdk.NewAttribute(types.PlayMoveEventIdValue, msg.IdValue),
 			sdk.NewAttribute(types.PlayMoveEventCapturedX, strconv.FormatInt(int64(captured.X), 10)),
