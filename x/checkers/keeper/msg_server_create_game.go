@@ -17,12 +17,24 @@ func (k msgServer) CreateGame(goCtx context.Context, msg *types.MsgCreateGame) (
 		panic("NextGame not found")
 	}
 	newIndex := strconv.FormatUint(nextGame.IdValue, 10)
+	creator, err := sdk.AccAddressFromBech32(msg.Creator)
+	if err != nil {
+		return nil, types.ErrInvalidCreator
+	}
+	red, err := sdk.AccAddressFromBech32(msg.Red)
+	if err != nil {
+		return nil, types.ErrInvalidRed
+	}
+	black, err := sdk.AccAddressFromBech32(msg.Black)
+	if err != nil {
+		return nil, types.ErrInvalidBlack
+	}
 	newGame := types.FullGame{
-		Creator: sdk.AccAddress(msg.Creator),
+		Creator: creator,
 		Index:   newIndex,
 		Game:    *rules.New(),
-		Red:     sdk.AccAddress(msg.Red),
-		Black:   sdk.AccAddress(msg.Black),
+		Red:     red,
+		Black:   black,
 	}
 	k.Keeper.SetStoredGame(ctx, newGame.ToStoredGame())
 
