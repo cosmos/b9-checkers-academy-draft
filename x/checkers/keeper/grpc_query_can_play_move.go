@@ -2,10 +2,11 @@ package keeper
 
 import (
 	"context"
-	"errors"
+	"fmt"
 	"strings"
 
 	sdk "github.com/cosmos/cosmos-sdk/types"
+	sdkerrors "github.com/cosmos/cosmos-sdk/types/errors"
 	rules "github.com/xavierlepretre/checkers/x/checkers/rules"
 	"github.com/xavierlepretre/checkers/x/checkers/types"
 	"google.golang.org/grpc/codes"
@@ -21,14 +22,14 @@ func (k Keeper) CanPlayMove(goCtx context.Context, req *types.QueryCanPlayMoveRe
 
 	storedGame, found := k.GetStoredGame(ctx, req.IdValue)
 	if !found {
-		return nil, errors.New("Game not found " + req.IdValue)
+		return nil, sdkerrors.Wrapf(types.ErrGameNotFound, "game not found %s", req.IdValue)
 	}
 
 	// Is the game already won? Can happen when it is forfeited.
 	if storedGame.Winner != rules.NO_PLAYER.Color {
 		return &types.QueryCanPlayMoveResponse{
 			Possible: false,
-			Reason:   "Game is already finished",
+			Reason:   types.ErrGameFinished.Error(),
 		}, nil
 	}
 
@@ -41,7 +42,7 @@ func (k Keeper) CanPlayMove(goCtx context.Context, req *types.QueryCanPlayMoveRe
 	} else {
 		return &types.QueryCanPlayMoveResponse{
 			Possible: false,
-			Reason:   "Message creator is not a player",
+			Reason:   types.ErrCreatorNotPlayer.Error(),
 		}, nil
 	}
 
@@ -50,7 +51,7 @@ func (k Keeper) CanPlayMove(goCtx context.Context, req *types.QueryCanPlayMoveRe
 	if !fullGame.Game.TurnIs(player) {
 		return &types.QueryCanPlayMoveResponse{
 			Possible: false,
-			Reason:   "Player tried to play out of turn",
+			Reason:   types.ErrNotPlayerTurn.Error(),
 		}, nil
 	}
 
@@ -68,12 +69,12 @@ func (k Keeper) CanPlayMove(goCtx context.Context, req *types.QueryCanPlayMoveRe
 	if moveErr != nil {
 		return &types.QueryCanPlayMoveResponse{
 			Possible: false,
-			Reason:   moveErr.Error(),
+			Reason:   fmt.Sprintf(types.ErrWrongMove.Error(), moveErr.Error()),
 		}, nil
 	}
 
 	return &types.QueryCanPlayMoveResponse{
 		Possible: true,
-		Reason:   "Ok",
+		Reason:   "ok",
 	}, nil
 }
