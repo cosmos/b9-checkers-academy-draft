@@ -2,7 +2,6 @@ package keeper
 
 import (
 	"context"
-	"errors"
 	"strconv"
 
 	sdk "github.com/cosmos/cosmos-sdk/types"
@@ -20,15 +19,15 @@ func (k msgServer) CreateGame(goCtx context.Context, msg *types.MsgCreateGame) (
 	newIndex := strconv.FormatUint(nextGame.IdValue, 10)
 	creator, err := sdk.AccAddressFromBech32(msg.Creator)
 	if err != nil {
-		return nil, errors.New("Creator is a malformed address")
+		return nil, types.ErrInvalidCreator
 	}
 	red, err := sdk.AccAddressFromBech32(msg.Red)
 	if err != nil {
-		return nil, errors.New("Red is a malformed address")
+		return nil, types.ErrInvalidRed
 	}
 	black, err := sdk.AccAddressFromBech32(msg.Black)
 	if err != nil {
-		return nil, errors.New("Black is a malformed address")
+		return nil, types.ErrInvalidBlack
 	}
 	newGame := types.FullGame{
 		Creator: creator,
