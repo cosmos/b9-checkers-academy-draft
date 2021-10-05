@@ -26,7 +26,7 @@ func (fullGame FullGame) ToStoredGame() StoredGame {
 		Black:     fullGame.Black.String(),
 		MoveCount: fullGame.MoveCount,
 		BeforeId:  fullGame.BeforeId,
-		AfterId:   fullGame.BeforeId,
+		AfterId:   fullGame.AfterId,
 	}
 }
 
