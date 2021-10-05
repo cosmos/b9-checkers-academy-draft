@@ -15,7 +15,7 @@ func (k msgServer) PlayMove(goCtx context.Context, msg *types.MsgPlayMove) (*typ
 
 	storedGame, found := k.Keeper.GetStoredGame(ctx, msg.IdValue)
 	if !found {
-		return nil, sdkerrors.Wrapf(sdkerrors.ErrUnauthorized, "game not found %s", msg.IdValue)
+		return nil, sdkerrors.Wrapf(types.ErrGameNotFound, "game not found %s", msg.IdValue)
 	}
 
 	// Is it an expected player?
@@ -25,13 +25,13 @@ func (k msgServer) PlayMove(goCtx context.Context, msg *types.MsgPlayMove) (*typ
 	} else if strings.Compare(storedGame.Black, msg.Creator) == 0 {
 		player = rules.BLACK_PLAYER
 	} else {
-		return nil, sdkerrors.Wrapf(sdkerrors.ErrUnauthorized, "message creator is not a player")
+		return nil, types.ErrCreatorNotPlayer
 	}
 
 	// Is it the player's turn?
 	fullGame := storedGame.ToFullGame()
 	if !fullGame.Game.TurnIs(player) {
-		return nil, sdkerrors.Wrapf(sdkerrors.ErrUnauthorized, "player tried to play out of turn")
+		return nil, types.ErrNotPlayerTurn
 	}
 
 	// Do it
@@ -46,7 +46,7 @@ func (k msgServer) PlayMove(goCtx context.Context, msg *types.MsgPlayMove) (*typ
 		},
 	)
 	if moveErr != nil {
-		return nil, moveErr
+		return nil, sdkerrors.Wrapf(types.ErrWrongMove, "wrong move: %s", moveErr.Error())
 	}
 
 	// Save for the next play move

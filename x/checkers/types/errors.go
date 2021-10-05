@@ -8,8 +8,12 @@ import (
 
 // x/checkers module sentinel errors
 var (
-	ErrInvalidCreator = sdkerrors.Register(ModuleName, 1100, "creator address is invalid")
-	ErrInvalidRed     = sdkerrors.Register(ModuleName, 1101, "red address is invalid")
-	ErrInvalidBlack   = sdkerrors.Register(ModuleName, 1102, "black address is invalid")
+	ErrInvalidCreator   = sdkerrors.Register(ModuleName, 1100, "creator address is invalid")
+	ErrInvalidRed       = sdkerrors.Register(ModuleName, 1101, "red address is invalid")
+	ErrInvalidBlack     = sdkerrors.Register(ModuleName, 1102, "black address is invalid")
+	ErrGameNotFound     = sdkerrors.Register(ModuleName, 1103, "game by id not found")
+	ErrCreatorNotPlayer = sdkerrors.Register(ModuleName, 1104, "message creator is not a player")
+	ErrNotPlayerTurn    = sdkerrors.Register(ModuleName, 1105, "player tried to play out of turn")
+	ErrWrongMove        = sdkerrors.Register(ModuleName, 1106, "wrong move")
 	// this line is used by starport scaffolding # ibc/errors
 )
