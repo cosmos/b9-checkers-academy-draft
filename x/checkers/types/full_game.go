@@ -43,7 +43,7 @@ func (fullGame FullGame) ToStoredGame() StoredGame {
 		Black:     fullGame.Black.String(),
 		MoveCount: fullGame.MoveCount,
 		BeforeId:  fullGame.BeforeId,
-		AfterId:   fullGame.BeforeId,
+		AfterId:   fullGame.AfterId,
 		Deadline:  fullGame.Deadline.UTC().Format(DeadlineLayout),
 		Winner:    fullGame.Winner,
 		Wager:     fullGame.Wager.Amount.Uint64(),
