@@ -7,7 +7,7 @@ export interface StoredGame {
     turn: string;
     red: string;
     black: string;
-    moveCount: string;
+    moveCount: number;
     /** Pertains to the FIFO. Towards head. */
     beforeId: string;
     /** Pertains to the FIFO. Towards tail. */
