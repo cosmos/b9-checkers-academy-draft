@@ -21,7 +21,7 @@ func (k msgServer) PlayMove(goCtx context.Context, msg *types.MsgPlayMove) (*typ
 
 	// Is the game already won? Can happen when it is forfeited.
 	if storedGame.Winner != rules.NO_PLAYER.Color {
-		return nil, errors.New("Game is already finished")
+		return nil, types.ErrGameFinished
 	}
 
 	// Is it an expected player?

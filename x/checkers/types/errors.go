@@ -17,5 +17,6 @@ var (
 	ErrWrongMove          = sdkerrors.Register(ModuleName, 1106, "wrong move")
 	ErrRedAlreadyPlayed   = sdkerrors.Register(ModuleName, 1107, "red player has already played")
 	ErrBlackAlreadyPlayed = sdkerrors.Register(ModuleName, 1108, "black player has already played")
+	ErrGameFinished       = sdkerrors.Register(ModuleName, 1109, "game is already finished")
 	// this line is used by starport scaffolding # ibc/errors
 )
