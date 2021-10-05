@@ -17,12 +17,24 @@ func (k msgServer) CreateGame(goCtx context.Context, msg *types.MsgCreateGame) (
 		panic("NextGame not found")
 	}
 	newIndex := strconv.FormatUint(nextGame.IdValue, 10)
+	creator, err := sdk.AccAddressFromBech32(msg.Creator)
+	if err != nil {
+		return nil, types.ErrInvalidCreator
+	}
+	red, err := sdk.AccAddressFromBech32(msg.Red)
+	if err != nil {
+		return nil, types.ErrInvalidRed
+	}
+	black, err := sdk.AccAddressFromBech32(msg.Black)
+	if err != nil {
+		return nil, types.ErrInvalidBlack
+	}
 	newGame := types.FullGame{
-		Creator: sdk.AccAddress(msg.Creator),
+		Creator: creator,
 		Index:   newIndex,
 		Game:    *rules.New(),
-		Red:     sdk.AccAddress(msg.Red),
-		Black:   sdk.AccAddress(msg.Black),
+		Red:     red,
+		Black:   black,
 	}
 	k.Keeper.SetStoredGame(ctx, newGame.ToStoredGame())
 
@@ -31,7 +43,9 @@ func (k msgServer) CreateGame(goCtx context.Context, msg *types.MsgCreateGame) (
 
 	// What to emit
 	ctx.EventManager().EmitEvent(
-		sdk.NewEvent(types.StoredGameEventKey,
+		sdk.NewEvent(sdk.EventTypeMessage,
+			sdk.NewAttribute(sdk.AttributeKeyModule, types.ModuleName),
+			sdk.NewAttribute(sdk.AttributeKeyAction, types.StoredGameEventKey),
 			sdk.NewAttribute(types.StoredGameEventCreator, msg.Creator),
 			sdk.NewAttribute(types.StoredGameEventIndex, newIndex),
 			sdk.NewAttribute(types.StoredGameEventRed, msg.Red),
