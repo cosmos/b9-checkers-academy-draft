@@ -44,7 +44,9 @@ func (k Keeper) ForfeitExpiredGames(goCtx context.Context) {
 				// No point in keeping a game that was never played
 				k.RemoveStoredGame(ctx, storedGameId)
 				ctx.EventManager().EmitEvent(
-					sdk.NewEvent(types.ForfeitGameEventKey,
+					sdk.NewEvent(sdk.EventTypeMessage,
+						sdk.NewAttribute(sdk.AttributeKeyModule, types.ModuleName),
+						sdk.NewAttribute(sdk.AttributeKeyAction, types.ForfeitGameEventKey),
 						sdk.NewAttribute(types.ForfeitGameEventIdValue, storedGameId),
 						sdk.NewAttribute(types.ForfeitGameEventWinner, rules.NO_PLAYER.Color),
 					),
