@@ -19236,6 +19236,7 @@ paths:
                       type: string
                     moveCount:
                       type: string
+                      format: uint64
                     beforeId:
                       type: string
                     afterId:
@@ -19368,6 +19369,7 @@ paths:
                     type: string
                   moveCount:
                     type: string
+                    format: uint64
                   beforeId:
                     type: string
                   afterId:
@@ -29624,6 +29626,7 @@ definitions:
               type: string
             moveCount:
               type: string
+              format: uint64
             beforeId:
               type: string
             afterId:
@@ -29702,6 +29705,7 @@ definitions:
             type: string
           moveCount:
             type: string
+            format: uint64
           beforeId:
             type: string
           afterId:
@@ -29730,6 +29734,7 @@ definitions:
         type: string
       moveCount:
         type: string
+        format: uint64
       beforeId:
         type: string
       afterId:

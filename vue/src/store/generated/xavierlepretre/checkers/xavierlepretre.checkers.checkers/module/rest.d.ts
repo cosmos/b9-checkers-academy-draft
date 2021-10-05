@@ -47,6 +47,7 @@ export interface CheckersStoredGame {
     turn?: string;
     red?: string;
     black?: string;
+    /** @format uint64 */
     moveCount?: string;
     beforeId?: string;
     afterId?: string;
