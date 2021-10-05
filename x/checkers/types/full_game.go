@@ -1,7 +1,6 @@
 package types
 
 import (
-	"strconv"
 	"time"
 
 	sdk "github.com/cosmos/cosmos-sdk/types"
@@ -30,7 +29,7 @@ func (fullGame FullGame) ToStoredGame() StoredGame {
 		Turn:      fullGame.Game.Turn.Color,
 		Red:       fullGame.Red.String(),
 		Black:     fullGame.Black.String(),
-		MoveCount: strconv.FormatUint(fullGame.MoveCount, 10),
+		MoveCount: fullGame.MoveCount,
 		BeforeId:  fullGame.BeforeId,
 		AfterId:   fullGame.BeforeId,
 		Deadline:  fullGame.Deadline.UTC().Format(DeadlineLayout),
@@ -59,10 +58,6 @@ func (storedGame StoredGame) ToFullGame() (fullGame FullGame) {
 	if err != nil {
 		panic(err)
 	}
-	moveCount, err := strconv.ParseUint(storedGame.MoveCount, 10, 64)
-	if err != nil {
-		panic(err)
-	}
 	deadline, err := time.Parse(DeadlineLayout, storedGame.Deadline)
 	if err != nil {
 		panic(err)
@@ -73,7 +68,7 @@ func (storedGame StoredGame) ToFullGame() (fullGame FullGame) {
 		Game:      *game,
 		Red:       red,
 		Black:     black,
-		MoveCount: moveCount,
+		MoveCount: storedGame.MoveCount,
 		BeforeId:  storedGame.BeforeId,
 		AfterId:   storedGame.AfterId,
 		Deadline:  deadline,
