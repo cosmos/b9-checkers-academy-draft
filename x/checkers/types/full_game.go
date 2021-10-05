@@ -1,8 +1,6 @@
 package types
 
 import (
-	"strconv"
-
 	sdk "github.com/cosmos/cosmos-sdk/types"
 	"github.com/xavierlepretre/checkers/x/checkers/rules"
 )
@@ -24,7 +22,7 @@ func (fullGame FullGame) ToStoredGame() StoredGame {
 		Turn:      fullGame.Game.Turn.Color,
 		Red:       fullGame.Red.String(),
 		Black:     fullGame.Black.String(),
-		MoveCount: strconv.FormatUint(fullGame.MoveCount, 10),
+		MoveCount: fullGame.MoveCount,
 	}
 }
 
@@ -48,16 +46,12 @@ func (storedGame StoredGame) ToFullGame() (fullGame FullGame) {
 	if err != nil {
 		panic(err)
 	}
-	moveCount, err := strconv.ParseUint(storedGame.MoveCount, 10, 64)
-	if err != nil {
-		panic(err)
-	}
 	return FullGame{
 		Creator:   creator,
 		Index:     storedGame.Index,
 		Game:      *game,
 		Red:       red,
 		Black:     black,
-		MoveCount: moveCount,
+		MoveCount: storedGame.MoveCount,
 	}
 }

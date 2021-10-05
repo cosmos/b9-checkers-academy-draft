@@ -30,11 +30,12 @@ func (k msgServer) CreateGame(goCtx context.Context, msg *types.MsgCreateGame) (
 		return nil, types.ErrInvalidBlack
 	}
 	newGame := types.FullGame{
-		Creator: creator,
-		Index:   newIndex,
-		Game:    *rules.New(),
-		Red:     red,
-		Black:   black,
+		Creator:   creator,
+		Index:     newIndex,
+		Game:      *rules.New(),
+		Red:       red,
+		Black:     black,
+		MoveCount: 0,
 	}
 	k.Keeper.SetStoredGame(ctx, newGame.ToStoredGame())
 

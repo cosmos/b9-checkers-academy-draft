@@ -7,7 +7,7 @@ export interface StoredGame {
     turn: string;
     red: string;
     black: string;
-    moveCount: string;
+    moveCount: number;
 }
 export declare const StoredGame: {
     encode(message: StoredGame, writer?: Writer): Writer;
