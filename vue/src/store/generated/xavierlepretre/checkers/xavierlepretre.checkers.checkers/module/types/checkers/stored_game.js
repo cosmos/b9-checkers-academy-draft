@@ -1,7 +1,8 @@
 /* eslint-disable */
-import { Writer, Reader } from 'protobufjs/minimal';
+import * as Long from 'long';
+import { util, configure, Writer, Reader } from 'protobufjs/minimal';
 export const protobufPackage = 'xavierlepretre.checkers.checkers';
-const baseStoredGame = { creator: '', index: '', game: '', turn: '', red: '', black: '', moveCount: '', beforeId: '', afterId: '', deadline: '' };
+const baseStoredGame = { creator: '', index: '', game: '', turn: '', red: '', black: '', moveCount: 0, beforeId: '', afterId: '', deadline: '' };
 export const StoredGame = {
     encode(message, writer = Writer.create()) {
         if (message.creator !== '') {
@@ -22,8 +23,8 @@ export const StoredGame = {
         if (message.black !== '') {
             writer.uint32(50).string(message.black);
         }
-        if (message.moveCount !== '') {
-            writer.uint32(58).string(message.moveCount);
+        if (message.moveCount !== 0) {
+            writer.uint32(56).uint64(message.moveCount);
         }
         if (message.beforeId !== '') {
             writer.uint32(66).string(message.beforeId);
@@ -62,7 +63,7 @@ export const StoredGame = {
                     message.black = reader.string();
                     break;
                 case 7:
-                    message.moveCount = reader.string();
+                    message.moveCount = longToNumber(reader.uint64());
                     break;
                 case 8:
                     message.beforeId = reader.string();
@@ -119,10 +120,10 @@ export const StoredGame = {
             message.black = '';
         }
         if (object.moveCount !== undefined && object.moveCount !== null) {
-            message.moveCount = String(object.moveCount);
+            message.moveCount = Number(object.moveCount);
         }
         else {
-            message.moveCount = '';
+            message.moveCount = 0;
         }
         if (object.beforeId !== undefined && object.beforeId !== null) {
             message.beforeId = String(object.beforeId);
@@ -200,7 +201,7 @@ export const StoredGame = {
             message.moveCount = object.moveCount;
         }
         else {
-            message.moveCount = '';
+            message.moveCount = 0;
         }
         if (object.beforeId !== undefined && object.beforeId !== null) {
             message.beforeId = object.beforeId;
@@ -223,3 +224,24 @@ export const StoredGame = {
         return message;
     }
 };
+var globalThis = (() => {
+    if (typeof globalThis !== 'undefined')
+        return globalThis;
+    if (typeof self !== 'undefined')
+        return self;
+    if (typeof window !== 'undefined')
+        return window;
+    if (typeof global !== 'undefined')
+        return global;
+    throw 'Unable to locate global object';
+})();
+function longToNumber(long) {
+    if (long.gt(Number.MAX_SAFE_INTEGER)) {
+        throw new globalThis.Error('Value is larger than Number.MAX_SAFE_INTEGER');
+    }
+    return long.toNumber();
+}
+if (util.Long !== Long) {
+    util.Long = Long;
+    configure();
+}
