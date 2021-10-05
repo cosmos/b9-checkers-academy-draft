@@ -2,10 +2,10 @@ package keeper
 
 import (
 	"context"
-	"errors"
 	"strings"
 
 	sdk "github.com/cosmos/cosmos-sdk/types"
+	sdkerrors "github.com/cosmos/cosmos-sdk/types/errors"
 	"github.com/xavierlepretre/checkers/x/checkers/types"
 )
 
@@ -14,21 +14,21 @@ func (k msgServer) RejectGame(goCtx context.Context, msg *types.MsgRejectGame) (
 
 	storedGame, found := k.Keeper.GetStoredGame(ctx, msg.IdValue)
 	if !found {
-		return nil, errors.New("Game not found " + msg.IdValue)
+		return nil, sdkerrors.Wrapf(types.ErrGameNotFound, "game not found %s", msg.IdValue)
 	}
 	fullGame := storedGame.ToFullGame()
 
 	// Is it an expected player? And did the player already play?
 	if strings.Compare(storedGame.Red, msg.Creator) == 0 {
 		if 1 < fullGame.MoveCount {
-			return nil, errors.New("Red player has already played, and cannot reject")
+			return nil, types.ErrRedAlreadyPlayed
 		}
 	} else if strings.Compare(storedGame.Black, msg.Creator) == 0 {
 		if 0 < fullGame.MoveCount {
-			return nil, errors.New("Black player has already played, and cannot reject")
+			return nil, types.ErrBlackAlreadyPlayed
 		}
 	} else {
-		return nil, errors.New("Message creator is not a player")
+		return nil, types.ErrCreatorNotPlayer
 	}
 
 	// Remove the game completely as it is not interesting to keep it.
@@ -36,7 +36,9 @@ func (k msgServer) RejectGame(goCtx context.Context, msg *types.MsgRejectGame) (
 
 	// What to emit
 	ctx.EventManager().EmitEvent(
-		sdk.NewEvent(types.RejectGameEventKey,
+		sdk.NewEvent(sdk.EventTypeMessage,
+			sdk.NewAttribute(sdk.AttributeKeyModule, types.ModuleName),
+			sdk.NewAttribute(sdk.AttributeKeyAction, types.RejectGameEventKey),
 			sdk.NewAttribute(types.RejectGameEventCreator, msg.Creator),
 			sdk.NewAttribute(types.RejectGameEventIdValue, msg.IdValue),
 		),
