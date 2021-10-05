@@ -1,7 +1,6 @@
 package types
 
 import (
-	"strconv"
 	"time"
 
 	sdk "github.com/cosmos/cosmos-sdk/types"
@@ -34,21 +33,22 @@ func (fullGame *FullGame) GetWinnerAddress() (address sdk.AccAddress, found bool
 	return fullGame.GetPlayerAddress(fullGame.Winner)
 }
 
-func (fullGame *FullGame) ToStoredGame() (storedGame *StoredGame) {
-	storedGame.Creator = fullGame.Creator.String()
-	storedGame.Index = fullGame.Index
-	storedGame.Game = fullGame.Game.String()
-	storedGame.Turn = fullGame.Game.Turn.Color
-	storedGame.Red = fullGame.Red.String()
-	storedGame.Black = fullGame.Black.String()
-	storedGame.MoveCount = strconv.FormatUint(fullGame.MoveCount, 10)
-	storedGame.BeforeId = fullGame.BeforeId
-	storedGame.AfterId = fullGame.BeforeId
-	storedGame.Deadline = fullGame.Deadline.UTC().Format(DeadlineLayout)
-	storedGame.Winner = fullGame.Winner
-	storedGame.Wager = fullGame.Wager.Amount.Uint64()
-	storedGame.Token = fullGame.Wager.Denom
-	return storedGame
+func (fullGame FullGame) ToStoredGame() StoredGame {
+	return StoredGame{
+		Creator:   fullGame.Creator.String(),
+		Index:     fullGame.Index,
+		Game:      fullGame.Game.String(),
+		Turn:      fullGame.Game.Turn.Color,
+		Red:       fullGame.Red.String(),
+		Black:     fullGame.Black.String(),
+		MoveCount: fullGame.MoveCount,
+		BeforeId:  fullGame.BeforeId,
+		AfterId:   fullGame.AfterId,
+		Deadline:  fullGame.Deadline.UTC().Format(DeadlineLayout),
+		Winner:    fullGame.Winner,
+		Wager:     fullGame.Wager.Amount.Uint64(),
+		Token:     fullGame.Wager.Denom,
+	}
 }
 
 func (storedGame *StoredGame) GetDeadlineAsTime() (deadline time.Time, err error) {
@@ -56,26 +56,41 @@ func (storedGame *StoredGame) GetDeadlineAsTime() (deadline time.Time, err error
 	return deadline, err
 }
 
-func (storedGame *StoredGame) ToFullGame() (fullGame *FullGame) {
-	var err error
-	fullGame.Creator, err = sdk.AccAddressFromBech32(storedGame.Creator)
-	fullGame.Index = storedGame.Index
-	var game *rules.Game
-	game, err = rules.Parse(storedGame.Game)
-	game.Turn = rules.Player{
-		Color: storedGame.Turn,
-	}
-	fullGame.Game = *game
-	fullGame.Red, err = sdk.AccAddressFromBech32(storedGame.Red)
-	fullGame.Black, err = sdk.AccAddressFromBech32(storedGame.Black)
-	fullGame.MoveCount, err = strconv.ParseUint(storedGame.MoveCount, 10, 64)
-	fullGame.BeforeId = storedGame.BeforeId
-	fullGame.AfterId = storedGame.AfterId
-	fullGame.Deadline, err = storedGame.GetDeadlineAsTime()
-	fullGame.Winner = storedGame.Winner
-	fullGame.Wager = sdk.NewCoin(storedGame.Token, sdk.NewInt(int64(storedGame.Wager)))
+func (storedGame StoredGame) ToFullGame() (fullGame FullGame) {
+	creator, err := sdk.AccAddressFromBech32(storedGame.Creator)
 	if err != nil {
 		panic(err)
 	}
-	return fullGame
+	game, err := rules.Parse(storedGame.Game)
+	if err != nil {
+		panic(err)
+	}
+	game.Turn = rules.Player{
+		Color: storedGame.Turn,
+	}
+	red, err := sdk.AccAddressFromBech32(storedGame.Red)
+	if err != nil {
+		panic(err)
+	}
+	black, err := sdk.AccAddressFromBech32(storedGame.Black)
+	if err != nil {
+		panic(err)
+	}
+	deadline, err := storedGame.GetDeadlineAsTime()
+	if err != nil {
+		panic(err)
+	}
+	return FullGame{
+		Creator:   creator,
+		Index:     storedGame.Index,
+		Game:      *game,
+		Red:       red,
+		Black:     black,
+		MoveCount: storedGame.MoveCount,
+		BeforeId:  storedGame.BeforeId,
+		AfterId:   storedGame.AfterId,
+		Deadline:  deadline,
+		Winner:    storedGame.Winner,
+		Wager:     sdk.NewCoin(storedGame.Token, sdk.NewInt(int64(storedGame.Wager))),
+	}
 }

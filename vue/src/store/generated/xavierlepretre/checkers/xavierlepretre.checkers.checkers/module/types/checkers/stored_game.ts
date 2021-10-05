@@ -11,7 +11,7 @@ export interface StoredGame {
   turn: string
   red: string
   black: string
-  moveCount: string
+  moveCount: number
   /** Pertains to the FIFO. Towards head. */
   beforeId: string
   /** Pertains to the FIFO. Towards tail. */
@@ -30,7 +30,7 @@ const baseStoredGame: object = {
   turn: '',
   red: '',
   black: '',
-  moveCount: '',
+  moveCount: 0,
   beforeId: '',
   afterId: '',
   deadline: '',
@@ -59,8 +59,8 @@ export const StoredGame = {
     if (message.black !== '') {
       writer.uint32(50).string(message.black)
     }
-    if (message.moveCount !== '') {
-      writer.uint32(58).string(message.moveCount)
+    if (message.moveCount !== 0) {
+      writer.uint32(56).uint64(message.moveCount)
     }
     if (message.beforeId !== '') {
       writer.uint32(66).string(message.beforeId)
@@ -109,7 +109,7 @@ export const StoredGame = {
           message.black = reader.string()
           break
         case 7:
-          message.moveCount = reader.string()
+          message.moveCount = longToNumber(reader.uint64() as Long)
           break
         case 8:
           message.beforeId = reader.string()
@@ -170,9 +170,9 @@ export const StoredGame = {
       message.black = ''
     }
     if (object.moveCount !== undefined && object.moveCount !== null) {
-      message.moveCount = String(object.moveCount)
+      message.moveCount = Number(object.moveCount)
     } else {
-      message.moveCount = ''
+      message.moveCount = 0
     }
     if (object.beforeId !== undefined && object.beforeId !== null) {
       message.beforeId = String(object.beforeId)
@@ -260,7 +260,7 @@ export const StoredGame = {
     if (object.moveCount !== undefined && object.moveCount !== null) {
       message.moveCount = object.moveCount
     } else {
-      message.moveCount = ''
+      message.moveCount = 0
     }
     if (object.beforeId !== undefined && object.beforeId !== null) {
       message.beforeId = object.beforeId
