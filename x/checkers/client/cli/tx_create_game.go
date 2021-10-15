@@ -30,7 +30,7 @@ func CmdCreateGame() *cobra.Command {
 				return err
 			}
 
-			msg := types.NewMsgCreateGame(clientCtx.GetFromAddress().String(), string(argsRed), string(argsBlack), uint64(argsWager))
+			msg := types.NewMsgCreateGame(clientCtx.GetFromAddress().String(), string(argsRed), string(argsBlack), argsWager)
 			if err := msg.ValidateBasic(); err != nil {
 				return err
 			}
