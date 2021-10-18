@@ -26,7 +26,7 @@ func (k msgServer) CreateGame(goCtx context.Context, msg *types.MsgCreateGame) (
 		MoveCount: 0,
 		Deadline:  types.FormatDeadline(types.GetNextDeadline(ctx)),
 		Winner:    rules.NO_PLAYER.Color,
-		Wager:     sdk.NewCoin(sdk.DefaultBondDenom, sdk.NewInt(int64(msg.Wager))),
+		Wager:     msg.Wager,
 	}
 	err := storedGame.Validate()
 	if err != nil {

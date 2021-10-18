@@ -44,7 +44,7 @@ func (k msgServer) PlayMove(goCtx context.Context, msg *types.MsgPlayMove) (*typ
 	}
 
 	// Make the player pay the wager at the beginning
-	err := k.Keeper.CollectWager(ctx, &fullGame)
+	err = k.Keeper.CollectWager(ctx, &storedGame)
 	if err != nil {
 		return nil, err
 	}
@@ -78,7 +78,7 @@ func (k msgServer) PlayMove(goCtx context.Context, msg *types.MsgPlayMove) (*typ
 		k.Keeper.RemoveFromFifo(ctx, &storedGame, &nextGame)
 
 		// Pay the winnings to the winner
-		k.Keeper.MustPayWinnings(ctx, &fullGame)
+		k.Keeper.MustPayWinnings(ctx, &storedGame)
 	}
 
 	// Save for the next play move
