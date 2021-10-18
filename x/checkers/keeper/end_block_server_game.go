@@ -31,7 +31,11 @@ func (k Keeper) ForfeitExpiredGames(goCtx context.Context) {
 		if !found {
 			panic("Fifo head game not found " + nextGame.FifoHead)
 		}
-		if storedGame.ToFullGame().Deadline.Before(ctx.BlockTime()) {
+		deadline, err := storedGame.GetDeadlineAsTime()
+		if err != nil {
+			panic(err)
+		}
+		if deadline.Before(ctx.BlockTime()) {
 			// Game is past deadline
 			storedGame.Winner, found = opponents[storedGame.Turn]
 			if !found {
