@@ -30,13 +30,16 @@ func (k msgServer) PlayMove(goCtx context.Context, msg *types.MsgPlayMove) (*typ
 	}
 
 	// Is it the player's turn?
-	fullGame := storedGame.ToFullGame()
-	if !fullGame.Game.TurnIs(player) {
+	game, err := storedGame.ParseGame()
+	if err != nil {
+		panic(err.Error())
+	}
+	if !game.TurnIs(player) {
 		return nil, types.ErrNotPlayerTurn
 	}
 
 	// Do it
-	captured, moveErr := fullGame.Game.Move(
+	captured, moveErr := game.Move(
 		rules.Pos{
 			X: int(msg.FromX),
 			Y: int(msg.FromY),
@@ -47,12 +50,11 @@ func (k msgServer) PlayMove(goCtx context.Context, msg *types.MsgPlayMove) (*typ
 		},
 	)
 	if moveErr != nil {
-		return nil, sdkerrors.Wrapf(types.ErrWrongMove, "wrong move: %s", moveErr.Error())
+		return nil, sdkerrors.Wrapf(moveErr, types.ErrWrongMove.Error())
 	}
-	fullGame.MoveCount++
+	storedGame.MoveCount++
 
 	// Send to the back of the FIFO
-	storedGame = fullGame.ToStoredGame()
 	nextGame, found := k.Keeper.GetNextGame(ctx)
 	if !found {
 		panic("NextGame not found")
@@ -60,6 +62,8 @@ func (k msgServer) PlayMove(goCtx context.Context, msg *types.MsgPlayMove) (*typ
 	k.Keeper.SendToFifoTail(ctx, &storedGame, &nextGame)
 
 	// Save for the next play move
+	storedGame.Game = game.String()
+	storedGame.Turn = game.Turn.Color
 	k.Keeper.SetStoredGame(ctx, storedGame)
 	k.Keeper.SetNextGame(ctx, nextGame)
 
@@ -72,7 +76,7 @@ func (k msgServer) PlayMove(goCtx context.Context, msg *types.MsgPlayMove) (*typ
 			sdk.NewAttribute(types.PlayMoveEventIdValue, msg.IdValue),
 			sdk.NewAttribute(types.PlayMoveEventCapturedX, strconv.FormatInt(int64(captured.X), 10)),
 			sdk.NewAttribute(types.PlayMoveEventCapturedY, strconv.FormatInt(int64(captured.Y), 10)),
-			sdk.NewAttribute(types.PlayMoveEventWinner, fullGame.Game.Winner().Color),
+			sdk.NewAttribute(types.PlayMoveEventWinner, game.Winner().Color),
 		),
 	)
 
@@ -81,6 +85,6 @@ func (k msgServer) PlayMove(goCtx context.Context, msg *types.MsgPlayMove) (*typ
 		IdValue:   msg.IdValue,
 		CapturedX: int64(captured.X),
 		CapturedY: int64(captured.Y),
-		Winner:    fullGame.Game.Winner().Color,
+		Winner:    game.Winner().Color,
 	}, nil
 }

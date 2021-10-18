@@ -16,15 +16,14 @@ func (k msgServer) RejectGame(goCtx context.Context, msg *types.MsgRejectGame) (
 	if !found {
 		return nil, sdkerrors.Wrapf(types.ErrGameNotFound, "game not found %s", msg.IdValue)
 	}
-	fullGame := storedGame.ToFullGame()
 
 	// Is it an expected player? And did the player already play?
 	if strings.Compare(storedGame.Red, msg.Creator) == 0 {
-		if 1 < fullGame.MoveCount {
+		if 1 < storedGame.MoveCount {
 			return nil, types.ErrRedAlreadyPlayed
 		}
 	} else if strings.Compare(storedGame.Black, msg.Creator) == 0 {
-		if 0 < fullGame.MoveCount {
+		if 0 < storedGame.MoveCount {
 			return nil, types.ErrBlackAlreadyPlayed
 		}
 	} else {
