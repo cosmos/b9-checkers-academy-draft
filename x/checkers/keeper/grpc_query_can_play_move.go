@@ -22,7 +22,7 @@ func (k Keeper) CanPlayMove(goCtx context.Context, req *types.QueryCanPlayMoveRe
 
 	storedGame, found := k.GetStoredGame(ctx, req.IdValue)
 	if !found {
-		return nil, sdkerrors.Wrapf(types.ErrGameNotFound, "game not found %s", req.IdValue)
+		return nil, sdkerrors.Wrapf(types.ErrGameNotFound, types.ErrGameNotFound.Error(), req.IdValue)
 	}
 
 	// Is the game already won? Can happen when it is forfeited.
@@ -47,8 +47,11 @@ func (k Keeper) CanPlayMove(goCtx context.Context, req *types.QueryCanPlayMoveRe
 	}
 
 	// Is it the player's turn?
-	fullGame := storedGame.ToFullGame()
-	if !fullGame.Game.TurnIs(player) {
+	game, err := storedGame.ParseGame()
+	if err != nil {
+		return nil, err
+	}
+	if !game.TurnIs(player) {
 		return &types.QueryCanPlayMoveResponse{
 			Possible: false,
 			Reason:   types.ErrNotPlayerTurn.Error(),
@@ -56,7 +59,7 @@ func (k Keeper) CanPlayMove(goCtx context.Context, req *types.QueryCanPlayMoveRe
 	}
 
 	// Attempt a move in memory
-	_, moveErr := fullGame.Game.Move(
+	_, moveErr := game.Move(
 		rules.Pos{
 			X: int(req.FromX),
 			Y: int(req.FromY),
