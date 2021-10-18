@@ -35,19 +35,22 @@ func (k msgServer) PlayMove(goCtx context.Context, msg *types.MsgPlayMove) (*typ
 	}
 
 	// Is it the player's turn?
-	fullGame := storedGame.ToFullGame()
-	if !fullGame.Game.TurnIs(player) {
+	game, err := storedGame.ParseGame()
+	if err != nil {
+		panic(err.Error())
+	}
+	if !game.TurnIs(player) {
 		return nil, types.ErrNotPlayerTurn
 	}
 
 	// Make the player pay the wager at the beginning
-	err := k.Keeper.CollectWager(ctx, &fullGame)
+	err = k.Keeper.CollectWager(ctx, &storedGame)
 	if err != nil {
 		return nil, err
 	}
 
 	// Do it
-	captured, moveErr := fullGame.Game.Move(
+	captured, moveErr := game.Move(
 		rules.Pos{
 			X: int(msg.FromX),
 			Y: int(msg.FromY),
@@ -58,14 +61,13 @@ func (k msgServer) PlayMove(goCtx context.Context, msg *types.MsgPlayMove) (*typ
 		},
 	)
 	if moveErr != nil {
-		return nil, sdkerrors.Wrapf(types.ErrWrongMove, "wrong move: %s", moveErr.Error())
+		return nil, sdkerrors.Wrapf(moveErr, types.ErrWrongMove.Error())
 	}
-	fullGame.MoveCount++
-	fullGame.Deadline = ctx.BlockTime().Add(types.MaxTurnDurationInSeconds)
-	fullGame.Winner = fullGame.Game.Winner().Color
+	storedGame.MoveCount++
+	storedGame.Deadline = types.FormatDeadline(types.GetNextDeadline(ctx))
+	storedGame.Winner = game.Winner().Color
 
 	// Remove from or send to the back of the FIFO
-	storedGame = fullGame.ToStoredGame()
 	nextGame, found := k.Keeper.GetNextGame(ctx)
 	if !found {
 		panic("NextGame not found")
@@ -76,10 +78,12 @@ func (k msgServer) PlayMove(goCtx context.Context, msg *types.MsgPlayMove) (*typ
 		k.Keeper.RemoveFromFifo(ctx, &storedGame, &nextGame)
 
 		// Pay the winnings to the winner
-		k.Keeper.MustPayWinnings(ctx, &fullGame)
+		k.Keeper.MustPayWinnings(ctx, &storedGame)
 	}
 
 	// Save for the next play move
+	storedGame.Game = game.String()
+	storedGame.Turn = game.Turn.Color
 	k.Keeper.SetStoredGame(ctx, storedGame)
 	k.Keeper.SetNextGame(ctx, nextGame)
 
@@ -94,7 +98,7 @@ func (k msgServer) PlayMove(goCtx context.Context, msg *types.MsgPlayMove) (*typ
 			sdk.NewAttribute(types.PlayMoveEventIdValue, msg.IdValue),
 			sdk.NewAttribute(types.PlayMoveEventCapturedX, strconv.FormatInt(int64(captured.X), 10)),
 			sdk.NewAttribute(types.PlayMoveEventCapturedY, strconv.FormatInt(int64(captured.Y), 10)),
-			sdk.NewAttribute(types.PlayMoveEventWinner, fullGame.Winner),
+			sdk.NewAttribute(types.PlayMoveEventWinner, storedGame.Winner),
 		),
 	)
 
@@ -103,6 +107,6 @@ func (k msgServer) PlayMove(goCtx context.Context, msg *types.MsgPlayMove) (*typ
 		IdValue:   msg.IdValue,
 		CapturedX: int64(captured.X),
 		CapturedY: int64(captured.Y),
-		Winner:    fullGame.Winner,
+		Winner:    storedGame.Winner,
 	}, nil
 }
