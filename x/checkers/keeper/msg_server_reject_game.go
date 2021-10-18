@@ -21,15 +21,14 @@ func (k msgServer) RejectGame(goCtx context.Context, msg *types.MsgRejectGame) (
 	if storedGame.Winner != rules.NO_PLAYER.Color {
 		return nil, types.ErrGameFinished
 	}
-	fullGame := storedGame.ToFullGame()
 
 	// Is it an expected player? And did the player already play?
 	if strings.Compare(storedGame.Red, msg.Creator) == 0 {
-		if 1 < fullGame.MoveCount {
+		if 1 < storedGame.MoveCount {
 			return nil, types.ErrRedAlreadyPlayed
 		}
 	} else if strings.Compare(storedGame.Black, msg.Creator) == 0 {
-		if 0 < fullGame.MoveCount {
+		if 0 < storedGame.MoveCount {
 			return nil, types.ErrBlackAlreadyPlayed
 		}
 	} else {
@@ -37,7 +36,7 @@ func (k msgServer) RejectGame(goCtx context.Context, msg *types.MsgRejectGame) (
 	}
 
 	// Refund wager to black player if red rejects after black played
-	k.Keeper.MustRefundWager(ctx, &fullGame)
+	k.Keeper.MustRefundWager(ctx, &storedGame)
 
 	// Remove from the FIFO
 	nextGame, found := k.Keeper.GetNextGame(ctx)
