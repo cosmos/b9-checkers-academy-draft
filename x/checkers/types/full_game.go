@@ -36,7 +36,7 @@ func (storedGame *StoredGame) ParseGame() (game *rules.Game, err error) {
 
 func (storedGame *StoredGame) GetDeadlineAsTime() (deadline time.Time, err error) {
 	deadline, errDeadline := time.Parse(DeadlineLayout, storedGame.Deadline)
-	return deadline, sdkerrors.Wrapf(errDeadline, ErrInvalidDeadline.Error())
+	return deadline, sdkerrors.Wrapf(errDeadline, ErrInvalidDeadline.Error(), storedGame.Deadline)
 }
 
 func GetNextDeadline(ctx sdk.Context) time.Time {
