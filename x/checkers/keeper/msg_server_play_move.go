@@ -52,7 +52,7 @@ func (k msgServer) PlayMove(goCtx context.Context, msg *types.MsgPlayMove) (*typ
 	if moveErr != nil {
 		return nil, sdkerrors.Wrapf(moveErr, types.ErrWrongMove.Error())
 	}
-	fullGame.MoveCount++
+	storedGame.MoveCount++
 
 	// Save for the next play move
 	storedGame.Game = game.String()
