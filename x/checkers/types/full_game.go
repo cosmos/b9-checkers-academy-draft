@@ -4,72 +4,62 @@ import (
 	"time"
 
 	sdk "github.com/cosmos/cosmos-sdk/types"
+	sdkerrors "github.com/cosmos/cosmos-sdk/types/errors"
 	"github.com/xavierlepretre/checkers/x/checkers/rules"
 )
 
-type FullGame struct {
-	Creator   sdk.AccAddress
-	Index     string
-	Game      rules.Game
-	Red       sdk.AccAddress
-	Black     sdk.AccAddress
-	MoveCount uint64
-	BeforeId  string
-	AfterId   string
-	Deadline  time.Time
-	Winner    string
+func (storedGame *StoredGame) GetCreatorAddress() (creator sdk.AccAddress, err error) {
+	creator, errCreator := sdk.AccAddressFromBech32(storedGame.Creator)
+	return creator, sdkerrors.Wrapf(errCreator, ErrInvalidCreator.Error(), storedGame.Creator)
 }
 
-func (fullGame FullGame) ToStoredGame() StoredGame {
-	return StoredGame{
-		Creator:   fullGame.Creator.String(),
-		Index:     fullGame.Index,
-		Game:      fullGame.Game.String(),
-		Turn:      fullGame.Game.Turn.Color,
-		Red:       fullGame.Red.String(),
-		Black:     fullGame.Black.String(),
-		MoveCount: fullGame.MoveCount,
-		BeforeId:  fullGame.BeforeId,
-		AfterId:   fullGame.AfterId,
-		Deadline:  fullGame.Deadline.UTC().Format(DeadlineLayout),
-		Winner:    fullGame.Winner,
-	}
+func (storedGame *StoredGame) GetRedAddress() (red sdk.AccAddress, err error) {
+	red, errRed := sdk.AccAddressFromBech32(storedGame.Red)
+	return red, sdkerrors.Wrapf(errRed, ErrInvalidRed.Error(), storedGame.Red)
 }
 
-func (storedGame StoredGame) ToFullGame() (fullGame FullGame) {
-	creator, err := sdk.AccAddressFromBech32(storedGame.Creator)
+func (storedGame *StoredGame) GetBlackAddress() (black sdk.AccAddress, err error) {
+	black, errBlack := sdk.AccAddressFromBech32(storedGame.Black)
+	return black, sdkerrors.Wrapf(errBlack, ErrInvalidBlack.Error(), storedGame.Black)
+}
+
+func (storedGame *StoredGame) ParseGame() (game *rules.Game, err error) {
+	game, errGame := rules.Parse(storedGame.Game)
 	if err != nil {
-		panic(err)
-	}
-	game, err := rules.Parse(storedGame.Game)
-	if err != nil {
-		panic(err)
+		return game, sdkerrors.Wrapf(errGame, ErrGameNotParseable.Error())
 	}
 	game.Turn = rules.Player{
 		Color: storedGame.Turn,
 	}
-	red, err := sdk.AccAddressFromBech32(storedGame.Red)
+	return game, nil
+}
+
+func (storedGame *StoredGame) GetDeadlineAsTime() (deadline time.Time, err error) {
+	deadline, errDeadline := time.Parse(DeadlineLayout, storedGame.Deadline)
+	return deadline, sdkerrors.Wrapf(errDeadline, ErrInvalidDeadline.Error())
+}
+
+func GetNextDeadline(ctx sdk.Context) time.Time {
+	return ctx.BlockTime().Add(MaxTurnDurationInSeconds)
+}
+
+func FormatDeadline(deadline time.Time) string {
+	return deadline.UTC().Format(DeadlineLayout)
+}
+
+func (storedGame StoredGame) Validate() (err error) {
+	_, err = storedGame.GetCreatorAddress()
 	if err != nil {
-		panic(err)
+		return err
 	}
-	black, err := sdk.AccAddressFromBech32(storedGame.Black)
+	_, err = storedGame.ParseGame()
 	if err != nil {
-		panic(err)
+		return err
 	}
-	deadline, err := time.Parse(DeadlineLayout, storedGame.Deadline)
+	_, err = storedGame.GetRedAddress()
 	if err != nil {
-		panic(err)
+		return err
 	}
-	return FullGame{
-		Creator:   creator,
-		Index:     storedGame.Index,
-		Game:      *game,
-		Red:       red,
-		Black:     black,
-		MoveCount: storedGame.MoveCount,
-		BeforeId:  storedGame.BeforeId,
-		AfterId:   storedGame.AfterId,
-		Deadline:  deadline,
-		Winner:    storedGame.Winner,
-	}
+	_, err = storedGame.GetBlackAddress()
+	return err
 }
