@@ -31,3 +31,20 @@ func (storedGame *StoredGame) ParseGame() (game *rules.Game, err error) {
 	}
 	return game, nil
 }
+
+func (storedGame StoredGame) Validate() (err error) {
+	_, err = storedGame.GetCreatorAddress()
+	if err != nil {
+		return err
+	}
+	_, err = storedGame.ParseGame()
+	if err != nil {
+		return err
+	}
+	_, err = storedGame.GetRedAddress()
+	if err != nil {
+		return err
+	}
+	_, err = storedGame.GetBlackAddress()
+	return err
+}
