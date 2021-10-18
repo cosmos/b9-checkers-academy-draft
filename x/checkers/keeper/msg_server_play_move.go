@@ -67,7 +67,7 @@ func (k msgServer) PlayMove(goCtx context.Context, msg *types.MsgPlayMove) (*typ
 			sdk.NewAttribute(types.PlayMoveEventIdValue, msg.IdValue),
 			sdk.NewAttribute(types.PlayMoveEventCapturedX, strconv.FormatInt(int64(captured.X), 10)),
 			sdk.NewAttribute(types.PlayMoveEventCapturedY, strconv.FormatInt(int64(captured.Y), 10)),
-			sdk.NewAttribute(types.PlayMoveEventWinner, fullGame.Game.Winner().Color),
+			sdk.NewAttribute(types.PlayMoveEventWinner, game.Winner().Color),
 		),
 	)
 
