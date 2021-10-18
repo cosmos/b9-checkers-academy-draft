@@ -2,6 +2,7 @@ package keeper
 
 import (
 	"context"
+	"fmt"
 	"strings"
 
 	sdk "github.com/cosmos/cosmos-sdk/types"
@@ -38,40 +39,33 @@ func (k Keeper) ForfeitExpiredGames(goCtx context.Context) {
 		if deadline.Before(ctx.BlockTime()) {
 			// Game is past deadline
 			k.RemoveFromFifo(ctx, &storedGame, &nextGame)
-			fullGame := storedGame.ToFullGame()
+			var winner string
 
-			if fullGame.MoveCount == 0 {
+			if storedGame.MoveCount == 0 {
+				winner = rules.NO_PLAYER.Color
 				// No point in keeping a game that was never played
 				k.RemoveStoredGame(ctx, storedGameId)
-				ctx.EventManager().EmitEvent(
-					sdk.NewEvent(sdk.EventTypeMessage,
-						sdk.NewAttribute(sdk.AttributeKeyModule, types.ModuleName),
-						sdk.NewAttribute(sdk.AttributeKeyAction, types.ForfeitGameEventKey),
-						sdk.NewAttribute(types.ForfeitGameEventIdValue, storedGameId),
-						sdk.NewAttribute(types.ForfeitGameEventWinner, rules.NO_PLAYER.Color),
-					),
-				)
 			} else {
-				fullGame.Winner, found = opponents[storedGame.Turn]
+				winner, found = opponents[storedGame.Turn]
 				if !found {
-					panic("Could not find opponent of " + storedGame.Turn)
+					panic(fmt.Sprintf(types.ErrCannotFindWinnerByColor.Error(), storedGame.Turn))
 				}
-				if fullGame.MoveCount <= 1 {
-					k.MustRefundWager(ctx, &fullGame)
+				if storedGame.MoveCount <= 1 {
+					k.MustRefundWager(ctx, &storedGame)
 				} else {
-					k.MustPayWinnings(ctx, &fullGame)
+					k.MustPayWinnings(ctx, &storedGame)
 				}
-				storedGame = fullGame.ToStoredGame()
+				storedGame.Winner = winner
 				k.SetStoredGame(ctx, storedGame)
-				ctx.EventManager().EmitEvent(
-					sdk.NewEvent(sdk.EventTypeMessage,
-						sdk.NewAttribute(sdk.AttributeKeyModule, types.ModuleName),
-						sdk.NewAttribute(sdk.AttributeKeyAction, types.ForfeitGameEventKey),
-						sdk.NewAttribute(types.ForfeitGameEventIdValue, storedGameId),
-						sdk.NewAttribute(types.ForfeitGameEventWinner, storedGame.Winner),
-					),
-				)
 			}
+			ctx.EventManager().EmitEvent(
+				sdk.NewEvent(sdk.EventTypeMessage,
+					sdk.NewAttribute(sdk.AttributeKeyModule, types.ModuleName),
+					sdk.NewAttribute(sdk.AttributeKeyAction, types.ForfeitGameEventKey),
+					sdk.NewAttribute(types.ForfeitGameEventIdValue, storedGameId),
+					sdk.NewAttribute(types.ForfeitGameEventWinner, winner),
+				),
+			)
 			// Move along FIFO
 			storedGameId = nextGame.FifoHead
 		} else {
