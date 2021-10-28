@@ -73,6 +73,7 @@ func (k *Keeper) MustRefundWager(ctx sdk.Context, storedGame *types.StoredGame) 
 	} else if storedGame.MoveCount == 0 {
 		// Do nothing
 	} else {
+		// TODO Implement a draw mechanism.
 		panic(fmt.Sprintf(types.ErrNotInRefundState.Error(), storedGame.MoveCount))
 	}
 }
