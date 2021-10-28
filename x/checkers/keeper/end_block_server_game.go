@@ -19,6 +19,9 @@ func (k Keeper) ForfeitExpiredGames(goCtx context.Context) {
 
 	// Get FIFO information
 	nextGame, found := k.GetNextGame(ctx)
+	if !found {
+		panic("NextGame not found")
+	}
 
 	storedGameId := nextGame.FifoHead
 	var storedGame types.StoredGame
