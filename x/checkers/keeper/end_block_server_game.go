@@ -2,6 +2,7 @@ package keeper
 
 import (
 	"context"
+	"fmt"
 	"strings"
 
 	sdk "github.com/cosmos/cosmos-sdk/types"
@@ -40,12 +41,18 @@ func (k Keeper) ForfeitExpiredGames(goCtx context.Context) {
 		}
 		if deadline.Before(ctx.BlockTime()) {
 			// Game is past deadline
-			storedGame.Winner, found = opponents[storedGame.Turn]
-			if !found {
-				panic("Could not find opponent of " + storedGame.Turn)
-			}
 			k.RemoveFromFifo(ctx, &storedGame, &nextGame)
-			k.SetStoredGame(ctx, storedGame)
+			if storedGame.MoveCount == 0 {
+				storedGame.Winner = rules.NO_PLAYER.Color
+				// No point in keeping a game that was never played
+				k.RemoveStoredGame(ctx, storedGameId)
+			} else {
+				storedGame.Winner, found = opponents[storedGame.Turn]
+				if !found {
+					panic(fmt.Sprintf(types.ErrCannotFindWinnerByColor.Error(), storedGame.Turn))
+				}
+				k.SetStoredGame(ctx, storedGame)
+			}
 			ctx.EventManager().EmitEvent(
 				sdk.NewEvent(sdk.EventTypeMessage,
 					sdk.NewAttribute(sdk.AttributeKeyModule, types.ModuleName),
