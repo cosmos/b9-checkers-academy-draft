@@ -42,14 +42,12 @@ func (k Keeper) ForfeitExpiredGames(goCtx context.Context) {
 		if deadline.Before(ctx.BlockTime()) {
 			// Game is past deadline
 			k.RemoveFromFifo(ctx, &storedGame, &nextGame)
-			var winner string
-
 			if storedGame.MoveCount == 0 {
-				winner = rules.NO_PLAYER.Color
+				storedGame.Winner = rules.NO_PLAYER.Color
 				// No point in keeping a game that was never played
 				k.RemoveStoredGame(ctx, storedGameId)
 			} else {
-				winner, found = opponents[storedGame.Turn]
+				storedGame.Winner, found = opponents[storedGame.Turn]
 				if !found {
 					panic(fmt.Sprintf(types.ErrCannotFindWinnerByColor.Error(), storedGame.Turn))
 				}
@@ -58,7 +56,6 @@ func (k Keeper) ForfeitExpiredGames(goCtx context.Context) {
 				} else {
 					k.MustPayWinnings(ctx, &storedGame)
 				}
-				storedGame.Winner = winner
 				k.SetStoredGame(ctx, storedGame)
 			}
 			ctx.EventManager().EmitEvent(
@@ -66,7 +63,7 @@ func (k Keeper) ForfeitExpiredGames(goCtx context.Context) {
 					sdk.NewAttribute(sdk.AttributeKeyModule, types.ModuleName),
 					sdk.NewAttribute(sdk.AttributeKeyAction, types.ForfeitGameEventKey),
 					sdk.NewAttribute(types.ForfeitGameEventIdValue, storedGameId),
-					sdk.NewAttribute(types.ForfeitGameEventWinner, winner),
+					sdk.NewAttribute(types.ForfeitGameEventWinner, storedGame.Winner),
 				),
 			)
 			// Move along FIFO
