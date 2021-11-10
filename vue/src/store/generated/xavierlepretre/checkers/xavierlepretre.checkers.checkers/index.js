@@ -2,8 +2,9 @@ import { txClient, queryClient, MissingWalletError } from './module';
 // @ts-ignore
 import { SpVuexError } from '@starport/vuex';
 import { NextGame } from "./module/types/checkers/next_game";
+import { PlayerInfo } from "./module/types/checkers/player_info";
 import { StoredGame } from "./module/types/checkers/stored_game";
-export { NextGame, StoredGame };
+export { NextGame, PlayerInfo, StoredGame };
 async function initTxClient(vuexGetters) {
     return await txClient(vuexGetters['common/wallet/signer'], {
         addr: vuexGetters['common/env/apiTendermint']
@@ -37,12 +38,15 @@ function getStructure(template) {
 }
 const getDefaultState = () => {
     return {
+        PlayerInfo: {},
+        PlayerInfoAll: {},
         CanPlayMove: {},
         StoredGame: {},
         StoredGameAll: {},
         NextGame: {},
         _Structure: {
             NextGame: getStructure(NextGame.fromPartial({})),
+            PlayerInfo: getStructure(PlayerInfo.fromPartial({})),
             StoredGame: getStructure(StoredGame.fromPartial({})),
         },
         _Subscriptions: new Set(),
@@ -68,6 +72,18 @@ export default {
         }
     },
     getters: {
+        getPlayerInfo: (state) => (params = { params: {} }) => {
+            if (!params.query) {
+                params.query = null;
+            }
+            return state.PlayerInfo[JSON.stringify(params)] ?? {};
+        },
+        getPlayerInfoAll: (state) => (params = { params: {} }) => {
+            if (!params.query) {
+                params.query = null;
+            }
+            return state.PlayerInfoAll[JSON.stringify(params)] ?? {};
+        },
         getCanPlayMove: (state) => (params = { params: {} }) => {
             if (!params.query) {
                 params.query = null;
@@ -120,6 +136,36 @@ export default {
                     throw new SpVuexError('Subscriptions: ' + e.message);
                 }
             });
+        },
+        async QueryPlayerInfo({ commit, rootGetters, getters }, { options: { subscribe, all } = { subscribe: false, all: false }, params: { ...key }, query = null }) {
+            try {
+                const queryClient = await initQueryClient(rootGetters);
+                let value = (await queryClient.queryPlayerInfo(key.index)).data;
+                commit('QUERY', { query: 'PlayerInfo', key: { params: { ...key }, query }, value });
+                if (subscribe)
+                    commit('SUBSCRIBE', { action: 'QueryPlayerInfo', payload: { options: { all }, params: { ...key }, query } });
+                return getters['getPlayerInfo']({ params: { ...key }, query }) ?? {};
+            }
+            catch (e) {
+                throw new SpVuexError('QueryClient:QueryPlayerInfo', 'API Node Unavailable. Could not perform query: ' + e.message);
+            }
+        },
+        async QueryPlayerInfoAll({ commit, rootGetters, getters }, { options: { subscribe, all } = { subscribe: false, all: false }, params: { ...key }, query = null }) {
+            try {
+                const queryClient = await initQueryClient(rootGetters);
+                let value = (await queryClient.queryPlayerInfoAll(query)).data;
+                while (all && value.pagination && value.pagination.nextKey != null) {
+                    let next_values = (await queryClient.queryPlayerInfoAll({ ...query, 'pagination.key': value.pagination.nextKey })).data;
+                    value = mergeResults(value, next_values);
+                }
+                commit('QUERY', { query: 'PlayerInfoAll', key: { params: { ...key }, query }, value });
+                if (subscribe)
+                    commit('SUBSCRIBE', { action: 'QueryPlayerInfoAll', payload: { options: { all }, params: { ...key }, query } });
+                return getters['getPlayerInfoAll']({ params: { ...key }, query }) ?? {};
+            }
+            catch (e) {
+                throw new SpVuexError('QueryClient:QueryPlayerInfoAll', 'API Node Unavailable. Could not perform query: ' + e.message);
+            }
         },
         async QueryCanPlayMove({ commit, rootGetters, getters }, { options: { subscribe, all } = { subscribe: false, all: false }, params: { ...key }, query = null }) {
             try {
@@ -198,23 +244,6 @@ export default {
                 }
             }
         },
-        async sendMsgCreateGame({ rootGetters }, { value, fee = [], memo = '' }) {
-            try {
-                const txClient = await initTxClient(rootGetters);
-                const msg = await txClient.msgCreateGame(value);
-                const result = await txClient.signAndBroadcast([msg], { fee: { amount: fee,
-                        gas: "200000" }, memo });
-                return result;
-            }
-            catch (e) {
-                if (e == MissingWalletError) {
-                    throw new SpVuexError('TxClient:MsgCreateGame:Init', 'Could not initialize signing client. Wallet is required.');
-                }
-                else {
-                    throw new SpVuexError('TxClient:MsgCreateGame:Send', 'Could not broadcast Tx: ' + e.message);
-                }
-            }
-        },
         async sendMsgRejectGame({ rootGetters }, { value, fee = [], memo = '' }) {
             try {
                 const txClient = await initTxClient(rootGetters);
@@ -229,6 +258,23 @@ export default {
                 }
                 else {
                     throw new SpVuexError('TxClient:MsgRejectGame:Send', 'Could not broadcast Tx: ' + e.message);
+                }
+            }
+        },
+        async sendMsgCreateGame({ rootGetters }, { value, fee = [], memo = '' }) {
+            try {
+                const txClient = await initTxClient(rootGetters);
+                const msg = await txClient.msgCreateGame(value);
+                const result = await txClient.signAndBroadcast([msg], { fee: { amount: fee,
+                        gas: "200000" }, memo });
+                return result;
+            }
+            catch (e) {
+                if (e == MissingWalletError) {
+                    throw new SpVuexError('TxClient:MsgCreateGame:Init', 'Could not initialize signing client. Wallet is required.');
+                }
+                else {
+                    throw new SpVuexError('TxClient:MsgCreateGame:Send', 'Could not broadcast Tx: ' + e.message);
                 }
             }
         },
@@ -247,21 +293,6 @@ export default {
                 }
             }
         },
-        async MsgCreateGame({ rootGetters }, { value }) {
-            try {
-                const txClient = await initTxClient(rootGetters);
-                const msg = await txClient.msgCreateGame(value);
-                return msg;
-            }
-            catch (e) {
-                if (e == MissingWalletError) {
-                    throw new SpVuexError('TxClient:MsgCreateGame:Init', 'Could not initialize signing client. Wallet is required.');
-                }
-                else {
-                    throw new SpVuexError('TxClient:MsgCreateGame:Create', 'Could not create message: ' + e.message);
-                }
-            }
-        },
         async MsgRejectGame({ rootGetters }, { value }) {
             try {
                 const txClient = await initTxClient(rootGetters);
@@ -274,6 +305,21 @@ export default {
                 }
                 else {
                     throw new SpVuexError('TxClient:MsgRejectGame:Create', 'Could not create message: ' + e.message);
+                }
+            }
+        },
+        async MsgCreateGame({ rootGetters }, { value }) {
+            try {
+                const txClient = await initTxClient(rootGetters);
+                const msg = await txClient.msgCreateGame(value);
+                return msg;
+            }
+            catch (e) {
+                if (e == MissingWalletError) {
+                    throw new SpVuexError('TxClient:MsgCreateGame:Init', 'Could not initialize signing client. Wallet is required.');
+                }
+                else {
+                    throw new SpVuexError('TxClient:MsgCreateGame:Create', 'Could not create message: ' + e.message);
                 }
             }
         },

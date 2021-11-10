@@ -17,6 +17,29 @@ export interface CheckersNextGame {
     fifoHead?: string;
     fifoTail?: string;
 }
+export interface CheckersPlayerInfo {
+    creator?: string;
+    index?: string;
+    /** @format uint64 */
+    wonCount?: string;
+    /** @format uint64 */
+    lostCount?: string;
+    /** @format uint64 */
+    forfeitedCount?: string;
+}
+export interface CheckersQueryAllPlayerInfoResponse {
+    PlayerInfo?: CheckersPlayerInfo[];
+    /**
+     * PageResponse is to be embedded in gRPC response messages where the
+     * corresponding request message has used PageRequest.
+     *
+     *  message SomeResponse {
+     *          repeated Bar results = 1;
+     *          PageResponse page = 2;
+     *  }
+     */
+    pagination?: V1Beta1PageResponse;
+}
 export interface CheckersQueryAllStoredGameResponse {
     StoredGame?: CheckersStoredGame[];
     /**
@@ -36,6 +59,9 @@ export interface CheckersQueryCanPlayMoveResponse {
 }
 export interface CheckersQueryGetNextGameResponse {
     NextGame?: CheckersNextGame;
+}
+export interface CheckersQueryGetPlayerInfoResponse {
+    PlayerInfo?: CheckersPlayerInfo;
 }
 export interface CheckersQueryGetStoredGameResponse {
     StoredGame?: CheckersStoredGame;
@@ -199,6 +225,29 @@ export declare class Api<SecurityDataType extends unknown> extends HttpClient<Se
      * @request GET:/xavierlepretre/checkers/checkers/nextGame
      */
     queryNextGame: (params?: RequestParams) => Promise<HttpResponse<CheckersQueryGetNextGameResponse, RpcStatus>>;
+    /**
+     * No description
+     *
+     * @tags Query
+     * @name QueryPlayerInfoAll
+     * @summary Queries a list of playerInfo items.
+     * @request GET:/xavierlepretre/checkers/checkers/playerInfo
+     */
+    queryPlayerInfoAll: (query?: {
+        "pagination.key"?: string;
+        "pagination.offset"?: string;
+        "pagination.limit"?: string;
+        "pagination.countTotal"?: boolean;
+    }, params?: RequestParams) => Promise<HttpResponse<CheckersQueryAllPlayerInfoResponse, RpcStatus>>;
+    /**
+     * No description
+     *
+     * @tags Query
+     * @name QueryPlayerInfo
+     * @summary Queries a playerInfo by index.
+     * @request GET:/xavierlepretre/checkers/checkers/playerInfo/{index}
+     */
+    queryPlayerInfo: (index: string, params?: RequestParams) => Promise<HttpResponse<CheckersQueryGetPlayerInfoResponse, RpcStatus>>;
     /**
      * No description
      *
