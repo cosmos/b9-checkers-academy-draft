@@ -1,11 +1,95 @@
 /* eslint-disable */
 import { Reader, util, configure, Writer } from 'protobufjs/minimal';
 import * as Long from 'long';
+import { Leaderboard } from '../checkers/leaderboard';
 import { PlayerInfo } from '../checkers/player_info';
 import { PageRequest, PageResponse } from '../cosmos/base/query/v1beta1/pagination';
 import { StoredGame } from '../checkers/stored_game';
 import { NextGame } from '../checkers/next_game';
 export const protobufPackage = 'xavierlepretre.checkers.checkers';
+const baseQueryGetLeaderboardRequest = {};
+export const QueryGetLeaderboardRequest = {
+    encode(_, writer = Writer.create()) {
+        return writer;
+    },
+    decode(input, length) {
+        const reader = input instanceof Uint8Array ? new Reader(input) : input;
+        let end = length === undefined ? reader.len : reader.pos + length;
+        const message = { ...baseQueryGetLeaderboardRequest };
+        while (reader.pos < end) {
+            const tag = reader.uint32();
+            switch (tag >>> 3) {
+                default:
+                    reader.skipType(tag & 7);
+                    break;
+            }
+        }
+        return message;
+    },
+    fromJSON(_) {
+        const message = { ...baseQueryGetLeaderboardRequest };
+        return message;
+    },
+    toJSON(_) {
+        const obj = {};
+        return obj;
+    },
+    fromPartial(_) {
+        const message = { ...baseQueryGetLeaderboardRequest };
+        return message;
+    }
+};
+const baseQueryGetLeaderboardResponse = {};
+export const QueryGetLeaderboardResponse = {
+    encode(message, writer = Writer.create()) {
+        if (message.Leaderboard !== undefined) {
+            Leaderboard.encode(message.Leaderboard, writer.uint32(10).fork()).ldelim();
+        }
+        return writer;
+    },
+    decode(input, length) {
+        const reader = input instanceof Uint8Array ? new Reader(input) : input;
+        let end = length === undefined ? reader.len : reader.pos + length;
+        const message = { ...baseQueryGetLeaderboardResponse };
+        while (reader.pos < end) {
+            const tag = reader.uint32();
+            switch (tag >>> 3) {
+                case 1:
+                    message.Leaderboard = Leaderboard.decode(reader, reader.uint32());
+                    break;
+                default:
+                    reader.skipType(tag & 7);
+                    break;
+            }
+        }
+        return message;
+    },
+    fromJSON(object) {
+        const message = { ...baseQueryGetLeaderboardResponse };
+        if (object.Leaderboard !== undefined && object.Leaderboard !== null) {
+            message.Leaderboard = Leaderboard.fromJSON(object.Leaderboard);
+        }
+        else {
+            message.Leaderboard = undefined;
+        }
+        return message;
+    },
+    toJSON(message) {
+        const obj = {};
+        message.Leaderboard !== undefined && (obj.Leaderboard = message.Leaderboard ? Leaderboard.toJSON(message.Leaderboard) : undefined);
+        return obj;
+    },
+    fromPartial(object) {
+        const message = { ...baseQueryGetLeaderboardResponse };
+        if (object.Leaderboard !== undefined && object.Leaderboard !== null) {
+            message.Leaderboard = Leaderboard.fromPartial(object.Leaderboard);
+        }
+        else {
+            message.Leaderboard = undefined;
+        }
+        return message;
+    }
+};
 const baseQueryGetPlayerInfoRequest = { index: '' };
 export const QueryGetPlayerInfoRequest = {
     encode(message, writer = Writer.create()) {
@@ -766,6 +850,11 @@ export const QueryGetNextGameResponse = {
 export class QueryClientImpl {
     constructor(rpc) {
         this.rpc = rpc;
+    }
+    Leaderboard(request) {
+        const data = QueryGetLeaderboardRequest.encode(request).finish();
+        const promise = this.rpc.request('xavierlepretre.checkers.checkers.Query', 'Leaderboard', data);
+        return promise.then((data) => QueryGetLeaderboardResponse.decode(new Reader(data)));
     }
     PlayerInfo(request) {
         const data = QueryGetPlayerInfoRequest.encode(request).finish();

@@ -1,6 +1,7 @@
 /* eslint-disable */
 import { Reader, util, configure, Writer } from 'protobufjs/minimal'
 import * as Long from 'long'
+import { Leaderboard } from '../checkers/leaderboard'
 import { PlayerInfo } from '../checkers/player_info'
 import { PageRequest, PageResponse } from '../cosmos/base/query/v1beta1/pagination'
 import { StoredGame } from '../checkers/stored_game'
@@ -9,6 +10,12 @@ import { NextGame } from '../checkers/next_game'
 export const protobufPackage = 'xavierlepretre.checkers.checkers'
 
 /** this line is used by starport scaffolding # 3 */
+export interface QueryGetLeaderboardRequest {}
+
+export interface QueryGetLeaderboardResponse {
+  Leaderboard: Leaderboard | undefined
+}
+
 export interface QueryGetPlayerInfoRequest {
   index: string
 }
@@ -61,6 +68,99 @@ export interface QueryGetNextGameRequest {}
 
 export interface QueryGetNextGameResponse {
   NextGame: NextGame | undefined
+}
+
+const baseQueryGetLeaderboardRequest: object = {}
+
+export const QueryGetLeaderboardRequest = {
+  encode(_: QueryGetLeaderboardRequest, writer: Writer = Writer.create()): Writer {
+    return writer
+  },
+
+  decode(input: Reader | Uint8Array, length?: number): QueryGetLeaderboardRequest {
+    const reader = input instanceof Uint8Array ? new Reader(input) : input
+    let end = length === undefined ? reader.len : reader.pos + length
+    const message = { ...baseQueryGetLeaderboardRequest } as QueryGetLeaderboardRequest
+    while (reader.pos < end) {
+      const tag = reader.uint32()
+      switch (tag >>> 3) {
+        default:
+          reader.skipType(tag & 7)
+          break
+      }
+    }
+    return message
+  },
+
+  fromJSON(_: any): QueryGetLeaderboardRequest {
+    const message = { ...baseQueryGetLeaderboardRequest } as QueryGetLeaderboardRequest
+    return message
+  },
+
+  toJSON(_: QueryGetLeaderboardRequest): unknown {
+    const obj: any = {}
+    return obj
+  },
+
+  fromPartial(_: DeepPartial<QueryGetLeaderboardRequest>): QueryGetLeaderboardRequest {
+    const message = { ...baseQueryGetLeaderboardRequest } as QueryGetLeaderboardRequest
+    return message
+  }
+}
+
+const baseQueryGetLeaderboardResponse: object = {}
+
+export const QueryGetLeaderboardResponse = {
+  encode(message: QueryGetLeaderboardResponse, writer: Writer = Writer.create()): Writer {
+    if (message.Leaderboard !== undefined) {
+      Leaderboard.encode(message.Leaderboard, writer.uint32(10).fork()).ldelim()
+    }
+    return writer
+  },
+
+  decode(input: Reader | Uint8Array, length?: number): QueryGetLeaderboardResponse {
+    const reader = input instanceof Uint8Array ? new Reader(input) : input
+    let end = length === undefined ? reader.len : reader.pos + length
+    const message = { ...baseQueryGetLeaderboardResponse } as QueryGetLeaderboardResponse
+    while (reader.pos < end) {
+      const tag = reader.uint32()
+      switch (tag >>> 3) {
+        case 1:
+          message.Leaderboard = Leaderboard.decode(reader, reader.uint32())
+          break
+        default:
+          reader.skipType(tag & 7)
+          break
+      }
+    }
+    return message
+  },
+
+  fromJSON(object: any): QueryGetLeaderboardResponse {
+    const message = { ...baseQueryGetLeaderboardResponse } as QueryGetLeaderboardResponse
+    if (object.Leaderboard !== undefined && object.Leaderboard !== null) {
+      message.Leaderboard = Leaderboard.fromJSON(object.Leaderboard)
+    } else {
+      message.Leaderboard = undefined
+    }
+    return message
+  },
+
+  toJSON(message: QueryGetLeaderboardResponse): unknown {
+    const obj: any = {}
+    message.Leaderboard !== undefined && (obj.Leaderboard = message.Leaderboard ? Leaderboard.toJSON(message.Leaderboard) : undefined)
+    return obj
+  },
+
+  fromPartial(object: DeepPartial<QueryGetLeaderboardResponse>): QueryGetLeaderboardResponse {
+    const message = { ...baseQueryGetLeaderboardResponse } as QueryGetLeaderboardResponse
+    if (object.Leaderboard !== undefined && object.Leaderboard !== null) {
+      message.Leaderboard = Leaderboard.fromPartial(object.Leaderboard)
+    } else {
+      message.Leaderboard = undefined
+    }
+    return message
+  }
 }
 
 const baseQueryGetPlayerInfoRequest: object = { index: '' }
@@ -858,6 +958,8 @@ export const QueryGetNextGameResponse = {
 
 /** Query defines the gRPC querier service. */
 export interface Query {
+  /** Queries a leaderboard by index. */
+  Leaderboard(request: QueryGetLeaderboardRequest): Promise<QueryGetLeaderboardResponse>
   /** Queries a playerInfo by index. */
   PlayerInfo(request: QueryGetPlayerInfoRequest): Promise<QueryGetPlayerInfoResponse>
   /** Queries a list of playerInfo items. */
@@ -877,6 +979,12 @@ export class QueryClientImpl implements Query {
   constructor(rpc: Rpc) {
     this.rpc = rpc
   }
+  Leaderboard(request: QueryGetLeaderboardRequest): Promise<QueryGetLeaderboardResponse> {
+    const data = QueryGetLeaderboardRequest.encode(request).finish()
+    const promise = this.rpc.request('xavierlepretre.checkers.checkers.Query', 'Leaderboard', data)
+    return promise.then((data) => QueryGetLeaderboardResponse.decode(new Reader(data)))
+  }
+
   PlayerInfo(request: QueryGetPlayerInfoRequest): Promise<QueryGetPlayerInfoResponse> {
     const data = QueryGetPlayerInfoRequest.encode(request).finish()
     const promise = this.rpc.request('xavierlepretre.checkers.checkers.Query', 'PlayerInfo', data)

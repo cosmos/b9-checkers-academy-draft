@@ -1,3 +1,6 @@
+export interface CheckersLeaderboard {
+    winners?: CheckersWinningPlayer[];
+}
 export interface CheckersMsgCreateGameResponse {
     idValue?: string;
 }
@@ -56,6 +59,9 @@ export interface CheckersQueryCanPlayMoveResponse {
     possible?: boolean;
     reason?: string;
 }
+export interface CheckersQueryGetLeaderboardResponse {
+    Leaderboard?: CheckersLeaderboard;
+}
 export interface CheckersQueryGetNextGameResponse {
     NextGame?: CheckersNextGame;
 }
@@ -81,6 +87,12 @@ export interface CheckersStoredGame {
     /** @format uint64 */
     wager?: string;
     token?: string;
+}
+export interface CheckersWinningPlayer {
+    playerAddress?: string;
+    /** @format uint64 */
+    wonCount?: string;
+    dateAdded?: string;
 }
 export interface ProtobufAny {
     "@type"?: string;
@@ -215,6 +227,15 @@ export declare class Api<SecurityDataType extends unknown> extends HttpClient<Se
         toX?: string;
         toY?: string;
     }, params?: RequestParams) => Promise<HttpResponse<CheckersQueryCanPlayMoveResponse, RpcStatus>>;
+    /**
+     * No description
+     *
+     * @tags Query
+     * @name QueryLeaderboard
+     * @summary Queries a leaderboard by index.
+     * @request GET:/xavierlepretre/checkers/checkers/leaderboard
+     */
+    queryLeaderboard: (params?: RequestParams) => Promise<HttpResponse<CheckersQueryGetLeaderboardResponse, RpcStatus>>;
     /**
      * No description
      *

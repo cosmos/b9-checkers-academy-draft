@@ -1,4 +1,5 @@
 /* eslint-disable */
+import { Leaderboard } from '../checkers/leaderboard';
 import { PlayerInfo } from '../checkers/player_info';
 import { StoredGame } from '../checkers/stored_game';
 import { NextGame } from '../checkers/next_game';
@@ -7,6 +8,9 @@ export const protobufPackage = 'xavierlepretre.checkers.checkers';
 const baseGenesisState = {};
 export const GenesisState = {
     encode(message, writer = Writer.create()) {
+        if (message.leaderboard !== undefined) {
+            Leaderboard.encode(message.leaderboard, writer.uint32(34).fork()).ldelim();
+        }
         for (const v of message.playerInfoList) {
             PlayerInfo.encode(v, writer.uint32(26).fork()).ldelim();
         }
@@ -27,6 +31,9 @@ export const GenesisState = {
         while (reader.pos < end) {
             const tag = reader.uint32();
             switch (tag >>> 3) {
+                case 4:
+                    message.leaderboard = Leaderboard.decode(reader, reader.uint32());
+                    break;
                 case 3:
                     message.playerInfoList.push(PlayerInfo.decode(reader, reader.uint32()));
                     break;
@@ -47,6 +54,12 @@ export const GenesisState = {
         const message = { ...baseGenesisState };
         message.playerInfoList = [];
         message.storedGameList = [];
+        if (object.leaderboard !== undefined && object.leaderboard !== null) {
+            message.leaderboard = Leaderboard.fromJSON(object.leaderboard);
+        }
+        else {
+            message.leaderboard = undefined;
+        }
         if (object.playerInfoList !== undefined && object.playerInfoList !== null) {
             for (const e of object.playerInfoList) {
                 message.playerInfoList.push(PlayerInfo.fromJSON(e));
@@ -67,6 +80,7 @@ export const GenesisState = {
     },
     toJSON(message) {
         const obj = {};
+        message.leaderboard !== undefined && (obj.leaderboard = message.leaderboard ? Leaderboard.toJSON(message.leaderboard) : undefined);
         if (message.playerInfoList) {
             obj.playerInfoList = message.playerInfoList.map((e) => (e ? PlayerInfo.toJSON(e) : undefined));
         }
@@ -86,6 +100,12 @@ export const GenesisState = {
         const message = { ...baseGenesisState };
         message.playerInfoList = [];
         message.storedGameList = [];
+        if (object.leaderboard !== undefined && object.leaderboard !== null) {
+            message.leaderboard = Leaderboard.fromPartial(object.leaderboard);
+        }
+        else {
+            message.leaderboard = undefined;
+        }
         if (object.playerInfoList !== undefined && object.playerInfoList !== null) {
             for (const e of object.playerInfoList) {
                 message.playerInfoList.push(PlayerInfo.fromPartial(e));
