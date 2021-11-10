@@ -25,7 +25,7 @@ func networkWithPlayerInfoObjects(t *testing.T, n int) (*network.Network, []*typ
 	require.NoError(t, cfg.Codec.UnmarshalJSON(cfg.GenesisState[types.ModuleName], &state))
 
 	for i := 0; i < n; i++ {
-		state.PlayerInfoList = append(state.PlayerInfoList, &types.PlayerInfo{Creator: "ANY", Index: strconv.Itoa(i)})
+		state.PlayerInfoList = append(state.PlayerInfoList, &types.PlayerInfo{Index: strconv.Itoa(i)})
 	}
 	buf, err := cfg.Codec.MarshalJSON(&state)
 	require.NoError(t, err)

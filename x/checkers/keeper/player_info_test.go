@@ -13,7 +13,6 @@ import (
 func createNPlayerInfo(keeper *Keeper, ctx sdk.Context, n int) []types.PlayerInfo {
 	items := make([]types.PlayerInfo, n)
 	for i := range items {
-		items[i].Creator = "any"
 		items[i].Index = fmt.Sprintf("%d", i)
 		keeper.SetPlayerInfo(ctx, items[i])
 	}
