@@ -80,3 +80,7 @@ const (
 const (
 	PlayerInfoKey = "PlayerInfo-value-"
 )
+
+const (
+	LeaderboardKey= "Leaderboard-value-"
+)

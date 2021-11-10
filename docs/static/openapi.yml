@@ -19165,6 +19165,51 @@ paths:
           format: uint64
       tags:
         - Query
+  /xavierlepretre/checkers/checkers/leaderboard:
+    get:
+      summary: Queries a leaderboard by index.
+      operationId: XavierlepretreCheckersCheckersLeaderboard
+      responses:
+        '200':
+          description: A successful response.
+          schema:
+            type: object
+            properties:
+              Leaderboard:
+                type: object
+                properties:
+                  winners:
+                    type: array
+                    items:
+                      type: object
+                      properties:
+                        playerAddress:
+                          type: string
+                        wonCount:
+                          type: string
+                          format: uint64
+                        dateAdded:
+                          type: string
+        default:
+          description: An unexpected error response.
+          schema:
+            type: object
+            properties:
+              code:
+                type: integer
+                format: int32
+              message:
+                type: string
+              details:
+                type: array
+                items:
+                  type: object
+                  properties:
+                    '@type':
+                      type: string
+                  additionalProperties: {}
+      tags:
+        - Query
   /xavierlepretre/checkers/checkers/nextGame:
     get:
       summary: Queries a nextGame by index.
@@ -29745,6 +29790,21 @@ definitions:
     description: |-
       Version defines the versioning scheme used to negotiate the IBC verison in
       the connection handshake.
+  xavierlepretre.checkers.checkers.Leaderboard:
+    type: object
+    properties:
+      winners:
+        type: array
+        items:
+          type: object
+          properties:
+            playerAddress:
+              type: string
+            wonCount:
+              type: string
+              format: uint64
+            dateAdded:
+              type: string
   xavierlepretre.checkers.checkers.MsgCreateGameResponse:
     type: object
     properties:
@@ -29903,6 +29963,24 @@ definitions:
         type: boolean
       reason:
         type: string
+  xavierlepretre.checkers.checkers.QueryGetLeaderboardResponse:
+    type: object
+    properties:
+      Leaderboard:
+        type: object
+        properties:
+          winners:
+            type: array
+            items:
+              type: object
+              properties:
+                playerAddress:
+                  type: string
+                wonCount:
+                  type: string
+                  format: uint64
+                dateAdded:
+                  type: string
   xavierlepretre.checkers.checkers.QueryGetNextGameResponse:
     type: object
     properties:
@@ -29999,4 +30077,14 @@ definitions:
         type: string
         format: uint64
       token:
+        type: string
+  xavierlepretre.checkers.checkers.WinningPlayer:
+    type: object
+    properties:
+      playerAddress:
+        type: string
+      wonCount:
+        type: string
+        format: uint64
+      dateAdded:
         type: string
