@@ -19222,8 +19222,6 @@ paths:
                 items:
                   type: object
                   properties:
-                    creator:
-                      type: string
                     index:
                       type: string
                     wonCount:
@@ -19342,8 +19340,6 @@ paths:
               PlayerInfo:
                 type: object
                 properties:
-                  creator:
-                    type: string
                   index:
                     type: string
                   wonCount:
@@ -29784,8 +29780,6 @@ definitions:
   xavierlepretre.checkers.checkers.PlayerInfo:
     type: object
     properties:
-      creator:
-        type: string
       index:
         type: string
       wonCount:
@@ -29805,8 +29799,6 @@ definitions:
         items:
           type: object
           properties:
-            creator:
-              type: string
             index:
               type: string
             wonCount:
@@ -29932,8 +29924,6 @@ definitions:
       PlayerInfo:
         type: object
         properties:
-          creator:
-            type: string
           index:
             type: string
           wonCount:

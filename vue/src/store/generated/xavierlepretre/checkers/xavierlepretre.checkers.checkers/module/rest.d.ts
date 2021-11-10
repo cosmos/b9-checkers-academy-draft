@@ -18,7 +18,6 @@ export interface CheckersNextGame {
     fifoTail?: string;
 }
 export interface CheckersPlayerInfo {
-    creator?: string;
     index?: string;
     /** @format uint64 */
     wonCount?: string;

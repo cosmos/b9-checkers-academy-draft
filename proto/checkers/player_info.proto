@@ -6,9 +6,8 @@ option go_package = "github.com/xavierlepretre/checkers/x/checkers/types";
 import "gogoproto/gogo.proto";
 
 message PlayerInfo {
-  string creator = 1;
-  string index = 2;
-  uint64 wonCount = 3; 
-  uint64 lostCount = 4; 
-  uint64 forfeitedCount = 5; 
+  string index = 1;
+  uint64 wonCount = 2; 
+  uint64 lostCount = 3; 
+  uint64 forfeitedCount = 4; 
 }

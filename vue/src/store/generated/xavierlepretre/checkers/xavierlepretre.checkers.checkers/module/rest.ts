@@ -36,7 +36,6 @@ export interface CheckersNextGame {
 }
 
 export interface CheckersPlayerInfo {
-  creator?: string;
   index?: string;
 
   /** @format uint64 */

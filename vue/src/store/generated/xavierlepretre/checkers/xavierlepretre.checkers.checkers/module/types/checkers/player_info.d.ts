@@ -1,7 +1,6 @@
 import { Writer, Reader } from 'protobufjs/minimal';
 export declare const protobufPackage = "xavierlepretre.checkers.checkers";
 export interface PlayerInfo {
-    creator: string;
     index: string;
     wonCount: number;
     lostCount: number;

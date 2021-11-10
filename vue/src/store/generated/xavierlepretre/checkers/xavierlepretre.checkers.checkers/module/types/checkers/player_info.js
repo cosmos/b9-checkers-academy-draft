@@ -2,23 +2,20 @@
 import * as Long from 'long';
 import { util, configure, Writer, Reader } from 'protobufjs/minimal';
 export const protobufPackage = 'xavierlepretre.checkers.checkers';
-const basePlayerInfo = { creator: '', index: '', wonCount: 0, lostCount: 0, forfeitedCount: 0 };
+const basePlayerInfo = { index: '', wonCount: 0, lostCount: 0, forfeitedCount: 0 };
 export const PlayerInfo = {
     encode(message, writer = Writer.create()) {
-        if (message.creator !== '') {
-            writer.uint32(10).string(message.creator);
-        }
         if (message.index !== '') {
-            writer.uint32(18).string(message.index);
+            writer.uint32(10).string(message.index);
         }
         if (message.wonCount !== 0) {
-            writer.uint32(24).uint64(message.wonCount);
+            writer.uint32(16).uint64(message.wonCount);
         }
         if (message.lostCount !== 0) {
-            writer.uint32(32).uint64(message.lostCount);
+            writer.uint32(24).uint64(message.lostCount);
         }
         if (message.forfeitedCount !== 0) {
-            writer.uint32(40).uint64(message.forfeitedCount);
+            writer.uint32(32).uint64(message.forfeitedCount);
         }
         return writer;
     },
@@ -30,18 +27,15 @@ export const PlayerInfo = {
             const tag = reader.uint32();
             switch (tag >>> 3) {
                 case 1:
-                    message.creator = reader.string();
-                    break;
-                case 2:
                     message.index = reader.string();
                     break;
-                case 3:
+                case 2:
                     message.wonCount = longToNumber(reader.uint64());
                     break;
-                case 4:
+                case 3:
                     message.lostCount = longToNumber(reader.uint64());
                     break;
-                case 5:
+                case 4:
                     message.forfeitedCount = longToNumber(reader.uint64());
                     break;
                 default:
@@ -53,12 +47,6 @@ export const PlayerInfo = {
     },
     fromJSON(object) {
         const message = { ...basePlayerInfo };
-        if (object.creator !== undefined && object.creator !== null) {
-            message.creator = String(object.creator);
-        }
-        else {
-            message.creator = '';
-        }
         if (object.index !== undefined && object.index !== null) {
             message.index = String(object.index);
         }
@@ -87,7 +75,6 @@ export const PlayerInfo = {
     },
     toJSON(message) {
         const obj = {};
-        message.creator !== undefined && (obj.creator = message.creator);
         message.index !== undefined && (obj.index = message.index);
         message.wonCount !== undefined && (obj.wonCount = message.wonCount);
         message.lostCount !== undefined && (obj.lostCount = message.lostCount);
@@ -96,12 +83,6 @@ export const PlayerInfo = {
     },
     fromPartial(object) {
         const message = { ...basePlayerInfo };
-        if (object.creator !== undefined && object.creator !== null) {
-            message.creator = object.creator;
-        }
-        else {
-            message.creator = '';
-        }
         if (object.index !== undefined && object.index !== null) {
             message.index = object.index;
         }
