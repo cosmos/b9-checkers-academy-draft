@@ -46,6 +46,10 @@ const (
 )
 
 const (
+	DateAddedLayout         = DeadlineLayout
+)
+
+const (
 	StoredGameKey          = "StoredGame-value-"
 	StoredGameEventKey     = "NewGameCreated"
 	StoredGameEventCreator = "Creator"
@@ -82,5 +86,5 @@ const (
 )
 
 const (
-	LeaderboardKey= "Leaderboard-value-"
+	LeaderboardKey = "Leaderboard-value-"
 )

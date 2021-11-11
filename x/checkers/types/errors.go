@@ -29,5 +29,6 @@ var (
 	ErrNotInRefundState        = sdkerrors.Register(ModuleName, 1118, "game is not in a state to refund, move count: %d")
 	ErrWinnerNotParseable      = sdkerrors.Register(ModuleName, 1119, "winner is not parseable: %s")
 	ErrThereIsNoWinner         = sdkerrors.Register(ModuleName, 1120, "there is no winner")
+	ErrInvalidDateAdded        = sdkerrors.Register(ModuleName, 1121, "dateAdded cannot be parsed: %s")
 	// this line is used by starport scaffolding # ibc/errors
 )
