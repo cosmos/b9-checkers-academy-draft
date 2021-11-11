@@ -13,7 +13,9 @@ func DefaultGenesis() *GenesisState {
 	return &GenesisState{
 		// this line is used by starport scaffolding # ibc/genesistype/default
 		// this line is used by starport scaffolding # genesis/types/default
-		Leaderboard:    nil,
+		Leaderboard: &Leaderboard{
+			Winners: []*WinningPlayer{},
+		},
 		PlayerInfoList: []*PlayerInfo{},
 		StoredGameList: []*StoredGame{},
 		NextGame: &NextGame{
