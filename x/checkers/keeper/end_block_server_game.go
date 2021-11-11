@@ -55,7 +55,8 @@ func (k Keeper) ForfeitExpiredGames(goCtx context.Context) {
 					k.MustRefundWager(ctx, &storedGame)
 				} else {
 					k.MustPayWinnings(ctx, &storedGame)
-					k.MustRegisterPlayerForfeit(ctx, &storedGame)
+					winnerInfo, _ := k.MustRegisterPlayerForfeit(ctx, &storedGame)
+					k.MustAddToLeaderboard(ctx, winnerInfo)
 				}
 				k.SetStoredGame(ctx, storedGame)
 			}

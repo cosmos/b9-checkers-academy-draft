@@ -1,8 +1,10 @@
 package types
 
 import (
+	"sort"
 	"time"
 
+	sdk "github.com/cosmos/cosmos-sdk/types"
 	sdkerrors "github.com/cosmos/cosmos-sdk/types/errors"
 )
 
@@ -64,4 +66,36 @@ func stringifyWinners(winners []*winningPlayerParsed) (stringified []*WinningPla
 		stringified[index] = winner.stringify()
 	}
 	return stringified
+}
+
+// The goal is to sort with the highest score at index 0 and then descending lower scores.
+// Plus, for equal scores, to have new ones closer to index 0 than older ones.
+func sortWinners(winners []*winningPlayerParsed) {
+	sort.SliceStable(winners[:], func(i, j int) bool {
+		if winners[i].WonCount > winners[j].WonCount {
+			return true
+		}
+		if winners[i].WonCount < winners[j].WonCount {
+			return false
+		}
+		return winners[i].DateAdded.After(winners[j].DateAdded)
+	})
+}
+
+func (leaderboard *Leaderboard) AddCandidateAndSort(ctx sdk.Context, playerInfo PlayerInfo) (err error) {
+	parsedWinners, err := leaderboard.parseWinners()
+	if err != nil {
+		return err
+	}
+	parsedWinners = append(parsedWinners, &winningPlayerParsed{
+		PlayerAddress: playerInfo.Index,
+		WonCount:      playerInfo.WonCount,
+		DateAdded:     GetDateAdded(ctx),
+	})
+	sortWinners(parsedWinners)
+	if LeaderboardWinnerLength < len(parsedWinners) {
+		parsedWinners = parsedWinners[:LeaderboardWinnerLength]
+	}
+	leaderboard.Winners = stringifyWinners(parsedWinners)
+	return nil
 }

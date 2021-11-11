@@ -46,6 +46,7 @@ const (
 )
 
 const (
+	LeaderboardWinnerLength = 100
 	DateAddedLayout         = DeadlineLayout
 )
 
