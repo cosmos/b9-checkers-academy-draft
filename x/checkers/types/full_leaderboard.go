@@ -82,20 +82,37 @@ func sortWinners(winners []*winningPlayerParsed) {
 	})
 }
 
-func (leaderboard *Leaderboard) AddCandidateAndSort(ctx sdk.Context, playerInfo PlayerInfo) (err error) {
+func AddParsedCandidatesAndSort(parsedWinners []*winningPlayerParsed, candidates []*winningPlayerParsed) (updated []*winningPlayerParsed) {
+	updated = append(parsedWinners, candidates...)
+	sortWinners(updated)
+	if LeaderboardWinnerLength < len(updated) {
+		updated = updated[:LeaderboardWinnerLength]
+	}
+	return updated
+}
+
+func (leaderboard *Leaderboard) AddCandidatesAndSortAtNow(now time.Time, playerInfos []*PlayerInfo) (err error) {
 	parsedWinners, err := leaderboard.parseWinners()
 	if err != nil {
 		return err
 	}
-	parsedWinners = append(parsedWinners, &winningPlayerParsed{
-		PlayerAddress: playerInfo.Index,
-		WonCount:      playerInfo.WonCount,
-		DateAdded:     GetDateAdded(ctx),
-	})
-	sortWinners(parsedWinners)
-	if LeaderboardWinnerLength < len(parsedWinners) {
-		parsedWinners = parsedWinners[:LeaderboardWinnerLength]
+	parsedPlayers := make([]*winningPlayerParsed, len(playerInfos))
+	for index, playerInfo := range playerInfos {
+		parsedPlayers[index] = &winningPlayerParsed{
+			PlayerAddress: playerInfo.Index,
+			WonCount:      playerInfo.WonCount,
+			DateAdded:     now,
+		}
 	}
+	parsedWinners = AddParsedCandidatesAndSort(parsedWinners, parsedPlayers)
 	leaderboard.Winners = stringifyWinners(parsedWinners)
 	return nil
+}
+
+func (leaderboard *Leaderboard) AddCandidatesAndSort(ctx sdk.Context, playerInfos []*PlayerInfo) (err error) {
+	return leaderboard.AddCandidatesAndSortAtNow(GetDateAdded(ctx), playerInfos)
+}
+
+func (leaderboard *Leaderboard) AddCandidateAndSort(ctx sdk.Context, playerInfo PlayerInfo) (err error) {
+	return leaderboard.AddCandidatesAndSort(ctx, []*PlayerInfo{&playerInfo})
 }
