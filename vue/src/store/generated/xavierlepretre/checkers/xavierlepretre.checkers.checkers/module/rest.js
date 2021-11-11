@@ -155,12 +155,55 @@ export class Api extends HttpClient {
          * No description
          *
          * @tags Query
+         * @name QueryLeaderboard
+         * @summary Queries a leaderboard by index.
+         * @request GET:/xavierlepretre/checkers/checkers/leaderboard
+         */
+        this.queryLeaderboard = (params = {}) => this.request({
+            path: `/xavierlepretre/checkers/checkers/leaderboard`,
+            method: "GET",
+            format: "json",
+            ...params,
+        });
+        /**
+         * No description
+         *
+         * @tags Query
          * @name QueryNextGame
          * @summary Queries a nextGame by index.
          * @request GET:/xavierlepretre/checkers/checkers/nextGame
          */
         this.queryNextGame = (params = {}) => this.request({
             path: `/xavierlepretre/checkers/checkers/nextGame`,
+            method: "GET",
+            format: "json",
+            ...params,
+        });
+        /**
+         * No description
+         *
+         * @tags Query
+         * @name QueryPlayerInfoAll
+         * @summary Queries a list of playerInfo items.
+         * @request GET:/xavierlepretre/checkers/checkers/playerInfo
+         */
+        this.queryPlayerInfoAll = (query, params = {}) => this.request({
+            path: `/xavierlepretre/checkers/checkers/playerInfo`,
+            method: "GET",
+            query: query,
+            format: "json",
+            ...params,
+        });
+        /**
+         * No description
+         *
+         * @tags Query
+         * @name QueryPlayerInfo
+         * @summary Queries a playerInfo by index.
+         * @request GET:/xavierlepretre/checkers/checkers/playerInfo/{index}
+         */
+        this.queryPlayerInfo = (index, params = {}) => this.request({
+            path: `/xavierlepretre/checkers/checkers/playerInfo/${index}`,
             method: "GET",
             format: "json",
             ...params,

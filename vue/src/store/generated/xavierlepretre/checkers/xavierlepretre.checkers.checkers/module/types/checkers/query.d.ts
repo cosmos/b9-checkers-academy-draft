@@ -1,9 +1,29 @@
 import { Reader, Writer } from 'protobufjs/minimal';
-import { StoredGame } from '../checkers/stored_game';
+import { Leaderboard } from '../checkers/leaderboard';
+import { PlayerInfo } from '../checkers/player_info';
 import { PageRequest, PageResponse } from '../cosmos/base/query/v1beta1/pagination';
+import { StoredGame } from '../checkers/stored_game';
 import { NextGame } from '../checkers/next_game';
 export declare const protobufPackage = "xavierlepretre.checkers.checkers";
 /** this line is used by starport scaffolding # 3 */
+export interface QueryGetLeaderboardRequest {
+}
+export interface QueryGetLeaderboardResponse {
+    Leaderboard: Leaderboard | undefined;
+}
+export interface QueryGetPlayerInfoRequest {
+    index: string;
+}
+export interface QueryGetPlayerInfoResponse {
+    PlayerInfo: PlayerInfo | undefined;
+}
+export interface QueryAllPlayerInfoRequest {
+    pagination: PageRequest | undefined;
+}
+export interface QueryAllPlayerInfoResponse {
+    PlayerInfo: PlayerInfo[];
+    pagination: PageResponse | undefined;
+}
 export interface QueryCanPlayMoveRequest {
     idValue: string;
     player: string;
@@ -34,6 +54,48 @@ export interface QueryGetNextGameRequest {
 export interface QueryGetNextGameResponse {
     NextGame: NextGame | undefined;
 }
+export declare const QueryGetLeaderboardRequest: {
+    encode(_: QueryGetLeaderboardRequest, writer?: Writer): Writer;
+    decode(input: Reader | Uint8Array, length?: number): QueryGetLeaderboardRequest;
+    fromJSON(_: any): QueryGetLeaderboardRequest;
+    toJSON(_: QueryGetLeaderboardRequest): unknown;
+    fromPartial(_: DeepPartial<QueryGetLeaderboardRequest>): QueryGetLeaderboardRequest;
+};
+export declare const QueryGetLeaderboardResponse: {
+    encode(message: QueryGetLeaderboardResponse, writer?: Writer): Writer;
+    decode(input: Reader | Uint8Array, length?: number): QueryGetLeaderboardResponse;
+    fromJSON(object: any): QueryGetLeaderboardResponse;
+    toJSON(message: QueryGetLeaderboardResponse): unknown;
+    fromPartial(object: DeepPartial<QueryGetLeaderboardResponse>): QueryGetLeaderboardResponse;
+};
+export declare const QueryGetPlayerInfoRequest: {
+    encode(message: QueryGetPlayerInfoRequest, writer?: Writer): Writer;
+    decode(input: Reader | Uint8Array, length?: number): QueryGetPlayerInfoRequest;
+    fromJSON(object: any): QueryGetPlayerInfoRequest;
+    toJSON(message: QueryGetPlayerInfoRequest): unknown;
+    fromPartial(object: DeepPartial<QueryGetPlayerInfoRequest>): QueryGetPlayerInfoRequest;
+};
+export declare const QueryGetPlayerInfoResponse: {
+    encode(message: QueryGetPlayerInfoResponse, writer?: Writer): Writer;
+    decode(input: Reader | Uint8Array, length?: number): QueryGetPlayerInfoResponse;
+    fromJSON(object: any): QueryGetPlayerInfoResponse;
+    toJSON(message: QueryGetPlayerInfoResponse): unknown;
+    fromPartial(object: DeepPartial<QueryGetPlayerInfoResponse>): QueryGetPlayerInfoResponse;
+};
+export declare const QueryAllPlayerInfoRequest: {
+    encode(message: QueryAllPlayerInfoRequest, writer?: Writer): Writer;
+    decode(input: Reader | Uint8Array, length?: number): QueryAllPlayerInfoRequest;
+    fromJSON(object: any): QueryAllPlayerInfoRequest;
+    toJSON(message: QueryAllPlayerInfoRequest): unknown;
+    fromPartial(object: DeepPartial<QueryAllPlayerInfoRequest>): QueryAllPlayerInfoRequest;
+};
+export declare const QueryAllPlayerInfoResponse: {
+    encode(message: QueryAllPlayerInfoResponse, writer?: Writer): Writer;
+    decode(input: Reader | Uint8Array, length?: number): QueryAllPlayerInfoResponse;
+    fromJSON(object: any): QueryAllPlayerInfoResponse;
+    toJSON(message: QueryAllPlayerInfoResponse): unknown;
+    fromPartial(object: DeepPartial<QueryAllPlayerInfoResponse>): QueryAllPlayerInfoResponse;
+};
 export declare const QueryCanPlayMoveRequest: {
     encode(message: QueryCanPlayMoveRequest, writer?: Writer): Writer;
     decode(input: Reader | Uint8Array, length?: number): QueryCanPlayMoveRequest;
@@ -92,6 +154,12 @@ export declare const QueryGetNextGameResponse: {
 };
 /** Query defines the gRPC querier service. */
 export interface Query {
+    /** Queries a leaderboard by index. */
+    Leaderboard(request: QueryGetLeaderboardRequest): Promise<QueryGetLeaderboardResponse>;
+    /** Queries a playerInfo by index. */
+    PlayerInfo(request: QueryGetPlayerInfoRequest): Promise<QueryGetPlayerInfoResponse>;
+    /** Queries a list of playerInfo items. */
+    PlayerInfoAll(request: QueryAllPlayerInfoRequest): Promise<QueryAllPlayerInfoResponse>;
     /** Queries a list of canPlayMove items. */
     CanPlayMove(request: QueryCanPlayMoveRequest): Promise<QueryCanPlayMoveResponse>;
     /** Queries a storedGame by index. */
@@ -104,6 +172,9 @@ export interface Query {
 export declare class QueryClientImpl implements Query {
     private readonly rpc;
     constructor(rpc: Rpc);
+    Leaderboard(request: QueryGetLeaderboardRequest): Promise<QueryGetLeaderboardResponse>;
+    PlayerInfo(request: QueryGetPlayerInfoRequest): Promise<QueryGetPlayerInfoResponse>;
+    PlayerInfoAll(request: QueryAllPlayerInfoRequest): Promise<QueryAllPlayerInfoResponse>;
     CanPlayMove(request: QueryCanPlayMoveRequest): Promise<QueryCanPlayMoveResponse>;
     StoredGame(request: QueryGetStoredGameRequest): Promise<QueryGetStoredGameResponse>;
     StoredGameAll(request: QueryAllStoredGameRequest): Promise<QueryAllStoredGameResponse>;

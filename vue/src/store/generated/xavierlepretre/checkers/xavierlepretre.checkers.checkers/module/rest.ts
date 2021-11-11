@@ -9,6 +9,10 @@
  * ---------------------------------------------------------------
  */
 
+export interface CheckersLeaderboard {
+  winners?: CheckersWinningPlayer[];
+}
+
 export interface CheckersMsgCreateGameResponse {
   idValue?: string;
 }
@@ -35,6 +39,34 @@ export interface CheckersNextGame {
   fifoTail?: string;
 }
 
+export interface CheckersPlayerInfo {
+  index?: string;
+
+  /** @format uint64 */
+  wonCount?: string;
+
+  /** @format uint64 */
+  lostCount?: string;
+
+  /** @format uint64 */
+  forfeitedCount?: string;
+}
+
+export interface CheckersQueryAllPlayerInfoResponse {
+  PlayerInfo?: CheckersPlayerInfo[];
+
+  /**
+   * PageResponse is to be embedded in gRPC response messages where the
+   * corresponding request message has used PageRequest.
+   *
+   *  message SomeResponse {
+   *          repeated Bar results = 1;
+   *          PageResponse page = 2;
+   *  }
+   */
+  pagination?: V1Beta1PageResponse;
+}
+
 export interface CheckersQueryAllStoredGameResponse {
   StoredGame?: CheckersStoredGame[];
 
@@ -55,8 +87,16 @@ export interface CheckersQueryCanPlayMoveResponse {
   reason?: string;
 }
 
+export interface CheckersQueryGetLeaderboardResponse {
+  Leaderboard?: CheckersLeaderboard;
+}
+
 export interface CheckersQueryGetNextGameResponse {
   NextGame?: CheckersNextGame;
+}
+
+export interface CheckersQueryGetPlayerInfoResponse {
+  PlayerInfo?: CheckersPlayerInfo;
 }
 
 export interface CheckersQueryGetStoredGameResponse {
@@ -81,6 +121,14 @@ export interface CheckersStoredGame {
   /** @format uint64 */
   wager?: string;
   token?: string;
+}
+
+export interface CheckersWinningPlayer {
+  playerAddress?: string;
+
+  /** @format uint64 */
+  wonCount?: string;
+  dateAdded?: string;
 }
 
 export interface ProtobufAny {
@@ -370,6 +418,22 @@ export class Api<SecurityDataType extends unknown> extends HttpClient<SecurityDa
    * No description
    *
    * @tags Query
+   * @name QueryLeaderboard
+   * @summary Queries a leaderboard by index.
+   * @request GET:/xavierlepretre/checkers/checkers/leaderboard
+   */
+  queryLeaderboard = (params: RequestParams = {}) =>
+    this.request<CheckersQueryGetLeaderboardResponse, RpcStatus>({
+      path: `/xavierlepretre/checkers/checkers/leaderboard`,
+      method: "GET",
+      format: "json",
+      ...params,
+    });
+
+  /**
+   * No description
+   *
+   * @tags Query
    * @name QueryNextGame
    * @summary Queries a nextGame by index.
    * @request GET:/xavierlepretre/checkers/checkers/nextGame
@@ -377,6 +441,47 @@ export class Api<SecurityDataType extends unknown> extends HttpClient<SecurityDa
   queryNextGame = (params: RequestParams = {}) =>
     this.request<CheckersQueryGetNextGameResponse, RpcStatus>({
       path: `/xavierlepretre/checkers/checkers/nextGame`,
+      method: "GET",
+      format: "json",
+      ...params,
+    });
+
+  /**
+   * No description
+   *
+   * @tags Query
+   * @name QueryPlayerInfoAll
+   * @summary Queries a list of playerInfo items.
+   * @request GET:/xavierlepretre/checkers/checkers/playerInfo
+   */
+  queryPlayerInfoAll = (
+    query?: {
+      "pagination.key"?: string;
+      "pagination.offset"?: string;
+      "pagination.limit"?: string;
+      "pagination.countTotal"?: boolean;
+    },
+    params: RequestParams = {},
+  ) =>
+    this.request<CheckersQueryAllPlayerInfoResponse, RpcStatus>({
+      path: `/xavierlepretre/checkers/checkers/playerInfo`,
+      method: "GET",
+      query: query,
+      format: "json",
+      ...params,
+    });
+
+  /**
+   * No description
+   *
+   * @tags Query
+   * @name QueryPlayerInfo
+   * @summary Queries a playerInfo by index.
+   * @request GET:/xavierlepretre/checkers/checkers/playerInfo/{index}
+   */
+  queryPlayerInfo = (index: string, params: RequestParams = {}) =>
+    this.request<CheckersQueryGetPlayerInfoResponse, RpcStatus>({
+      path: `/xavierlepretre/checkers/checkers/playerInfo/${index}`,
       method: "GET",
       format: "json",
       ...params,
