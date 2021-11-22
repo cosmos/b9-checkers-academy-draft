@@ -70,6 +70,11 @@ curl https://get.starport.network/xavierlepretre/checkers@latest! | sudo bash
 * `can-play-move-query`
 * `can-play-move-handler`
 * `wager-denomination`
+* `player-info-object`
+* `player-info-handling`
+* `leaderboard-object`
+* `leaderboard-handling`
+* `genesis-migration`
 
 ## Learn more
 
