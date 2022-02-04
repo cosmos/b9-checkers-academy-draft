@@ -56,8 +56,9 @@ func (k Keeper) SendToFifoTail(ctx sdk.Context, game *types.StoredGame, info *ty
 			panic("Current Fifo tail was not found")
 		}
 		currentTail.AfterId = game.Index
-		game.BeforeId = currentTail.Index
+		k.SetStoredGame(ctx, currentTail)
 
+		game.BeforeId = currentTail.Index
 		info.FifoTail = game.Index
 	}
 }
