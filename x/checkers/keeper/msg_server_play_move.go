@@ -55,7 +55,7 @@ func (k msgServer) PlayMove(goCtx context.Context, msg *types.MsgPlayMove) (*typ
 		},
 	)
 	if moveErr != nil {
-		return nil, sdkerrors.Wrapf(moveErr, types.ErrWrongMove.Error())
+		return nil, sdkerrors.Wrapf(types.ErrWrongMove, moveErr.Error())
 	}
 	storedGame.MoveCount++
 	storedGame.Deadline = types.FormatDeadline(types.GetNextDeadline(ctx))
