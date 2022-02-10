@@ -17,13 +17,17 @@ func (k msgServer) CreateGame(goCtx context.Context, msg *types.MsgCreateGame) (
 		panic("NextGame not found")
 	}
 	newIndex := strconv.FormatUint(nextGame.IdValue, 10)
+	newGame := rules.New()
 	storedGame := types.StoredGame{
 		Creator:   msg.Creator,
 		Index:     newIndex,
-		Game:      rules.New().String(),
+		Game:      newGame.String(),
+		Turn:      newGame.Turn.Color,
 		Red:       msg.Red,
 		Black:     msg.Black,
 		MoveCount: 0,
+		BeforeId:  types.NoFifoIdKey,
+		AfterId:   types.NoFifoIdKey,
 		Deadline:  types.FormatDeadline(types.GetNextDeadline(ctx)),
 		Winner:    rules.NO_PLAYER.Color,
 		Wager:     msg.Wager,
