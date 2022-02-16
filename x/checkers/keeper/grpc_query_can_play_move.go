@@ -42,7 +42,7 @@ func (k Keeper) CanPlayMove(goCtx context.Context, req *types.QueryCanPlayMoveRe
 	} else {
 		return &types.QueryCanPlayMoveResponse{
 			Possible: false,
-			Reason:   types.ErrCreatorNotPlayer.Error(),
+			Reason:   fmt.Sprintf(types.ErrCreatorNotPlayer.Error(), req.Player),
 		}, nil
 	}
 
@@ -54,7 +54,7 @@ func (k Keeper) CanPlayMove(goCtx context.Context, req *types.QueryCanPlayMoveRe
 	if !game.TurnIs(player) {
 		return &types.QueryCanPlayMoveResponse{
 			Possible: false,
-			Reason:   types.ErrNotPlayerTurn.Error(),
+			Reason:   fmt.Sprintf(types.ErrNotPlayerTurn.Error(), player.Color),
 		}, nil
 	}
 
