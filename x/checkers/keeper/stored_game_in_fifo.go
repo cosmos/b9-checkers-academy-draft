@@ -18,6 +18,9 @@ func (k Keeper) RemoveFromFifo(ctx sdk.Context, game *types.StoredGame, info *ty
 		if game.AfterId == types.NoFifoIdKey {
 			info.FifoTail = beforeElement.Index
 		}
+		// Is it at the FIFO head?
+	} else if info.FifoHead == game.Index {
+		info.FifoHead = game.AfterId
 	}
 	// Does it have a successor?
 	if game.AfterId != types.NoFifoIdKey {
@@ -30,6 +33,9 @@ func (k Keeper) RemoveFromFifo(ctx sdk.Context, game *types.StoredGame, info *ty
 		if game.BeforeId == types.NoFifoIdKey {
 			info.FifoHead = afterElement.Index
 		}
+		// Is it at the FIFO tail?
+	} else if info.FifoTail == game.Index {
+		info.FifoTail = game.BeforeId
 	}
 	game.BeforeId = types.NoFifoIdKey
 	game.AfterId = types.NoFifoIdKey
@@ -56,8 +62,9 @@ func (k Keeper) SendToFifoTail(ctx sdk.Context, game *types.StoredGame, info *ty
 			panic("Current Fifo tail was not found")
 		}
 		currentTail.AfterId = game.Index
-		game.BeforeId = currentTail.Index
+		k.SetStoredGame(ctx, currentTail)
 
+		game.BeforeId = currentTail.Index
 		info.FifoTail = game.Index
 	}
 }
