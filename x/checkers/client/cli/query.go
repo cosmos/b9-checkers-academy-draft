@@ -31,6 +31,7 @@ func GetQueryCmd(queryRoute string) *cobra.Command {
 	cmd.AddCommand(CmdListPlayerInfo())
 	cmd.AddCommand(CmdShowPlayerInfo())
 
+	cmd.AddCommand(CmdPlayMove())
 	cmd.AddCommand(CmdCanPlayMove())
 
 	cmd.AddCommand(CmdListStoredGame())
