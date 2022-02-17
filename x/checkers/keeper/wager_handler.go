@@ -24,7 +24,7 @@ func (k *Keeper) CollectWager(ctx sdk.Context, storedGame *types.StoredGame) err
 		}
 	} else if storedGame.MoveCount == 1 {
 		// Red plays second
-		red, err := storedGame.GetBlackAddress()
+		red, err := storedGame.GetRedAddress()
 		if err != nil {
 			panic(err.Error())
 		}
