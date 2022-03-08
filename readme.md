@@ -75,6 +75,7 @@ curl https://get.starport.network/xavierlepretre/checkers@latest! | sudo bash
 * `leaderboard-object`
 * `leaderboard-handling`
 * `genesis-migration`
+* `server-indexing`
 
 ## Learn more
 
