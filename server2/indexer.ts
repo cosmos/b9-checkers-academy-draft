@@ -12,13 +12,17 @@ import {
 import { DbType, PlayerInfo } from "./types"
 import { MyStargateClient } from "./mystargateclient"
 
-export const createIndexer = async () => {
-    const port = "3001"
-    const dbFile = "./db.json"
+export interface IndexerParams {
+    listenPort: string
+    dbFile: string
+    pollIntervalMs: number
+    rpcPoint: string
+}
+
+export const createIndexer = async (params: IndexerParams) => {
+    const { listenPort, dbFile, pollIntervalMs, rpcPoint } = params
     const db: DbType = require(dbFile)
-    const pollIntervalMs = 5_000 // 5 seconds
     let timer: NodeJS.Timer | undefined
-    const rpcPoint = "http://localhost:26657"
     // Web socket https://gist.github.com/findolor/48e02750e24045e65ee59721618623ea
     let client: MyStargateClient
 
@@ -257,11 +261,13 @@ export const createIndexer = async () => {
             })
     })
 
-    const server: Server = app.listen(port, () => {
+    const server: Server = app.listen(listenPort, () => {
         init()
             .catch(console.error)
             .then(() => {
-                console.log(`\nserver started at http://localhost:${port}`)
+                console.log(
+                    `\nserver started at http://localhost:${listenPort}`
+                )
             })
     })
 }
