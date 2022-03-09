@@ -50,32 +50,32 @@ curl https://get.starport.network/xavierlepretre/checkers@latest! | sudo bash
 ## Progressive feature branches
 
 * `starport-start`
-* `rules-added`
-* `stored-game`
-* `full-game-object`
-* `create-game-msg`
-* `create-game-handler`
-* `play-move-msg`
-* `play-move-handler`
-* `two-events`
-* `reject-game-msg`
-* `reject-game-handler`
-* `game-fifo`
-* `game-deadline`
-* `game-winner`
-* `forfeit-game`
-* `game-wager`
-* `payment-winning`
-* `gas-meter`
-* `can-play-move-query`
-* `can-play-move-handler`
-* `wager-denomination`
-* `player-info-object`
-* `player-info-handling`
-* `leaderboard-object`
-* `leaderboard-handling`
-* `genesis-migration`
-* `server-indexing`
+* `rules-added`, [diff](../../compare/starport-start..rules-added)
+* `stored-game`, [diff](../../compare/rules-added..stored-game)
+* `full-game-object`, [diff](../../compare/stored-game..full-game-object)
+* `create-game-msg`, [diff](../../compare/full-game-object..create-game-msg)
+* `create-game-handler`, [diff](../../compare/create-game-msg..create-game-handler)
+* `play-move-msg`, [diff](../../compare/create-game-handler..play-move-msg)
+* `play-move-handler`, [diff](../../compare/play-move-msg..play-move-handler)
+* `two-events`, [diff](../../compare/play-move-handler..two-events)
+* `reject-game-msg`, [diff](../../compare/two-events..reject-game-msg)
+* `reject-game-handler`, [diff](../../compare/reject-game-msg..reject-game-handler)
+* `game-fifo`, [diff](../../compare/reject-game-handler..game-fifo)
+* `game-deadline`, [diff](../../compare/game-fifo..game-deadline)
+* `game-winner`, [diff](../../compare/game-deadline..game-winner)
+* `forfeit-game`, [diff](../../compare/game-winner..forfeit-game)
+* `game-wager`, [diff](../../compare/forfeit-game..game-wager)
+* `payment-winning`, [diff](../../compare/game-wager..payment-winning)
+* `gas-meter`, [diff](../../compare/payment-winning..gas-meter)
+* `can-play-move-query`, [diff](../../compare/gas-meter..can-play-move-query)
+* `can-play-move-handler`, [diff](../../compare/can-play-move-query..can-play-move-handler)
+* `wager-denomination`, [diff](../../compare/can-play-move-handler..wager-denomination)
+* `player-info-object`, [diff](../../compare/wager-denomination..player-info-object)
+* `player-info-handling`, [diff](../../compare/player-info-object..player-info-handling)
+* `leaderboard-object`, [diff](../../compare/player-info-handling..leaderboard-object)
+* `leaderboard-handling`, [diff](../../compare/leaderboard-object..leaderboard-handling)
+* `genesis-migration`, [diff](../../compare/leaderboard-handling..genesis-migration)
+* `server-indexing`, [diff](../../compare/genesis-migration..server-indexing)
 
 ## Learn more
 
