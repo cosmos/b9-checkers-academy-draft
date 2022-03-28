@@ -1,6 +1,9 @@
 package types
 
 import (
+	"errors"
+	"fmt"
+
 	sdk "github.com/cosmos/cosmos-sdk/types"
 	sdkerrors "github.com/cosmos/cosmos-sdk/types/errors"
 	"github.com/xavierlepretre/checkers/x/checkers/rules"
@@ -23,11 +26,12 @@ func (storedGame *StoredGame) GetBlackAddress() (black sdk.AccAddress, err error
 
 func (storedGame *StoredGame) ParseGame() (game *rules.Game, err error) {
 	game, errGame := rules.Parse(storedGame.Game)
-	if err != nil {
-		return game, sdkerrors.Wrapf(errGame, ErrGameNotParseable.Error())
+	if errGame != nil {
+		return nil, sdkerrors.Wrapf(errGame, ErrGameNotParseable.Error())
 	}
-	game.Turn = rules.Player{
-		Color: storedGame.Turn,
+	game.Turn = rules.StringPieces[storedGame.Turn].Player
+	if game.Turn.Color == "" {
+		return nil, sdkerrors.Wrapf(errors.New(fmt.Sprintf("Turn: %s", storedGame.Turn)), ErrGameNotParseable.Error())
 	}
 	return game, nil
 }
