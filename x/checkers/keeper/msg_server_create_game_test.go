@@ -1,9 +1,12 @@
-package keeper
+package keeper_test
 
 import (
+	"context"
 	"testing"
 
+	sdk "github.com/cosmos/cosmos-sdk/types"
 	"github.com/stretchr/testify/require"
+	"github.com/xavierlepretre/checkers/x/checkers/keeper"
 	"github.com/xavierlepretre/checkers/x/checkers/types"
 )
 
@@ -13,8 +16,13 @@ const (
 	carol = "cosmos1e0w5t53nrq7p66fye6c8p0ynyhf6y24l4yuxd7"
 )
 
+func setupMsgServerCreateGame(t testing.TB) (types.MsgServer, keeper.Keeper, context.Context) {
+	k, ctx := setupKeeper(t)
+	return keeper.NewMsgServerImpl(*k), *k, sdk.WrapSDKContext(ctx)
+}
+
 func TestCreateGame(t *testing.T) {
-	msgServer, context := setupMsgServer(t)
+	msgServer, _, context := setupMsgServerCreateGame(t)
 	createResponse, err := msgServer.CreateGame(context, &types.MsgCreateGame{
 		Creator: alice,
 		Red:     bob,
