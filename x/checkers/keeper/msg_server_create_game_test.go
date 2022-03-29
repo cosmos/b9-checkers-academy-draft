@@ -6,6 +6,7 @@ import (
 
 	sdk "github.com/cosmos/cosmos-sdk/types"
 	"github.com/stretchr/testify/require"
+	"github.com/xavierlepretre/checkers/x/checkers"
 	"github.com/xavierlepretre/checkers/x/checkers/keeper"
 	"github.com/xavierlepretre/checkers/x/checkers/types"
 )
@@ -18,6 +19,7 @@ const (
 
 func setupMsgServerCreateGame(t testing.TB) (types.MsgServer, keeper.Keeper, context.Context) {
 	k, ctx := setupKeeper(t)
+	checkers.InitGenesis(ctx, *k, *types.DefaultGenesis())
 	return keeper.NewMsgServerImpl(*k), *k, sdk.WrapSDKContext(ctx)
 }
 
@@ -30,6 +32,6 @@ func TestCreateGame(t *testing.T) {
 	})
 	require.Nil(t, err)
 	require.EqualValues(t, types.MsgCreateGameResponse{
-		IdValue: "", // TODO: update with a proper value when updated
+		IdValue: "1",
 	}, *createResponse)
 }
