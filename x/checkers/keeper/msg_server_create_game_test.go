@@ -80,7 +80,7 @@ func TestCreate1GameGetAll(t *testing.T) {
 	}, games[0])
 }
 
-func TestCreateGameBadRedAddress(t *testing.T) {
+func TestCreateGameRedAddressBad(t *testing.T) {
 	msgServer, _, context := setupMsgServerCreateGame(t)
 	createResponse, err := msgServer.CreateGame(context, &types.MsgCreateGame{
 		Creator: alice,
@@ -88,7 +88,22 @@ func TestCreateGameBadRedAddress(t *testing.T) {
 		Black:   carol,
 	})
 	require.Nil(t, createResponse)
-	require.Equal(t, "red address is invalid: notanaddress: decoding bech32 failed: invalid index of 1", err.Error())
+	require.Equal(t,
+		"red address is invalid: notanaddress: decoding bech32 failed: invalid index of 1",
+		err.Error())
+}
+
+func TestCreateGameEmptyRedAddress(t *testing.T) {
+	msgServer, _, context := setupMsgServerCreateGame(t)
+	createResponse, err := msgServer.CreateGame(context, &types.MsgCreateGame{
+		Creator: alice,
+		Red:     "",
+		Black:   carol,
+	})
+	require.Nil(t, createResponse)
+	require.Equal(t,
+		"red address is invalid: : empty address string is not allowed",
+		err.Error())
 }
 
 func TestCreate3Games(t *testing.T) {
