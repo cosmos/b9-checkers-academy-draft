@@ -11,19 +11,21 @@ import (
 	"github.com/xavierlepretre/checkers/x/checkers/types"
 )
 
-func setupMsgServerPlayMove(t testing.TB) (types.MsgServer, keeper.Keeper, context.Context) {
+func setupMsgServerWithOneGameForPlayMove(t testing.TB) (types.MsgServer, keeper.Keeper, context.Context) {
 	k, ctx := setupKeeper(t)
 	checkers.InitGenesis(ctx, *k, *types.DefaultGenesis())
-	return keeper.NewMsgServerImpl(*k), *k, sdk.WrapSDKContext(ctx)
-}
-
-func TestPlayMove(t *testing.T) {
-	msgServer, _, context := setupMsgServerCreateGame(t)
-	msgServer.CreateGame(context, &types.MsgCreateGame{
+	server := keeper.NewMsgServerImpl(*k)
+	context := sdk.WrapSDKContext(ctx)
+	server.CreateGame(context, &types.MsgCreateGame{
 		Creator: alice,
 		Red:     bob,
 		Black:   carol,
 	})
+	return server, *k, context
+}
+
+func TestPlayMove(t *testing.T) {
+	msgServer, _, context := setupMsgServerWithOneGameForPlayMove(t)
 	playMoveResponse, err := msgServer.PlayMove(context, &types.MsgPlayMove{
 		Creator: carol,
 		IdValue: "1",
