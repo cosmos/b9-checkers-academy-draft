@@ -80,6 +80,17 @@ func TestCreate1GameGetAll(t *testing.T) {
 	}, games[0])
 }
 
+func TestCreateGameBadRedAddress(t *testing.T) {
+	msgServer, _, context := setupMsgServerCreateGame(t)
+	createResponse, err := msgServer.CreateGame(context, &types.MsgCreateGame{
+		Creator: alice,
+		Red:     "notanaddress",
+		Black:   carol,
+	})
+	require.Nil(t, createResponse)
+	require.Equal(t, "red address is invalid: notanaddress: decoding bech32 failed: invalid index of 1", err.Error())
+}
+
 func TestCreate3Games(t *testing.T) {
 	msgSrvr, _, context := setupMsgServerCreateGame(t)
 	msgSrvr.CreateGame(context, &types.MsgCreateGame{
