@@ -46,8 +46,10 @@ func TestCreate1GameHasSaved(t *testing.T) {
 	nextGame, found := keeper.GetNextGame(sdk.UnwrapSDKContext(context))
 	require.True(t, found)
 	require.EqualValues(t, types.NextGame{
-		Creator: "",
-		IdValue: 2,
+		Creator:  "",
+		IdValue:  2,
+		FifoHead: "1",
+		FifoTail: "1",
 	}, nextGame)
 	game1, found1 := keeper.GetStoredGame(sdk.UnwrapSDKContext(context), "1")
 	require.True(t, found1)
@@ -59,6 +61,8 @@ func TestCreate1GameHasSaved(t *testing.T) {
 		Red:       bob,
 		Black:     carol,
 		MoveCount: uint64(0),
+		BeforeId:  "-1",
+		AfterId:   "-1",
 	}, game1)
 }
 
@@ -79,6 +83,8 @@ func TestCreate1GameGetAll(t *testing.T) {
 		Red:       bob,
 		Black:     carol,
 		MoveCount: uint64(0),
+		BeforeId:  "-1",
+		AfterId:   "-1",
 	}, games[0])
 }
 
@@ -180,8 +186,10 @@ func TestCreate3GamesHasSaved(t *testing.T) {
 	nextGame, found := keeper.GetNextGame(sdk.UnwrapSDKContext(context))
 	require.True(t, found)
 	require.EqualValues(t, types.NextGame{
-		Creator: "",
-		IdValue: 4,
+		Creator:  "",
+		IdValue:  4,
+		FifoHead: "1",
+		FifoTail: "3",
 	}, nextGame)
 	game1, found1 := keeper.GetStoredGame(sdk.UnwrapSDKContext(context), "1")
 	require.True(t, found1)
@@ -193,6 +201,8 @@ func TestCreate3GamesHasSaved(t *testing.T) {
 		Red:       bob,
 		Black:     carol,
 		MoveCount: uint64(0),
+		BeforeId:  "-1",
+		AfterId:   "2",
 	}, game1)
 	game2, found2 := keeper.GetStoredGame(sdk.UnwrapSDKContext(context), "2")
 	require.True(t, found2)
@@ -204,6 +214,8 @@ func TestCreate3GamesHasSaved(t *testing.T) {
 		Red:       carol,
 		Black:     alice,
 		MoveCount: uint64(0),
+		BeforeId:  "1",
+		AfterId:   "3",
 	}, game2)
 	game3, found3 := keeper.GetStoredGame(sdk.UnwrapSDKContext(context), "3")
 	require.True(t, found3)
@@ -215,6 +227,8 @@ func TestCreate3GamesHasSaved(t *testing.T) {
 		Red:       alice,
 		Black:     bob,
 		MoveCount: uint64(0),
+		BeforeId:  "2",
+		AfterId:   "-1",
 	}, game3)
 }
 
@@ -245,6 +259,8 @@ func TestCreate3GamesGetAll(t *testing.T) {
 		Red:       bob,
 		Black:     carol,
 		MoveCount: uint64(0),
+		BeforeId:  "-1",
+		AfterId:   "2",
 	}, games[0])
 	require.EqualValues(t, types.StoredGame{
 		Creator:   bob,
@@ -254,6 +270,8 @@ func TestCreate3GamesGetAll(t *testing.T) {
 		Red:       carol,
 		Black:     alice,
 		MoveCount: uint64(0),
+		BeforeId:  "1",
+		AfterId:   "3",
 	}, games[1])
 	require.EqualValues(t, types.StoredGame{
 		Creator:   carol,
@@ -263,39 +281,7 @@ func TestCreate3GamesGetAll(t *testing.T) {
 		Red:       alice,
 		Black:     bob,
 		MoveCount: uint64(0),
+		BeforeId:  "2",
+		AfterId:   "-1",
 	}, games[2])
-}
-
-func TestCreateGameFarFuture(t *testing.T) {
-	msgSrvr, keeper, context := setupMsgServerCreateGame(t)
-	keeper.SetNextGame(sdk.UnwrapSDKContext(context), types.NextGame{
-		Creator: "",
-		IdValue: 1024,
-	})
-	createResponse, err := msgSrvr.CreateGame(context, &types.MsgCreateGame{
-		Creator: alice,
-		Red:     bob,
-		Black:   carol,
-	})
-	require.Nil(t, err)
-	require.EqualValues(t, types.MsgCreateGameResponse{
-		IdValue: "1024",
-	}, *createResponse)
-	nextGame, found := keeper.GetNextGame(sdk.UnwrapSDKContext(context))
-	require.True(t, found)
-	require.EqualValues(t, types.NextGame{
-		Creator: "",
-		IdValue: 1025,
-	}, nextGame)
-	game1, found1 := keeper.GetStoredGame(sdk.UnwrapSDKContext(context), "1024")
-	require.True(t, found1)
-	require.EqualValues(t, types.StoredGame{
-		Creator:   alice,
-		Index:     "1024",
-		Game:      "*b*b*b*b|b*b*b*b*|*b*b*b*b|********|********|r*r*r*r*|*r*r*r*r|r*r*r*r*",
-		Turn:      "b",
-		Red:       bob,
-		Black:     carol,
-		MoveCount: uint64(0),
-	}, game1)
 }
