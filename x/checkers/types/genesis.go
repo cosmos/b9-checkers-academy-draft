@@ -16,7 +16,7 @@ func DefaultGenesis() *GenesisState {
 		StoredGameList: []*StoredGame{},
 		NextGame: &NextGame{
 			Creator:  "",
-			IdValue:  uint64(0),
+			IdValue:  uint64(DefaultIndex),
 			FifoHead: NoFifoIdKey,
 			FifoTail: NoFifoIdKey,
 		},
