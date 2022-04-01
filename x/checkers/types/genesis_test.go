@@ -10,7 +10,12 @@ func TestDefaultGenesisIsCorrect(t *testing.T) {
 	require.EqualValues(t,
 		&GenesisState{
 			StoredGameList: []*StoredGame{},
-			NextGame:       &NextGame{"", uint64(1)},
+			NextGame: &NextGame{
+				"",
+				uint64(1),
+				"-1",
+				"-1",
+			},
 		},
 		DefaultGenesis())
 }
