@@ -1,9 +1,13 @@
 import { createProtobufRpcClient, QueryClient } from "@cosmjs/stargate"
 import { assert } from "@cosmjs/utils"
-import { NextGame } from "../../generated/checkers/next_game"
-import { QueryAllStoredGameResponse, QueryClientImpl, QueryGetStoredGameResponse } from "../../generated/checkers/query"
-import { StoredGame } from "../../generated/checkers/stored_game"
-import { PageResponse } from "../../generated/cosmos/base/query/v1beta1/pagination"
+import { NextGame } from "../../types/generated/checkers/next_game"
+import {
+    QueryAllStoredGameResponse,
+    QueryClientImpl,
+    QueryGetStoredGameResponse,
+} from "../../types/generated/checkers/query"
+import { StoredGame } from "../../types/generated/checkers/stored_game"
+import { PageResponse } from "../../types/generated/cosmos/base/query/v1beta1/pagination"
 
 export interface AllStoredGameResponse {
     storedGames: StoredGame[]
@@ -14,7 +18,12 @@ export interface CheckersExtension {
     readonly checkers: {
         readonly getNextGame: () => Promise<NextGame>
         readonly getStoredGame: (index: string) => Promise<StoredGame | undefined>
-        readonly getAllStoredGames: (key: Uint8Array, offset: Long, limit: Long, countTotal: boolean) => Promise<AllStoredGameResponse>
+        readonly getAllStoredGames: (
+            key: Uint8Array,
+            offset: Long,
+            limit: Long,
+            countTotal: boolean,
+        ) => Promise<AllStoredGameResponse>
     }
 }
 
@@ -37,7 +46,12 @@ export function setupCheckersExtension(base: QueryClient): CheckersExtension {
                 })
                 return response.StoredGame
             },
-            getAllStoredGames: async (key: Uint8Array, offset: Long, limit: Long, countTotal: boolean): Promise<AllStoredGameResponse> => {
+            getAllStoredGames: async (
+                key: Uint8Array,
+                offset: Long,
+                limit: Long,
+                countTotal: boolean,
+            ): Promise<AllStoredGameResponse> => {
                 const response: QueryAllStoredGameResponse = await queryService.StoredGameAll({
                     pagination: {
                         key: key,
