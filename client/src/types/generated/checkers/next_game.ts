@@ -80,7 +80,10 @@ export const NextGame = {
     fromPartial<I extends Exact<DeepPartial<NextGame>, I>>(object: I): NextGame {
         const message = createBaseNextGame()
         message.creator = object.creator ?? ""
-        message.idValue = object.idValue !== undefined && object.idValue !== null ? Long.fromValue(object.idValue) : Long.UZERO
+        message.idValue =
+            object.idValue !== undefined && object.idValue !== null
+                ? Long.fromValue(object.idValue)
+                : Long.UZERO
         message.fifoHead = object.fifoHead ?? ""
         message.fifoTail = object.fifoTail ?? ""
         return message
@@ -102,7 +105,9 @@ export type DeepPartial<T> = T extends Builtin
     : Partial<T>
 
 type KeysOfUnion<T> = T extends T ? keyof T : never
-export type Exact<P, I extends P> = P extends Builtin ? P : P & { [K in keyof P]: Exact<P[K], I[K]> } & Record<Exclude<keyof I, KeysOfUnion<P>>, never>
+export type Exact<P, I extends P> = P extends Builtin
+    ? P
+    : P & { [K in keyof P]: Exact<P[K], I[K]> } & Record<Exclude<keyof I, KeysOfUnion<P>>, never>
 
 if (_m0.util.Long !== Long) {
     _m0.util.Long = Long as any

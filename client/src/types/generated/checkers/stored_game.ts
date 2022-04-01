@@ -183,12 +183,16 @@ export const StoredGame = {
         message.turn = object.turn ?? ""
         message.red = object.red ?? ""
         message.black = object.black ?? ""
-        message.moveCount = object.moveCount !== undefined && object.moveCount !== null ? Long.fromValue(object.moveCount) : Long.UZERO
+        message.moveCount =
+            object.moveCount !== undefined && object.moveCount !== null
+                ? Long.fromValue(object.moveCount)
+                : Long.UZERO
         message.beforeId = object.beforeId ?? ""
         message.afterId = object.afterId ?? ""
         message.deadline = object.deadline ?? ""
         message.winner = object.winner ?? ""
-        message.wager = object.wager !== undefined && object.wager !== null ? Long.fromValue(object.wager) : Long.UZERO
+        message.wager =
+            object.wager !== undefined && object.wager !== null ? Long.fromValue(object.wager) : Long.UZERO
         message.token = object.token ?? ""
         return message
     },
@@ -209,7 +213,9 @@ export type DeepPartial<T> = T extends Builtin
     : Partial<T>
 
 type KeysOfUnion<T> = T extends T ? keyof T : never
-export type Exact<P, I extends P> = P extends Builtin ? P : P & { [K in keyof P]: Exact<P[K], I[K]> } & Record<Exclude<keyof I, KeysOfUnion<P>>, never>
+export type Exact<P, I extends P> = P extends Builtin
+    ? P
+    : P & { [K in keyof P]: Exact<P[K], I[K]> } & Record<Exclude<keyof I, KeysOfUnion<P>>, never>
 
 if (_m0.util.Long !== Long) {
     _m0.util.Long = Long as any

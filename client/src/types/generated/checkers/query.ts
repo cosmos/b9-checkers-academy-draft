@@ -127,14 +127,20 @@ export const QueryCanPlayMoveRequest = {
         return obj
     },
 
-    fromPartial<I extends Exact<DeepPartial<QueryCanPlayMoveRequest>, I>>(object: I): QueryCanPlayMoveRequest {
+    fromPartial<I extends Exact<DeepPartial<QueryCanPlayMoveRequest>, I>>(
+        object: I,
+    ): QueryCanPlayMoveRequest {
         const message = createBaseQueryCanPlayMoveRequest()
         message.idValue = object.idValue ?? ""
         message.player = object.player ?? ""
-        message.fromX = object.fromX !== undefined && object.fromX !== null ? Long.fromValue(object.fromX) : Long.UZERO
-        message.fromY = object.fromY !== undefined && object.fromY !== null ? Long.fromValue(object.fromY) : Long.UZERO
-        message.toX = object.toX !== undefined && object.toX !== null ? Long.fromValue(object.toX) : Long.UZERO
-        message.toY = object.toY !== undefined && object.toY !== null ? Long.fromValue(object.toY) : Long.UZERO
+        message.fromX =
+            object.fromX !== undefined && object.fromX !== null ? Long.fromValue(object.fromX) : Long.UZERO
+        message.fromY =
+            object.fromY !== undefined && object.fromY !== null ? Long.fromValue(object.fromY) : Long.UZERO
+        message.toX =
+            object.toX !== undefined && object.toX !== null ? Long.fromValue(object.toX) : Long.UZERO
+        message.toY =
+            object.toY !== undefined && object.toY !== null ? Long.fromValue(object.toY) : Long.UZERO
         return message
     },
 }
@@ -189,7 +195,9 @@ export const QueryCanPlayMoveResponse = {
         return obj
     },
 
-    fromPartial<I extends Exact<DeepPartial<QueryCanPlayMoveResponse>, I>>(object: I): QueryCanPlayMoveResponse {
+    fromPartial<I extends Exact<DeepPartial<QueryCanPlayMoveResponse>, I>>(
+        object: I,
+    ): QueryCanPlayMoveResponse {
         const message = createBaseQueryCanPlayMoveResponse()
         message.possible = object.possible ?? false
         message.reason = object.reason ?? ""
@@ -239,7 +247,9 @@ export const QueryGetStoredGameRequest = {
         return obj
     },
 
-    fromPartial<I extends Exact<DeepPartial<QueryGetStoredGameRequest>, I>>(object: I): QueryGetStoredGameRequest {
+    fromPartial<I extends Exact<DeepPartial<QueryGetStoredGameRequest>, I>>(
+        object: I,
+    ): QueryGetStoredGameRequest {
         const message = createBaseQueryGetStoredGameRequest()
         message.index = object.index ?? ""
         return message
@@ -284,13 +294,19 @@ export const QueryGetStoredGameResponse = {
 
     toJSON(message: QueryGetStoredGameResponse): unknown {
         const obj: any = {}
-        message.StoredGame !== undefined && (obj.StoredGame = message.StoredGame ? StoredGame.toJSON(message.StoredGame) : undefined)
+        message.StoredGame !== undefined &&
+            (obj.StoredGame = message.StoredGame ? StoredGame.toJSON(message.StoredGame) : undefined)
         return obj
     },
 
-    fromPartial<I extends Exact<DeepPartial<QueryGetStoredGameResponse>, I>>(object: I): QueryGetStoredGameResponse {
+    fromPartial<I extends Exact<DeepPartial<QueryGetStoredGameResponse>, I>>(
+        object: I,
+    ): QueryGetStoredGameResponse {
         const message = createBaseQueryGetStoredGameResponse()
-        message.StoredGame = object.StoredGame !== undefined && object.StoredGame !== null ? StoredGame.fromPartial(object.StoredGame) : undefined
+        message.StoredGame =
+            object.StoredGame !== undefined && object.StoredGame !== null
+                ? StoredGame.fromPartial(object.StoredGame)
+                : undefined
         return message
     },
 }
@@ -333,13 +349,19 @@ export const QueryAllStoredGameRequest = {
 
     toJSON(message: QueryAllStoredGameRequest): unknown {
         const obj: any = {}
-        message.pagination !== undefined && (obj.pagination = message.pagination ? PageRequest.toJSON(message.pagination) : undefined)
+        message.pagination !== undefined &&
+            (obj.pagination = message.pagination ? PageRequest.toJSON(message.pagination) : undefined)
         return obj
     },
 
-    fromPartial<I extends Exact<DeepPartial<QueryAllStoredGameRequest>, I>>(object: I): QueryAllStoredGameRequest {
+    fromPartial<I extends Exact<DeepPartial<QueryAllStoredGameRequest>, I>>(
+        object: I,
+    ): QueryAllStoredGameRequest {
         const message = createBaseQueryAllStoredGameRequest()
-        message.pagination = object.pagination !== undefined && object.pagination !== null ? PageRequest.fromPartial(object.pagination) : undefined
+        message.pagination =
+            object.pagination !== undefined && object.pagination !== null
+                ? PageRequest.fromPartial(object.pagination)
+                : undefined
         return message
     },
 }
@@ -382,7 +404,9 @@ export const QueryAllStoredGameResponse = {
 
     fromJSON(object: any): QueryAllStoredGameResponse {
         return {
-            StoredGame: Array.isArray(object?.StoredGame) ? object.StoredGame.map((e: any) => StoredGame.fromJSON(e)) : [],
+            StoredGame: Array.isArray(object?.StoredGame)
+                ? object.StoredGame.map((e: any) => StoredGame.fromJSON(e))
+                : [],
             pagination: isSet(object.pagination) ? PageResponse.fromJSON(object.pagination) : undefined,
         }
     },
@@ -394,14 +418,20 @@ export const QueryAllStoredGameResponse = {
         } else {
             obj.StoredGame = []
         }
-        message.pagination !== undefined && (obj.pagination = message.pagination ? PageResponse.toJSON(message.pagination) : undefined)
+        message.pagination !== undefined &&
+            (obj.pagination = message.pagination ? PageResponse.toJSON(message.pagination) : undefined)
         return obj
     },
 
-    fromPartial<I extends Exact<DeepPartial<QueryAllStoredGameResponse>, I>>(object: I): QueryAllStoredGameResponse {
+    fromPartial<I extends Exact<DeepPartial<QueryAllStoredGameResponse>, I>>(
+        object: I,
+    ): QueryAllStoredGameResponse {
         const message = createBaseQueryAllStoredGameResponse()
         message.StoredGame = object.StoredGame?.map((e) => StoredGame.fromPartial(e)) || []
-        message.pagination = object.pagination !== undefined && object.pagination !== null ? PageResponse.fromPartial(object.pagination) : undefined
+        message.pagination =
+            object.pagination !== undefined && object.pagination !== null
+                ? PageResponse.fromPartial(object.pagination)
+                : undefined
         return message
     },
 }
@@ -483,13 +513,19 @@ export const QueryGetNextGameResponse = {
 
     toJSON(message: QueryGetNextGameResponse): unknown {
         const obj: any = {}
-        message.NextGame !== undefined && (obj.NextGame = message.NextGame ? NextGame.toJSON(message.NextGame) : undefined)
+        message.NextGame !== undefined &&
+            (obj.NextGame = message.NextGame ? NextGame.toJSON(message.NextGame) : undefined)
         return obj
     },
 
-    fromPartial<I extends Exact<DeepPartial<QueryGetNextGameResponse>, I>>(object: I): QueryGetNextGameResponse {
+    fromPartial<I extends Exact<DeepPartial<QueryGetNextGameResponse>, I>>(
+        object: I,
+    ): QueryGetNextGameResponse {
         const message = createBaseQueryGetNextGameResponse()
-        message.NextGame = object.NextGame !== undefined && object.NextGame !== null ? NextGame.fromPartial(object.NextGame) : undefined
+        message.NextGame =
+            object.NextGame !== undefined && object.NextGame !== null
+                ? NextGame.fromPartial(object.NextGame)
+                : undefined
         return message
     },
 }
@@ -559,7 +595,9 @@ export type DeepPartial<T> = T extends Builtin
     : Partial<T>
 
 type KeysOfUnion<T> = T extends T ? keyof T : never
-export type Exact<P, I extends P> = P extends Builtin ? P : P & { [K in keyof P]: Exact<P[K], I[K]> } & Record<Exclude<keyof I, KeysOfUnion<P>>, never>
+export type Exact<P, I extends P> = P extends Builtin
+    ? P
+    : P & { [K in keyof P]: Exact<P[K], I[K]> } & Record<Exclude<keyof I, KeysOfUnion<P>>, never>
 
 if (_m0.util.Long !== Long) {
     _m0.util.Long = Long as any

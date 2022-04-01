@@ -139,7 +139,14 @@ export const MsgRejectGameResponse = {
 }
 
 function createBaseMsgPlayMove(): MsgPlayMove {
-    return { creator: "", idValue: "", fromX: Long.UZERO, fromY: Long.UZERO, toX: Long.UZERO, toY: Long.UZERO }
+    return {
+        creator: "",
+        idValue: "",
+        fromX: Long.UZERO,
+        fromY: Long.UZERO,
+        toX: Long.UZERO,
+        toY: Long.UZERO,
+    }
 }
 
 export const MsgPlayMove = {
@@ -224,10 +231,14 @@ export const MsgPlayMove = {
         const message = createBaseMsgPlayMove()
         message.creator = object.creator ?? ""
         message.idValue = object.idValue ?? ""
-        message.fromX = object.fromX !== undefined && object.fromX !== null ? Long.fromValue(object.fromX) : Long.UZERO
-        message.fromY = object.fromY !== undefined && object.fromY !== null ? Long.fromValue(object.fromY) : Long.UZERO
-        message.toX = object.toX !== undefined && object.toX !== null ? Long.fromValue(object.toX) : Long.UZERO
-        message.toY = object.toY !== undefined && object.toY !== null ? Long.fromValue(object.toY) : Long.UZERO
+        message.fromX =
+            object.fromX !== undefined && object.fromX !== null ? Long.fromValue(object.fromX) : Long.UZERO
+        message.fromY =
+            object.fromY !== undefined && object.fromY !== null ? Long.fromValue(object.fromY) : Long.UZERO
+        message.toX =
+            object.toX !== undefined && object.toX !== null ? Long.fromValue(object.toX) : Long.UZERO
+        message.toY =
+            object.toY !== undefined && object.toY !== null ? Long.fromValue(object.toY) : Long.UZERO
         return message
     },
 }
@@ -301,8 +312,14 @@ export const MsgPlayMoveResponse = {
     fromPartial<I extends Exact<DeepPartial<MsgPlayMoveResponse>, I>>(object: I): MsgPlayMoveResponse {
         const message = createBaseMsgPlayMoveResponse()
         message.idValue = object.idValue ?? ""
-        message.capturedX = object.capturedX !== undefined && object.capturedX !== null ? Long.fromValue(object.capturedX) : Long.ZERO
-        message.capturedY = object.capturedY !== undefined && object.capturedY !== null ? Long.fromValue(object.capturedY) : Long.ZERO
+        message.capturedX =
+            object.capturedX !== undefined && object.capturedX !== null
+                ? Long.fromValue(object.capturedX)
+                : Long.ZERO
+        message.capturedY =
+            object.capturedY !== undefined && object.capturedY !== null
+                ? Long.fromValue(object.capturedY)
+                : Long.ZERO
         message.winner = object.winner ?? ""
         return message
     },
@@ -387,7 +404,8 @@ export const MsgCreateGame = {
         message.creator = object.creator ?? ""
         message.red = object.red ?? ""
         message.black = object.black ?? ""
-        message.wager = object.wager !== undefined && object.wager !== null ? Long.fromValue(object.wager) : Long.UZERO
+        message.wager =
+            object.wager !== undefined && object.wager !== null ? Long.fromValue(object.wager) : Long.UZERO
         message.token = object.token ?? ""
         return message
     },
@@ -496,7 +514,9 @@ export type DeepPartial<T> = T extends Builtin
     : Partial<T>
 
 type KeysOfUnion<T> = T extends T ? keyof T : never
-export type Exact<P, I extends P> = P extends Builtin ? P : P & { [K in keyof P]: Exact<P[K], I[K]> } & Record<Exclude<keyof I, KeysOfUnion<P>>, never>
+export type Exact<P, I extends P> = P extends Builtin
+    ? P
+    : P & { [K in keyof P]: Exact<P[K], I[K]> } & Record<Exclude<keyof I, KeysOfUnion<P>>, never>
 
 if (_m0.util.Long !== Long) {
     _m0.util.Long = Long as any
