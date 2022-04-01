@@ -52,7 +52,9 @@ export const GenesisState = {
 
     fromJSON(object: any): GenesisState {
         return {
-            storedGameList: Array.isArray(object?.storedGameList) ? object.storedGameList.map((e: any) => StoredGame.fromJSON(e)) : [],
+            storedGameList: Array.isArray(object?.storedGameList)
+                ? object.storedGameList.map((e: any) => StoredGame.fromJSON(e))
+                : [],
             nextGame: isSet(object.nextGame) ? NextGame.fromJSON(object.nextGame) : undefined,
         }
     },
@@ -64,14 +66,18 @@ export const GenesisState = {
         } else {
             obj.storedGameList = []
         }
-        message.nextGame !== undefined && (obj.nextGame = message.nextGame ? NextGame.toJSON(message.nextGame) : undefined)
+        message.nextGame !== undefined &&
+            (obj.nextGame = message.nextGame ? NextGame.toJSON(message.nextGame) : undefined)
         return obj
     },
 
     fromPartial<I extends Exact<DeepPartial<GenesisState>, I>>(object: I): GenesisState {
         const message = createBaseGenesisState()
         message.storedGameList = object.storedGameList?.map((e) => StoredGame.fromPartial(e)) || []
-        message.nextGame = object.nextGame !== undefined && object.nextGame !== null ? NextGame.fromPartial(object.nextGame) : undefined
+        message.nextGame =
+            object.nextGame !== undefined && object.nextGame !== null
+                ? NextGame.fromPartial(object.nextGame)
+                : undefined
         return message
     },
 }
@@ -91,7 +97,9 @@ export type DeepPartial<T> = T extends Builtin
     : Partial<T>
 
 type KeysOfUnion<T> = T extends T ? keyof T : never
-export type Exact<P, I extends P> = P extends Builtin ? P : P & { [K in keyof P]: Exact<P[K], I[K]> } & Record<Exclude<keyof I, KeysOfUnion<P>>, never>
+export type Exact<P, I extends P> = P extends Builtin
+    ? P
+    : P & { [K in keyof P]: Exact<P[K], I[K]> } & Record<Exclude<keyof I, KeysOfUnion<P>>, never>
 
 if (_m0.util.Long !== Long) {
     _m0.util.Long = Long as any

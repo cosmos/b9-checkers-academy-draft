@@ -338,7 +338,9 @@ export const Http = {
     fromJSON(object: any): Http {
         return {
             rules: Array.isArray(object?.rules) ? object.rules.map((e: any) => HttpRule.fromJSON(e)) : [],
-            fullyDecodeReservedExpansion: isSet(object.fullyDecodeReservedExpansion) ? Boolean(object.fullyDecodeReservedExpansion) : false,
+            fullyDecodeReservedExpansion: isSet(object.fullyDecodeReservedExpansion)
+                ? Boolean(object.fullyDecodeReservedExpansion)
+                : false,
         }
     },
 
@@ -349,7 +351,8 @@ export const Http = {
         } else {
             obj.rules = []
         }
-        message.fullyDecodeReservedExpansion !== undefined && (obj.fullyDecodeReservedExpansion = message.fullyDecodeReservedExpansion)
+        message.fullyDecodeReservedExpansion !== undefined &&
+            (obj.fullyDecodeReservedExpansion = message.fullyDecodeReservedExpansion)
         return obj
     },
 
@@ -467,7 +470,9 @@ export const HttpRule = {
             custom: isSet(object.custom) ? CustomHttpPattern.fromJSON(object.custom) : undefined,
             body: isSet(object.body) ? String(object.body) : "",
             responseBody: isSet(object.responseBody) ? String(object.responseBody) : "",
-            additionalBindings: Array.isArray(object?.additionalBindings) ? object.additionalBindings.map((e: any) => HttpRule.fromJSON(e)) : [],
+            additionalBindings: Array.isArray(object?.additionalBindings)
+                ? object.additionalBindings.map((e: any) => HttpRule.fromJSON(e))
+                : [],
         }
     },
 
@@ -479,11 +484,14 @@ export const HttpRule = {
         message.post !== undefined && (obj.post = message.post)
         message.delete !== undefined && (obj.delete = message.delete)
         message.patch !== undefined && (obj.patch = message.patch)
-        message.custom !== undefined && (obj.custom = message.custom ? CustomHttpPattern.toJSON(message.custom) : undefined)
+        message.custom !== undefined &&
+            (obj.custom = message.custom ? CustomHttpPattern.toJSON(message.custom) : undefined)
         message.body !== undefined && (obj.body = message.body)
         message.responseBody !== undefined && (obj.responseBody = message.responseBody)
         if (message.additionalBindings) {
-            obj.additionalBindings = message.additionalBindings.map((e) => (e ? HttpRule.toJSON(e) : undefined))
+            obj.additionalBindings = message.additionalBindings.map((e) =>
+                e ? HttpRule.toJSON(e) : undefined,
+            )
         } else {
             obj.additionalBindings = []
         }
@@ -498,7 +506,10 @@ export const HttpRule = {
         message.post = object.post ?? undefined
         message.delete = object.delete ?? undefined
         message.patch = object.patch ?? undefined
-        message.custom = object.custom !== undefined && object.custom !== null ? CustomHttpPattern.fromPartial(object.custom) : undefined
+        message.custom =
+            object.custom !== undefined && object.custom !== null
+                ? CustomHttpPattern.fromPartial(object.custom)
+                : undefined
         message.body = object.body ?? ""
         message.responseBody = object.responseBody ?? ""
         message.additionalBindings = object.additionalBindings?.map((e) => HttpRule.fromPartial(e)) || []
@@ -579,7 +590,9 @@ export type DeepPartial<T> = T extends Builtin
     : Partial<T>
 
 type KeysOfUnion<T> = T extends T ? keyof T : never
-export type Exact<P, I extends P> = P extends Builtin ? P : P & { [K in keyof P]: Exact<P[K], I[K]> } & Record<Exclude<keyof I, KeysOfUnion<P>>, never>
+export type Exact<P, I extends P> = P extends Builtin
+    ? P
+    : P & { [K in keyof P]: Exact<P[K], I[K]> } & Record<Exclude<keyof I, KeysOfUnion<P>>, never>
 
 if (_m0.util.Long !== Long) {
     _m0.util.Long = Long as any
