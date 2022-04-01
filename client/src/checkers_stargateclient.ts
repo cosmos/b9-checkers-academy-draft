@@ -1,6 +1,6 @@
 import { QueryClient, StargateClient } from "@cosmjs/stargate"
 import { Tendermint34Client } from "@cosmjs/tendermint-rpc"
-import { CheckersExtension, setupCheckersExtension } from "./types/modules/checkers/queries"
+import { CheckersExtension, setupCheckersExtension } from "./modules/checkers/queries"
 
 export class CheckersStargateClient extends StargateClient {
     public readonly checkersQueryClient: CheckersExtension | undefined
