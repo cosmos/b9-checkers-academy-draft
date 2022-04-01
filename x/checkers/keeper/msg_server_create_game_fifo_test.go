@@ -5,6 +5,7 @@ import (
 
 	sdk "github.com/cosmos/cosmos-sdk/types"
 	"github.com/stretchr/testify/require"
+	rules "github.com/xavierlepretre/checkers/x/checkers/rules"
 	"github.com/xavierlepretre/checkers/x/checkers/types"
 )
 
@@ -43,6 +44,7 @@ func TestCreate3GamesHasSavedFifo(t *testing.T) {
 		BeforeId:  "-1",
 		AfterId:   "2",
 		Deadline:  types.FormatDeadline(ctx.BlockTime().Add(types.MaxTurnDurationInSeconds)),
+		Winner:    rules.NO_PLAYER.Color,
 	}, game1)
 	game2, found2 := keeper.GetStoredGame(ctx, "2")
 	require.True(t, found2)
@@ -57,6 +59,7 @@ func TestCreate3GamesHasSavedFifo(t *testing.T) {
 		BeforeId:  "1",
 		AfterId:   "-1",
 		Deadline:  types.FormatDeadline(ctx.BlockTime().Add(types.MaxTurnDurationInSeconds)),
+		Winner:    rules.NO_PLAYER.Color,
 	}, game2)
 
 	msgSrvr.CreateGame(context, &types.MsgCreateGame{
@@ -85,6 +88,7 @@ func TestCreate3GamesHasSavedFifo(t *testing.T) {
 		BeforeId:  "-1",
 		AfterId:   "2",
 		Deadline:  types.FormatDeadline(ctx.BlockTime().Add(types.MaxTurnDurationInSeconds)),
+		Winner:    rules.NO_PLAYER.Color,
 	}, game1)
 	game2, found2 = keeper.GetStoredGame(ctx, "2")
 	require.True(t, found2)
@@ -99,6 +103,7 @@ func TestCreate3GamesHasSavedFifo(t *testing.T) {
 		BeforeId:  "1",
 		AfterId:   "3",
 		Deadline:  types.FormatDeadline(ctx.BlockTime().Add(types.MaxTurnDurationInSeconds)),
+		Winner:    rules.NO_PLAYER.Color,
 	}, game2)
 	game3, found3 := keeper.GetStoredGame(ctx, "3")
 	require.True(t, found3)
@@ -113,5 +118,6 @@ func TestCreate3GamesHasSavedFifo(t *testing.T) {
 		BeforeId:  "2",
 		AfterId:   "-1",
 		Deadline:  types.FormatDeadline(ctx.BlockTime().Add(types.MaxTurnDurationInSeconds)),
+		Winner:    rules.NO_PLAYER.Color,
 	}, game3)
 }
