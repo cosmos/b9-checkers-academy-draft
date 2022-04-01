@@ -38,12 +38,13 @@ func TestCreateGame(t *testing.T) {
 
 func TestCreate1GameHasSaved(t *testing.T) {
 	msgSrvr, keeper, context := setupMsgServerCreateGame(t)
+	ctx := sdk.UnwrapSDKContext(context)
 	msgSrvr.CreateGame(context, &types.MsgCreateGame{
 		Creator: alice,
 		Red:     bob,
 		Black:   carol,
 	})
-	nextGame, found := keeper.GetNextGame(sdk.UnwrapSDKContext(context))
+	nextGame, found := keeper.GetNextGame(ctx)
 	require.True(t, found)
 	require.EqualValues(t, types.NextGame{
 		Creator:  "",
@@ -51,7 +52,7 @@ func TestCreate1GameHasSaved(t *testing.T) {
 		FifoHead: "1",
 		FifoTail: "1",
 	}, nextGame)
-	game1, found1 := keeper.GetStoredGame(sdk.UnwrapSDKContext(context), "1")
+	game1, found1 := keeper.GetStoredGame(ctx, "1")
 	require.True(t, found1)
 	require.EqualValues(t, types.StoredGame{
 		Creator:   alice,
@@ -63,17 +64,19 @@ func TestCreate1GameHasSaved(t *testing.T) {
 		MoveCount: uint64(0),
 		BeforeId:  "-1",
 		AfterId:   "-1",
+		Deadline:  types.FormatDeadline(ctx.BlockTime().Add(types.MaxTurnDurationInSeconds)),
 	}, game1)
 }
 
 func TestCreate1GameGetAll(t *testing.T) {
 	msgSrvr, keeper, context := setupMsgServerCreateGame(t)
+	ctx := sdk.UnwrapSDKContext(context)
 	msgSrvr.CreateGame(context, &types.MsgCreateGame{
 		Creator: alice,
 		Red:     bob,
 		Black:   carol,
 	})
-	games := keeper.GetAllStoredGame(sdk.UnwrapSDKContext(context))
+	games := keeper.GetAllStoredGame(ctx)
 	require.Len(t, games, 1)
 	require.EqualValues(t, types.StoredGame{
 		Creator:   alice,
@@ -85,6 +88,7 @@ func TestCreate1GameGetAll(t *testing.T) {
 		MoveCount: uint64(0),
 		BeforeId:  "-1",
 		AfterId:   "-1",
+		Deadline:  types.FormatDeadline(ctx.BlockTime().Add(types.MaxTurnDurationInSeconds)),
 	}, games[0])
 }
 
@@ -168,6 +172,7 @@ func TestCreate3Games(t *testing.T) {
 
 func TestCreate3GamesHasSaved(t *testing.T) {
 	msgSrvr, keeper, context := setupMsgServerCreateGame(t)
+	ctx := sdk.UnwrapSDKContext(context)
 	msgSrvr.CreateGame(context, &types.MsgCreateGame{
 		Creator: alice,
 		Red:     bob,
@@ -183,7 +188,7 @@ func TestCreate3GamesHasSaved(t *testing.T) {
 		Red:     alice,
 		Black:   bob,
 	})
-	nextGame, found := keeper.GetNextGame(sdk.UnwrapSDKContext(context))
+	nextGame, found := keeper.GetNextGame(ctx)
 	require.True(t, found)
 	require.EqualValues(t, types.NextGame{
 		Creator:  "",
@@ -191,7 +196,7 @@ func TestCreate3GamesHasSaved(t *testing.T) {
 		FifoHead: "1",
 		FifoTail: "3",
 	}, nextGame)
-	game1, found1 := keeper.GetStoredGame(sdk.UnwrapSDKContext(context), "1")
+	game1, found1 := keeper.GetStoredGame(ctx, "1")
 	require.True(t, found1)
 	require.EqualValues(t, types.StoredGame{
 		Creator:   alice,
@@ -203,8 +208,9 @@ func TestCreate3GamesHasSaved(t *testing.T) {
 		MoveCount: uint64(0),
 		BeforeId:  "-1",
 		AfterId:   "2",
+		Deadline:  types.FormatDeadline(ctx.BlockTime().Add(types.MaxTurnDurationInSeconds)),
 	}, game1)
-	game2, found2 := keeper.GetStoredGame(sdk.UnwrapSDKContext(context), "2")
+	game2, found2 := keeper.GetStoredGame(ctx, "2")
 	require.True(t, found2)
 	require.EqualValues(t, types.StoredGame{
 		Creator:   bob,
@@ -216,8 +222,9 @@ func TestCreate3GamesHasSaved(t *testing.T) {
 		MoveCount: uint64(0),
 		BeforeId:  "1",
 		AfterId:   "3",
+		Deadline:  types.FormatDeadline(ctx.BlockTime().Add(types.MaxTurnDurationInSeconds)),
 	}, game2)
-	game3, found3 := keeper.GetStoredGame(sdk.UnwrapSDKContext(context), "3")
+	game3, found3 := keeper.GetStoredGame(ctx, "3")
 	require.True(t, found3)
 	require.EqualValues(t, types.StoredGame{
 		Creator:   carol,
@@ -229,11 +236,13 @@ func TestCreate3GamesHasSaved(t *testing.T) {
 		MoveCount: uint64(0),
 		BeforeId:  "2",
 		AfterId:   "-1",
+		Deadline:  types.FormatDeadline(ctx.BlockTime().Add(types.MaxTurnDurationInSeconds)),
 	}, game3)
 }
 
 func TestCreate3GamesGetAll(t *testing.T) {
 	msgSrvr, keeper, context := setupMsgServerCreateGame(t)
+	ctx := sdk.UnwrapSDKContext(context)
 	msgSrvr.CreateGame(context, &types.MsgCreateGame{
 		Creator: alice,
 		Red:     bob,
@@ -249,7 +258,7 @@ func TestCreate3GamesGetAll(t *testing.T) {
 		Red:     alice,
 		Black:   bob,
 	})
-	games := keeper.GetAllStoredGame(sdk.UnwrapSDKContext(context))
+	games := keeper.GetAllStoredGame(ctx)
 	require.Len(t, games, 3)
 	require.EqualValues(t, types.StoredGame{
 		Creator:   alice,
@@ -261,6 +270,7 @@ func TestCreate3GamesGetAll(t *testing.T) {
 		MoveCount: uint64(0),
 		BeforeId:  "-1",
 		AfterId:   "2",
+		Deadline:  types.FormatDeadline(ctx.BlockTime().Add(types.MaxTurnDurationInSeconds)),
 	}, games[0])
 	require.EqualValues(t, types.StoredGame{
 		Creator:   bob,
@@ -272,6 +282,7 @@ func TestCreate3GamesGetAll(t *testing.T) {
 		MoveCount: uint64(0),
 		BeforeId:  "1",
 		AfterId:   "3",
+		Deadline:  types.FormatDeadline(ctx.BlockTime().Add(types.MaxTurnDurationInSeconds)),
 	}, games[1])
 	require.EqualValues(t, types.StoredGame{
 		Creator:   carol,
@@ -283,5 +294,6 @@ func TestCreate3GamesGetAll(t *testing.T) {
 		MoveCount: uint64(0),
 		BeforeId:  "2",
 		AfterId:   "-1",
+		Deadline:  types.FormatDeadline(ctx.BlockTime().Add(types.MaxTurnDurationInSeconds)),
 	}, games[2])
 }
