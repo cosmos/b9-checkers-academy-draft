@@ -1,13 +1,31 @@
 /* eslint-disable */
 import { Reader, util, configure, Writer } from 'protobufjs/minimal'
 import * as Long from 'long'
-import { StoredGame } from '../checkers/stored_game'
+import { PlayerInfo } from '../checkers/player_info'
 import { PageRequest, PageResponse } from '../cosmos/base/query/v1beta1/pagination'
+import { StoredGame } from '../checkers/stored_game'
 import { NextGame } from '../checkers/next_game'
 
 export const protobufPackage = 'xavierlepretre.checkers.checkers'
 
 /** this line is used by starport scaffolding # 3 */
+export interface QueryGetPlayerInfoRequest {
+  index: string
+}
+
+export interface QueryGetPlayerInfoResponse {
+  PlayerInfo: PlayerInfo | undefined
+}
+
+export interface QueryAllPlayerInfoRequest {
+  pagination: PageRequest | undefined
+}
+
+export interface QueryAllPlayerInfoResponse {
+  PlayerInfo: PlayerInfo[]
+  pagination: PageResponse | undefined
+}
+
 export interface QueryCanPlayMoveRequest {
   idValue: string
   player: string
@@ -43,6 +61,250 @@ export interface QueryGetNextGameRequest {}
 
 export interface QueryGetNextGameResponse {
   NextGame: NextGame | undefined
+}
+
+const baseQueryGetPlayerInfoRequest: object = { index: '' }
+
+export const QueryGetPlayerInfoRequest = {
+  encode(message: QueryGetPlayerInfoRequest, writer: Writer = Writer.create()): Writer {
+    if (message.index !== '') {
+      writer.uint32(10).string(message.index)
+    }
+    return writer
+  },
+
+  decode(input: Reader | Uint8Array, length?: number): QueryGetPlayerInfoRequest {
+    const reader = input instanceof Uint8Array ? new Reader(input) : input
+    let end = length === undefined ? reader.len : reader.pos + length
+    const message = { ...baseQueryGetPlayerInfoRequest } as QueryGetPlayerInfoRequest
+    while (reader.pos < end) {
+      const tag = reader.uint32()
+      switch (tag >>> 3) {
+        case 1:
+          message.index = reader.string()
+          break
+        default:
+          reader.skipType(tag & 7)
+          break
+      }
+    }
+    return message
+  },
+
+  fromJSON(object: any): QueryGetPlayerInfoRequest {
+    const message = { ...baseQueryGetPlayerInfoRequest } as QueryGetPlayerInfoRequest
+    if (object.index !== undefined && object.index !== null) {
+      message.index = String(object.index)
+    } else {
+      message.index = ''
+    }
+    return message
+  },
+
+  toJSON(message: QueryGetPlayerInfoRequest): unknown {
+    const obj: any = {}
+    message.index !== undefined && (obj.index = message.index)
+    return obj
+  },
+
+  fromPartial(object: DeepPartial<QueryGetPlayerInfoRequest>): QueryGetPlayerInfoRequest {
+    const message = { ...baseQueryGetPlayerInfoRequest } as QueryGetPlayerInfoRequest
+    if (object.index !== undefined && object.index !== null) {
+      message.index = object.index
+    } else {
+      message.index = ''
+    }
+    return message
+  }
+}
+
+const baseQueryGetPlayerInfoResponse: object = {}
+
+export const QueryGetPlayerInfoResponse = {
+  encode(message: QueryGetPlayerInfoResponse, writer: Writer = Writer.create()): Writer {
+    if (message.PlayerInfo !== undefined) {
+      PlayerInfo.encode(message.PlayerInfo, writer.uint32(10).fork()).ldelim()
+    }
+    return writer
+  },
+
+  decode(input: Reader | Uint8Array, length?: number): QueryGetPlayerInfoResponse {
+    const reader = input instanceof Uint8Array ? new Reader(input) : input
+    let end = length === undefined ? reader.len : reader.pos + length
+    const message = { ...baseQueryGetPlayerInfoResponse } as QueryGetPlayerInfoResponse
+    while (reader.pos < end) {
+      const tag = reader.uint32()
+      switch (tag >>> 3) {
+        case 1:
+          message.PlayerInfo = PlayerInfo.decode(reader, reader.uint32())
+          break
+        default:
+          reader.skipType(tag & 7)
+          break
+      }
+    }
+    return message
+  },
+
+  fromJSON(object: any): QueryGetPlayerInfoResponse {
+    const message = { ...baseQueryGetPlayerInfoResponse } as QueryGetPlayerInfoResponse
+    if (object.PlayerInfo !== undefined && object.PlayerInfo !== null) {
+      message.PlayerInfo = PlayerInfo.fromJSON(object.PlayerInfo)
+    } else {
+      message.PlayerInfo = undefined
+    }
+    return message
+  },
+
+  toJSON(message: QueryGetPlayerInfoResponse): unknown {
+    const obj: any = {}
+    message.PlayerInfo !== undefined && (obj.PlayerInfo = message.PlayerInfo ? PlayerInfo.toJSON(message.PlayerInfo) : undefined)
+    return obj
+  },
+
+  fromPartial(object: DeepPartial<QueryGetPlayerInfoResponse>): QueryGetPlayerInfoResponse {
+    const message = { ...baseQueryGetPlayerInfoResponse } as QueryGetPlayerInfoResponse
+    if (object.PlayerInfo !== undefined && object.PlayerInfo !== null) {
+      message.PlayerInfo = PlayerInfo.fromPartial(object.PlayerInfo)
+    } else {
+      message.PlayerInfo = undefined
+    }
+    return message
+  }
+}
+
+const baseQueryAllPlayerInfoRequest: object = {}
+
+export const QueryAllPlayerInfoRequest = {
+  encode(message: QueryAllPlayerInfoRequest, writer: Writer = Writer.create()): Writer {
+    if (message.pagination !== undefined) {
+      PageRequest.encode(message.pagination, writer.uint32(10).fork()).ldelim()
+    }
+    return writer
+  },
+
+  decode(input: Reader | Uint8Array, length?: number): QueryAllPlayerInfoRequest {
+    const reader = input instanceof Uint8Array ? new Reader(input) : input
+    let end = length === undefined ? reader.len : reader.pos + length
+    const message = { ...baseQueryAllPlayerInfoRequest } as QueryAllPlayerInfoRequest
+    while (reader.pos < end) {
+      const tag = reader.uint32()
+      switch (tag >>> 3) {
+        case 1:
+          message.pagination = PageRequest.decode(reader, reader.uint32())
+          break
+        default:
+          reader.skipType(tag & 7)
+          break
+      }
+    }
+    return message
+  },
+
+  fromJSON(object: any): QueryAllPlayerInfoRequest {
+    const message = { ...baseQueryAllPlayerInfoRequest } as QueryAllPlayerInfoRequest
+    if (object.pagination !== undefined && object.pagination !== null) {
+      message.pagination = PageRequest.fromJSON(object.pagination)
+    } else {
+      message.pagination = undefined
+    }
+    return message
+  },
+
+  toJSON(message: QueryAllPlayerInfoRequest): unknown {
+    const obj: any = {}
+    message.pagination !== undefined && (obj.pagination = message.pagination ? PageRequest.toJSON(message.pagination) : undefined)
+    return obj
+  },
+
+  fromPartial(object: DeepPartial<QueryAllPlayerInfoRequest>): QueryAllPlayerInfoRequest {
+    const message = { ...baseQueryAllPlayerInfoRequest } as QueryAllPlayerInfoRequest
+    if (object.pagination !== undefined && object.pagination !== null) {
+      message.pagination = PageRequest.fromPartial(object.pagination)
+    } else {
+      message.pagination = undefined
+    }
+    return message
+  }
+}
+
+const baseQueryAllPlayerInfoResponse: object = {}
+
+export const QueryAllPlayerInfoResponse = {
+  encode(message: QueryAllPlayerInfoResponse, writer: Writer = Writer.create()): Writer {
+    for (const v of message.PlayerInfo) {
+      PlayerInfo.encode(v!, writer.uint32(10).fork()).ldelim()
+    }
+    if (message.pagination !== undefined) {
+      PageResponse.encode(message.pagination, writer.uint32(18).fork()).ldelim()
+    }
+    return writer
+  },
+
+  decode(input: Reader | Uint8Array, length?: number): QueryAllPlayerInfoResponse {
+    const reader = input instanceof Uint8Array ? new Reader(input) : input
+    let end = length === undefined ? reader.len : reader.pos + length
+    const message = { ...baseQueryAllPlayerInfoResponse } as QueryAllPlayerInfoResponse
+    message.PlayerInfo = []
+    while (reader.pos < end) {
+      const tag = reader.uint32()
+      switch (tag >>> 3) {
+        case 1:
+          message.PlayerInfo.push(PlayerInfo.decode(reader, reader.uint32()))
+          break
+        case 2:
+          message.pagination = PageResponse.decode(reader, reader.uint32())
+          break
+        default:
+          reader.skipType(tag & 7)
+          break
+      }
+    }
+    return message
+  },
+
+  fromJSON(object: any): QueryAllPlayerInfoResponse {
+    const message = { ...baseQueryAllPlayerInfoResponse } as QueryAllPlayerInfoResponse
+    message.PlayerInfo = []
+    if (object.PlayerInfo !== undefined && object.PlayerInfo !== null) {
+      for (const e of object.PlayerInfo) {
+        message.PlayerInfo.push(PlayerInfo.fromJSON(e))
+      }
+    }
+    if (object.pagination !== undefined && object.pagination !== null) {
+      message.pagination = PageResponse.fromJSON(object.pagination)
+    } else {
+      message.pagination = undefined
+    }
+    return message
+  },
+
+  toJSON(message: QueryAllPlayerInfoResponse): unknown {
+    const obj: any = {}
+    if (message.PlayerInfo) {
+      obj.PlayerInfo = message.PlayerInfo.map((e) => (e ? PlayerInfo.toJSON(e) : undefined))
+    } else {
+      obj.PlayerInfo = []
+    }
+    message.pagination !== undefined && (obj.pagination = message.pagination ? PageResponse.toJSON(message.pagination) : undefined)
+    return obj
+  },
+
+  fromPartial(object: DeepPartial<QueryAllPlayerInfoResponse>): QueryAllPlayerInfoResponse {
+    const message = { ...baseQueryAllPlayerInfoResponse } as QueryAllPlayerInfoResponse
+    message.PlayerInfo = []
+    if (object.PlayerInfo !== undefined && object.PlayerInfo !== null) {
+      for (const e of object.PlayerInfo) {
+        message.PlayerInfo.push(PlayerInfo.fromPartial(e))
+      }
+    }
+    if (object.pagination !== undefined && object.pagination !== null) {
+      message.pagination = PageResponse.fromPartial(object.pagination)
+    } else {
+      message.pagination = undefined
+    }
+    return message
+  }
 }
 
 const baseQueryCanPlayMoveRequest: object = { idValue: '', player: '', fromX: 0, fromY: 0, toX: 0, toY: 0 }
@@ -596,6 +858,10 @@ export const QueryGetNextGameResponse = {
 
 /** Query defines the gRPC querier service. */
 export interface Query {
+  /** Queries a playerInfo by index. */
+  PlayerInfo(request: QueryGetPlayerInfoRequest): Promise<QueryGetPlayerInfoResponse>
+  /** Queries a list of playerInfo items. */
+  PlayerInfoAll(request: QueryAllPlayerInfoRequest): Promise<QueryAllPlayerInfoResponse>
   /** Queries a list of canPlayMove items. */
   CanPlayMove(request: QueryCanPlayMoveRequest): Promise<QueryCanPlayMoveResponse>
   /** Queries a storedGame by index. */
@@ -611,6 +877,18 @@ export class QueryClientImpl implements Query {
   constructor(rpc: Rpc) {
     this.rpc = rpc
   }
+  PlayerInfo(request: QueryGetPlayerInfoRequest): Promise<QueryGetPlayerInfoResponse> {
+    const data = QueryGetPlayerInfoRequest.encode(request).finish()
+    const promise = this.rpc.request('xavierlepretre.checkers.checkers.Query', 'PlayerInfo', data)
+    return promise.then((data) => QueryGetPlayerInfoResponse.decode(new Reader(data)))
+  }
+
+  PlayerInfoAll(request: QueryAllPlayerInfoRequest): Promise<QueryAllPlayerInfoResponse> {
+    const data = QueryAllPlayerInfoRequest.encode(request).finish()
+    const promise = this.rpc.request('xavierlepretre.checkers.checkers.Query', 'PlayerInfoAll', data)
+    return promise.then((data) => QueryAllPlayerInfoResponse.decode(new Reader(data)))
+  }
+
   CanPlayMove(request: QueryCanPlayMoveRequest): Promise<QueryCanPlayMoveResponse> {
     const data = QueryCanPlayMoveRequest.encode(request).finish()
     const promise = this.rpc.request('xavierlepretre.checkers.checkers.Query', 'CanPlayMove', data)

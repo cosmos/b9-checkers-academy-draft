@@ -1,0 +1,13 @@
+syntax = "proto3";
+package xavierlepretre.checkers.checkers;
+
+option go_package = "github.com/xavierlepretre/checkers/x/checkers/types";
+
+import "gogoproto/gogo.proto";
+
+message PlayerInfo {
+  string index = 1;
+  uint64 wonCount = 2; 
+  uint64 lostCount = 3; 
+  uint64 forfeitedCount = 4; 
+}

@@ -13,6 +13,7 @@ func DefaultGenesis() *GenesisState {
 	return &GenesisState{
 		// this line is used by starport scaffolding # ibc/genesistype/default
 		// this line is used by starport scaffolding # genesis/types/default
+		PlayerInfoList: []*PlayerInfo{},
 		StoredGameList: []*StoredGame{},
 		NextGame: &NextGame{
 			Creator:  "",
@@ -29,6 +30,15 @@ func (gs GenesisState) Validate() error {
 	// this line is used by starport scaffolding # ibc/genesistype/validate
 
 	// this line is used by starport scaffolding # genesis/types/validate
+	// Check for duplicated index in playerInfo
+	playerInfoIndexMap := make(map[string]bool)
+
+	for _, elem := range gs.PlayerInfoList {
+		if _, ok := playerInfoIndexMap[elem.Index]; ok {
+			return fmt.Errorf("duplicated index for playerInfo")
+		}
+		playerInfoIndexMap[elem.Index] = true
+	}
 	// Check for duplicated index in storedGame
 	storedGameIndexMap := make(map[string]bool)
 
