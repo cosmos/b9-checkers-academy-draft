@@ -40,7 +40,7 @@ func (storedGame *StoredGame) GetDeadlineAsTime() (deadline time.Time, err error
 }
 
 func GetNextDeadline(ctx sdk.Context) time.Time {
-	return ctx.BlockTime().Add(MaxTurnDurationInSeconds)
+	return ctx.BlockTime().Add(MaxTurnDurationInNanoseconds)
 }
 
 func FormatDeadline(deadline time.Time) string {
