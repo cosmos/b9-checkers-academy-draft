@@ -1,8 +1,4 @@
-export enum Player {
-    Black = "b",
-    Red = "r",
-}
-
+export type Player = "b" | "r"
 export interface Pos {
     x: number
     y: number

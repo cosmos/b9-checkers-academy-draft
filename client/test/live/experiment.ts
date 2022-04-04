@@ -12,7 +12,12 @@ async function runAll() {
     console.log("NextGame:", nextGame0, ", idValue:", nextGame0.idValue.toString(10))
 
     // All Games
-    const allGames0 = await checkers.getAllStoredGames(Uint8Array.of(), Long.fromInt(0), Long.fromInt(0), true)
+    const allGames0 = await checkers.getAllStoredGames(
+        Uint8Array.of(),
+        Long.fromInt(0),
+        Long.fromInt(0),
+        true,
+    )
     console.log("All games", allGames0, ", total: ", allGames0.pagination!.total.toString(10))
 
     // Non-existent game

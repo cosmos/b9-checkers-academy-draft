@@ -83,10 +83,10 @@ export function setupCheckersExtension(base: QueryClient): CheckersExtension {
                 return queryService.CanPlayMove({
                     idValue: index,
                     player: player,
-                    fromX: Long.fromInt(from.x),
-                    fromY: Long.fromInt(from.y),
-                    toX: Long.fromInt(to.x),
-                    toY: Long.fromInt(to.y),
+                    fromX: Long.fromNumber(from.x),
+                    fromY: Long.fromNumber(from.y),
+                    toX: Long.fromNumber(to.x),
+                    toY: Long.fromNumber(to.y),
                 })
             },
         },
