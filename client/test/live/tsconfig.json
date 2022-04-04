@@ -1,0 +1,8 @@
+{
+    "compilerOptions": {
+        "downlevelIteration": true,
+        "esModuleInterop": true,
+        "target": "ES6",
+        "types": ["node"],
+    }
+}
