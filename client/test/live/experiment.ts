@@ -44,7 +44,7 @@ async function runAll() {
     const bob: string = (await bobSigner.getAccounts())[0].address
     const aliceSigningClient: CheckersSigningStargateClient =
         await CheckersSigningStargateClient.connectWithSigner(starportEndpoint, aliceSigner, {
-            gasPrice: GasPrice.fromString("100stake"),
+            gasPrice: GasPrice.fromString("1stake"),
         })
     const bobSigningClient: CheckersSigningStargateClient =
         await CheckersSigningStargateClient.connectWithSigner(starportEndpoint, bobSigner, {
