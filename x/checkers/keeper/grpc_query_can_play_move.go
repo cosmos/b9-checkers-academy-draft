@@ -35,9 +35,9 @@ func (k Keeper) CanPlayMove(goCtx context.Context, req *types.QueryCanPlayMoveRe
 
 	// Is it an expected player?
 	var player rules.Player
-	if strings.Compare(rules.RED_PLAYER.Color, req.Player) == 0 {
+	if strings.Compare(rules.PieceStrings[rules.RED_PLAYER], req.Player) == 0 {
 		player = rules.RED_PLAYER
-	} else if strings.Compare(rules.BLACK_PLAYER.Color, req.Player) == 0 {
+	} else if strings.Compare(rules.PieceStrings[rules.BLACK_PLAYER], req.Player) == 0 {
 		player = rules.BLACK_PLAYER
 	} else {
 		return &types.QueryCanPlayMoveResponse{
