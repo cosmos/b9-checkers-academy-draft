@@ -16,7 +16,7 @@ const getSignerFromMnemonic = async (filePath: string): Promise<OfflineDirectSig
 
 const getGameId = (createResponse: DeliverTxResponse): string => {
     return JSON.parse(createResponse.rawLog!)[0].events[0].attributes.find(
-        (eventInfo) => eventInfo.key == "Index",
+        (eventInfo: { key: string }) => eventInfo.key == "Index",
     ).value
 }
 
@@ -64,7 +64,7 @@ async function runAll() {
     const createdGameId = getGameId(createResponse)
 
     // Play game
-    const canPlay: QueryCanPlayMoveResponse = await client.checkersQueryClient.checkers.canPlayMove(
+    const canPlay: QueryCanPlayMoveResponse = await client.checkersQueryClient!.checkers.canPlayMove(
         createdGameId,
         "b",
         { x: 1, y: 2 },

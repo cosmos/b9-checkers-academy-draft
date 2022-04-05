@@ -3,3 +3,4 @@ vue/node_modules
 vue/dist
 release/
 *.key
+.DS_Store

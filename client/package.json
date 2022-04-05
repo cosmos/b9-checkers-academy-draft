@@ -4,7 +4,7 @@
     "description": "",
     "main": "index.js",
     "scripts": {
-        "test": "echo \"Error: no test specified\" && exit 1",
+        "test": "mocha --require ts-node/register test/unit/**/*.ts",
         "proto-ts-gen": "../scripts/proto-ts-gen.sh"
     },
     "keywords": [],
@@ -12,10 +12,17 @@
     "license": "ISC",
     "dependencies": {
         "@cosmjs/stargate": "0.28.0",
-        "@cosmjs/utils": "0.28.0"
+        "@cosmjs/utils": "0.28.0",
+        "@types/lodash": "^4.14.181",
+        "lodash": "^4.17.21"
     },
     "devDependencies": {
+        "@types/chai": "4.3.0",
+        "@types/mocha": "9.1.0",
+        "chai": "4.3.6",
+        "mocha": "9.2.2",
         "protoc": "1.0.4",
+        "ts-node": "10.7.0",
         "ts-proto": "1.110.0"
     }
 }
