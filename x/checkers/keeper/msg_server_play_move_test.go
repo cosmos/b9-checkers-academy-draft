@@ -75,7 +75,7 @@ func TestPlayMoveSavedGame(t *testing.T) {
 		MoveCount: uint64(1),
 		BeforeId:  "-1",
 		AfterId:   "-1",
-		Deadline:  types.FormatDeadline(ctx.BlockTime().Add(types.MaxTurnDurationInSeconds)),
+		Deadline:  types.FormatDeadline(ctx.BlockTime().Add(types.MaxTurnDuration)),
 	}, game1)
 }
 
@@ -200,7 +200,7 @@ func TestPlayMove2SavedGame(t *testing.T) {
 		MoveCount: uint64(2),
 		BeforeId:  "-1",
 		AfterId:   "-1",
-		Deadline:  types.FormatDeadline(ctx.BlockTime().Add(types.MaxTurnDurationInSeconds)),
+		Deadline:  types.FormatDeadline(ctx.BlockTime().Add(types.MaxTurnDuration)),
 	}, game1)
 }
 
@@ -286,6 +286,6 @@ func TestPlayMove3SavedGame(t *testing.T) {
 		MoveCount: uint64(3),
 		BeforeId:  "-1",
 		AfterId:   "-1",
-		Deadline:  types.FormatDeadline(ctx.BlockTime().Add(types.MaxTurnDurationInSeconds)),
+		Deadline:  types.FormatDeadline(ctx.BlockTime().Add(types.MaxTurnDuration)),
 	}, game1)
 }
