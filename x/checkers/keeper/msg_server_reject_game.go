@@ -18,7 +18,7 @@ func (k msgServer) RejectGame(goCtx context.Context, msg *types.MsgRejectGame) (
 		return nil, sdkerrors.Wrapf(types.ErrGameNotFound, "game not found %s", msg.IdValue)
 	}
 	// Is the game already won? Here, likely because it is forfeited.
-	if storedGame.Winner != rules.NO_PLAYER.Color {
+	if storedGame.Winner != rules.PieceStrings[rules.NO_PLAYER] {
 		return nil, types.ErrGameFinished
 	}
 

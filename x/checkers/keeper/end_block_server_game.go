@@ -14,8 +14,8 @@ func (k Keeper) ForfeitExpiredGames(goCtx context.Context) {
 	ctx := sdk.UnwrapSDKContext(goCtx)
 
 	opponents := map[string]string{
-		rules.BLACK_PLAYER.Color: rules.RED_PLAYER.Color,
-		rules.RED_PLAYER.Color:   rules.BLACK_PLAYER.Color,
+		rules.PieceStrings[rules.BLACK_PLAYER]: rules.PieceStrings[rules.RED_PLAYER],
+		rules.PieceStrings[rules.RED_PLAYER]:   rules.PieceStrings[rules.BLACK_PLAYER],
 	}
 
 	// Get FIFO information
@@ -42,9 +42,8 @@ func (k Keeper) ForfeitExpiredGames(goCtx context.Context) {
 		if deadline.Before(ctx.BlockTime()) {
 			// Game is past deadline
 			k.RemoveFromFifo(ctx, &storedGame, &nextGame)
-			if storedGame.MoveCount == 0 {
-				storedGame.Winner = rules.NO_PLAYER.Color
-				// No point in keeping a game that was never played
+			if storedGame.MoveCount <= 1 {
+				// No point in keeping a game that was never really played
 				k.RemoveStoredGame(ctx, storedGameId)
 			} else {
 				storedGame.Winner, found = opponents[storedGame.Turn]

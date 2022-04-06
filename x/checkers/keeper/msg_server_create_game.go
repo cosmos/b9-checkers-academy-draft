@@ -29,7 +29,7 @@ func (k msgServer) CreateGame(goCtx context.Context, msg *types.MsgCreateGame) (
 		BeforeId:  types.NoFifoIdKey,
 		AfterId:   types.NoFifoIdKey,
 		Deadline:  types.FormatDeadline(types.GetNextDeadline(ctx)),
-		Winner:    rules.NO_PLAYER.Color,
+		Winner:    rules.PieceStrings[rules.NO_PLAYER],
 		Wager:     msg.Wager,
 	}
 	err := storedGame.Validate()
