@@ -65,7 +65,7 @@ func TestCreate1GameHasSaved(t *testing.T) {
 		MoveCount: uint64(0),
 		BeforeId:  "-1",
 		AfterId:   "-1",
-		Deadline:  types.FormatDeadline(ctx.BlockTime().Add(types.MaxTurnDurationInSeconds)),
+		Deadline:  types.FormatDeadline(ctx.BlockTime().Add(types.MaxTurnDuration)),
 		Winner:    rules.NO_PLAYER.Color,
 	}, game1)
 }
@@ -90,7 +90,7 @@ func TestCreate1GameGetAll(t *testing.T) {
 		MoveCount: uint64(0),
 		BeforeId:  "-1",
 		AfterId:   "-1",
-		Deadline:  types.FormatDeadline(ctx.BlockTime().Add(types.MaxTurnDurationInSeconds)),
+		Deadline:  types.FormatDeadline(ctx.BlockTime().Add(types.MaxTurnDuration)),
 		Winner:    rules.NO_PLAYER.Color,
 	}, games[0])
 }
@@ -211,7 +211,7 @@ func TestCreate3GamesHasSaved(t *testing.T) {
 		MoveCount: uint64(0),
 		BeforeId:  "-1",
 		AfterId:   "2",
-		Deadline:  types.FormatDeadline(ctx.BlockTime().Add(types.MaxTurnDurationInSeconds)),
+		Deadline:  types.FormatDeadline(ctx.BlockTime().Add(types.MaxTurnDuration)),
 		Winner:    rules.NO_PLAYER.Color,
 	}, game1)
 	game2, found2 := keeper.GetStoredGame(ctx, "2")
@@ -226,7 +226,7 @@ func TestCreate3GamesHasSaved(t *testing.T) {
 		MoveCount: uint64(0),
 		BeforeId:  "1",
 		AfterId:   "3",
-		Deadline:  types.FormatDeadline(ctx.BlockTime().Add(types.MaxTurnDurationInSeconds)),
+		Deadline:  types.FormatDeadline(ctx.BlockTime().Add(types.MaxTurnDuration)),
 		Winner:    rules.NO_PLAYER.Color,
 	}, game2)
 	game3, found3 := keeper.GetStoredGame(ctx, "3")
@@ -241,7 +241,7 @@ func TestCreate3GamesHasSaved(t *testing.T) {
 		MoveCount: uint64(0),
 		BeforeId:  "2",
 		AfterId:   "-1",
-		Deadline:  types.FormatDeadline(ctx.BlockTime().Add(types.MaxTurnDurationInSeconds)),
+		Deadline:  types.FormatDeadline(ctx.BlockTime().Add(types.MaxTurnDuration)),
 		Winner:    rules.NO_PLAYER.Color,
 	}, game3)
 }
@@ -276,7 +276,7 @@ func TestCreate3GamesGetAll(t *testing.T) {
 		MoveCount: uint64(0),
 		BeforeId:  "-1",
 		AfterId:   "2",
-		Deadline:  types.FormatDeadline(ctx.BlockTime().Add(types.MaxTurnDurationInSeconds)),
+		Deadline:  types.FormatDeadline(ctx.BlockTime().Add(types.MaxTurnDuration)),
 		Winner:    rules.NO_PLAYER.Color,
 	}, games[0])
 	require.EqualValues(t, types.StoredGame{
@@ -289,7 +289,7 @@ func TestCreate3GamesGetAll(t *testing.T) {
 		MoveCount: uint64(0),
 		BeforeId:  "1",
 		AfterId:   "3",
-		Deadline:  types.FormatDeadline(ctx.BlockTime().Add(types.MaxTurnDurationInSeconds)),
+		Deadline:  types.FormatDeadline(ctx.BlockTime().Add(types.MaxTurnDuration)),
 		Winner:    rules.NO_PLAYER.Color,
 	}, games[1])
 	require.EqualValues(t, types.StoredGame{
@@ -302,7 +302,7 @@ func TestCreate3GamesGetAll(t *testing.T) {
 		MoveCount: uint64(0),
 		BeforeId:  "2",
 		AfterId:   "-1",
-		Deadline:  types.FormatDeadline(ctx.BlockTime().Add(types.MaxTurnDurationInSeconds)),
+		Deadline:  types.FormatDeadline(ctx.BlockTime().Add(types.MaxTurnDuration)),
 		Winner:    rules.NO_PLAYER.Color,
 	}, games[2])
 }

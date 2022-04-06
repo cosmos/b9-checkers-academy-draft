@@ -46,7 +46,7 @@ func TestPlayMove2Games1MoveHasSavedFifo(t *testing.T) {
 		MoveCount: uint64(1),
 		BeforeId:  "2",
 		AfterId:   "-1",
-		Deadline:  types.FormatDeadline(ctx.BlockTime().Add(types.MaxTurnDurationInSeconds)),
+		Deadline:  types.FormatDeadline(ctx.BlockTime().Add(types.MaxTurnDuration)),
 		Winner:    rules.NO_PLAYER.Color,
 	}, game1)
 	game2, found2 := keeper.GetStoredGame(ctx, "2")
@@ -61,7 +61,7 @@ func TestPlayMove2Games1MoveHasSavedFifo(t *testing.T) {
 		MoveCount: uint64(0),
 		BeforeId:  "-1",
 		AfterId:   "1",
-		Deadline:  types.FormatDeadline(ctx.BlockTime().Add(types.MaxTurnDurationInSeconds)),
+		Deadline:  types.FormatDeadline(ctx.BlockTime().Add(types.MaxTurnDuration)),
 		Winner:    rules.NO_PLAYER.Color,
 	}, game2)
 }
@@ -111,7 +111,7 @@ func TestPlayMove2Games2MovesHasSavedFifo(t *testing.T) {
 		MoveCount: uint64(1),
 		BeforeId:  "-1",
 		AfterId:   "2",
-		Deadline:  types.FormatDeadline(ctx.BlockTime().Add(types.MaxTurnDurationInSeconds)),
+		Deadline:  types.FormatDeadline(ctx.BlockTime().Add(types.MaxTurnDuration)),
 		Winner:    rules.NO_PLAYER.Color,
 	}, game1)
 	game2, found2 := keeper.GetStoredGame(ctx, "2")
@@ -126,7 +126,7 @@ func TestPlayMove2Games2MovesHasSavedFifo(t *testing.T) {
 		MoveCount: uint64(1),
 		BeforeId:  "1",
 		AfterId:   "-1",
-		Deadline:  types.FormatDeadline(ctx.BlockTime().Add(types.MaxTurnDurationInSeconds)),
+		Deadline:  types.FormatDeadline(ctx.BlockTime().Add(types.MaxTurnDuration)),
 		Winner:    rules.NO_PLAYER.Color,
 	}, game2)
 }
