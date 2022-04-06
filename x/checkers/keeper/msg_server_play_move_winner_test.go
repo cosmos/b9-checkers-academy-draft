@@ -109,4 +109,17 @@ func TestPlayMoveUpToWinner(t *testing.T) {
 		Deadline:  types.FormatDeadline(ctx.BlockTime().Add(types.MaxTurnDuration)),
 		Winner:    "b",
 	}, game1)
+	events := sdk.StringifyEvents(ctx.EventManager().ABCIEvents())
+	require.Len(t, events, 1)
+	event := events[0]
+	require.Equal(t, event.Type, "message")
+	require.EqualValues(t, []sdk.Attribute{
+		{Key: "module", Value: "checkers"},
+		{Key: "action", Value: "MovePlayed"},
+		{Key: "Creator", Value: carol},
+		{Key: "IdValue", Value: "1"},
+		{Key: "CapturedX", Value: "2"},
+		{Key: "CapturedY", Value: "5"},
+		{Key: "Winner", Value: "b"},
+	}, event.Attributes[6+39*7:])
 }
