@@ -5,7 +5,6 @@ import (
 
 	sdk "github.com/cosmos/cosmos-sdk/types"
 	"github.com/stretchr/testify/require"
-	rules "github.com/xavierlepretre/checkers/x/checkers/rules"
 	"github.com/xavierlepretre/checkers/x/checkers/types"
 )
 
@@ -47,8 +46,8 @@ func TestPlayMove2Games1MoveHasSavedFifo(t *testing.T) {
 		MoveCount: uint64(1),
 		BeforeId:  "2",
 		AfterId:   "-1",
-		Deadline:  types.FormatDeadline(ctx.BlockTime().Add(types.MaxTurnDurationInSeconds)),
-		Winner:    rules.NO_PLAYER.Color,
+		Deadline:  types.FormatDeadline(ctx.BlockTime().Add(types.MaxTurnDuration)),
+		Winner:    "*",
 		Wager:     11,
 	}, game1)
 	game2, found2 := keeper.GetStoredGame(ctx, "2")
@@ -63,8 +62,8 @@ func TestPlayMove2Games1MoveHasSavedFifo(t *testing.T) {
 		MoveCount: uint64(0),
 		BeforeId:  "-1",
 		AfterId:   "1",
-		Deadline:  types.FormatDeadline(ctx.BlockTime().Add(types.MaxTurnDurationInSeconds)),
-		Winner:    rules.NO_PLAYER.Color,
+		Deadline:  types.FormatDeadline(ctx.BlockTime().Add(types.MaxTurnDuration)),
+		Winner:    "*",
 		Wager:     12,
 	}, game2)
 }
@@ -115,8 +114,8 @@ func TestPlayMove2Games2MovesHasSavedFifo(t *testing.T) {
 		MoveCount: uint64(1),
 		BeforeId:  "-1",
 		AfterId:   "2",
-		Deadline:  types.FormatDeadline(ctx.BlockTime().Add(types.MaxTurnDurationInSeconds)),
-		Winner:    rules.NO_PLAYER.Color,
+		Deadline:  types.FormatDeadline(ctx.BlockTime().Add(types.MaxTurnDuration)),
+		Winner:    "*",
 		Wager:     11,
 	}, game1)
 	game2, found2 := keeper.GetStoredGame(ctx, "2")
@@ -131,8 +130,8 @@ func TestPlayMove2Games2MovesHasSavedFifo(t *testing.T) {
 		MoveCount: uint64(1),
 		BeforeId:  "1",
 		AfterId:   "-1",
-		Deadline:  types.FormatDeadline(ctx.BlockTime().Add(types.MaxTurnDurationInSeconds)),
-		Winner:    rules.NO_PLAYER.Color,
+		Deadline:  types.FormatDeadline(ctx.BlockTime().Add(types.MaxTurnDuration)),
+		Winner:    "*",
 		Wager:     12,
 	}, game2)
 }

@@ -8,30 +8,72 @@ import (
 	"github.com/xavierlepretre/checkers/x/checkers/types"
 )
 
-func TestCreate3GamesHasSavedFifo(t *testing.T) {
-	msgSrvr, keeper, context := setupMsgServerCreateGame(t)
+func TestRejectSecondGameHasSavedFifo(t *testing.T) {
+	msgServer, keeper, context := setupMsgServerWithOneGameForRejectGame(t)
 	ctx := sdk.UnwrapSDKContext(context)
-	msgSrvr.CreateGame(context, &types.MsgCreateGame{
-		Creator: alice,
-		Red:     bob,
-		Black:   carol,
-		Wager:   11,
-	})
-
-	msgSrvr.CreateGame(context, &types.MsgCreateGame{
+	msgServer.CreateGame(context, &types.MsgCreateGame{
 		Creator: bob,
 		Red:     carol,
 		Black:   alice,
 		Wager:   12,
 	})
-	nextGame2, found2 := keeper.GetNextGame(ctx)
-	require.True(t, found2)
+	msgServer.RejectGame(context, &types.MsgRejectGame{
+		Creator: carol,
+		IdValue: "1",
+	})
+	nextGame, found := keeper.GetNextGame(ctx)
+	require.True(t, found)
 	require.EqualValues(t, types.NextGame{
 		Creator:  "",
 		IdValue:  3,
-		FifoHead: "1",
+		FifoHead: "2",
 		FifoTail: "2",
-	}, nextGame2)
+	}, nextGame)
+	game2, found2 := keeper.GetStoredGame(ctx, "2")
+	require.True(t, found2)
+	require.EqualValues(t, types.StoredGame{
+		Creator:   bob,
+		Index:     "2",
+		Game:      "*b*b*b*b|b*b*b*b*|*b*b*b*b|********|********|r*r*r*r*|*r*r*r*r|r*r*r*r*",
+		Turn:      "b",
+		Red:       carol,
+		Black:     alice,
+		MoveCount: uint64(0),
+		BeforeId:  "-1",
+		AfterId:   "-1",
+		Deadline:  types.FormatDeadline(ctx.BlockTime().Add(types.MaxTurnDuration)),
+		Winner:    "*",
+		Wager:     12,
+	}, game2)
+}
+
+func TestRejectMiddleGameHasSavedFifo(t *testing.T) {
+	msgServer, keeper, context := setupMsgServerWithOneGameForRejectGame(t)
+	ctx := sdk.UnwrapSDKContext(context)
+	msgServer.CreateGame(context, &types.MsgCreateGame{
+		Creator: bob,
+		Red:     carol,
+		Black:   alice,
+		Wager:   12,
+	})
+	msgServer.CreateGame(context, &types.MsgCreateGame{
+		Creator: carol,
+		Red:     alice,
+		Black:   bob,
+		Wager:   13,
+	})
+	msgServer.RejectGame(context, &types.MsgRejectGame{
+		Creator: carol,
+		IdValue: "2",
+	})
+	nextGame, found := keeper.GetNextGame(ctx)
+	require.True(t, found)
+	require.EqualValues(t, types.NextGame{
+		Creator:  "",
+		IdValue:  4,
+		FifoHead: "1",
+		FifoTail: "3",
+	}, nextGame)
 	game1, found1 := keeper.GetStoredGame(ctx, "1")
 	require.True(t, found1)
 	require.EqualValues(t, types.StoredGame{
@@ -43,74 +85,11 @@ func TestCreate3GamesHasSavedFifo(t *testing.T) {
 		Black:     carol,
 		MoveCount: uint64(0),
 		BeforeId:  "-1",
-		AfterId:   "2",
-		Deadline:  types.FormatDeadline(ctx.BlockTime().Add(types.MaxTurnDuration)),
-		Winner:    "*",
-		Wager:     11,
-	}, game1)
-	game2, found2 := keeper.GetStoredGame(ctx, "2")
-	require.True(t, found2)
-	require.EqualValues(t, types.StoredGame{
-		Creator:   bob,
-		Index:     "2",
-		Game:      "*b*b*b*b|b*b*b*b*|*b*b*b*b|********|********|r*r*r*r*|*r*r*r*r|r*r*r*r*",
-		Turn:      "b",
-		Red:       carol,
-		Black:     alice,
-		MoveCount: uint64(0),
-		BeforeId:  "1",
-		AfterId:   "-1",
-		Deadline:  types.FormatDeadline(ctx.BlockTime().Add(types.MaxTurnDuration)),
-		Winner:    "*",
-		Wager:     12,
-	}, game2)
-
-	msgSrvr.CreateGame(context, &types.MsgCreateGame{
-		Creator: carol,
-		Red:     alice,
-		Black:   bob,
-		Wager:   13,
-	})
-	nextGame3, found3 := keeper.GetNextGame(ctx)
-	require.True(t, found3)
-	require.EqualValues(t, types.NextGame{
-		Creator:  "",
-		IdValue:  4,
-		FifoHead: "1",
-		FifoTail: "3",
-	}, nextGame3)
-	game1, found1 = keeper.GetStoredGame(ctx, "1")
-	require.True(t, found1)
-	require.EqualValues(t, types.StoredGame{
-		Creator:   alice,
-		Index:     "1",
-		Game:      "*b*b*b*b|b*b*b*b*|*b*b*b*b|********|********|r*r*r*r*|*r*r*r*r|r*r*r*r*",
-		Turn:      "b",
-		Red:       bob,
-		Black:     carol,
-		MoveCount: uint64(0),
-		BeforeId:  "-1",
-		AfterId:   "2",
-		Deadline:  types.FormatDeadline(ctx.BlockTime().Add(types.MaxTurnDuration)),
-		Winner:    "*",
-		Wager:     11,
-	}, game1)
-	game2, found2 = keeper.GetStoredGame(ctx, "2")
-	require.True(t, found2)
-	require.EqualValues(t, types.StoredGame{
-		Creator:   bob,
-		Index:     "2",
-		Game:      "*b*b*b*b|b*b*b*b*|*b*b*b*b|********|********|r*r*r*r*|*r*r*r*r|r*r*r*r*",
-		Turn:      "b",
-		Red:       carol,
-		Black:     alice,
-		MoveCount: uint64(0),
-		BeforeId:  "1",
 		AfterId:   "3",
 		Deadline:  types.FormatDeadline(ctx.BlockTime().Add(types.MaxTurnDuration)),
 		Winner:    "*",
-		Wager:     12,
-	}, game2)
+		Wager:     11,
+	}, game1)
 	game3, found3 := keeper.GetStoredGame(ctx, "3")
 	require.True(t, found3)
 	require.EqualValues(t, types.StoredGame{
@@ -121,7 +100,7 @@ func TestCreate3GamesHasSavedFifo(t *testing.T) {
 		Red:       alice,
 		Black:     bob,
 		MoveCount: uint64(0),
-		BeforeId:  "2",
+		BeforeId:  "1",
 		AfterId:   "-1",
 		Deadline:  types.FormatDeadline(ctx.BlockTime().Add(types.MaxTurnDuration)),
 		Winner:    "*",

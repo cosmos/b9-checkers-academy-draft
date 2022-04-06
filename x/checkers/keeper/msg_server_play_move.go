@@ -20,7 +20,7 @@ func (k msgServer) PlayMove(goCtx context.Context, msg *types.MsgPlayMove) (*typ
 	}
 
 	// Is the game already won? Can happen when it is forfeited.
-	if storedGame.Winner != rules.NO_PLAYER.Color {
+	if storedGame.Winner != rules.PieceStrings[rules.NO_PLAYER] {
 		return nil, types.ErrGameFinished
 	}
 
@@ -59,14 +59,14 @@ func (k msgServer) PlayMove(goCtx context.Context, msg *types.MsgPlayMove) (*typ
 	}
 	storedGame.MoveCount++
 	storedGame.Deadline = types.FormatDeadline(types.GetNextDeadline(ctx))
-	storedGame.Winner = game.Winner().Color
+	storedGame.Winner = rules.PieceStrings[game.Winner()]
 
 	// Remove from or send to the back of the FIFO
 	nextGame, found := k.Keeper.GetNextGame(ctx)
 	if !found {
 		panic("NextGame not found")
 	}
-	if storedGame.Winner == rules.NO_PLAYER.Color {
+	if storedGame.Winner == rules.PieceStrings[rules.NO_PLAYER] {
 		k.Keeper.SendToFifoTail(ctx, &storedGame, &nextGame)
 	} else {
 		k.Keeper.RemoveFromFifo(ctx, &storedGame, &nextGame)
