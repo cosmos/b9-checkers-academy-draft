@@ -40,6 +40,11 @@ func (suite *IntegrationTestSuite) TestForfeitUnplayed() {
 		{Key: "IdValue", Value: "1"},
 		{Key: "Winner", Value: "*"},
 	}, forfeitEvent.Attributes[createEventCount:])
+
+	suite.RequireBankBalance(balAlice, alice)
+	suite.RequireBankBalance(balBob, bob)
+	suite.RequireBankBalance(balCarol, carol)
+	suite.RequireBankBalance(0, checkersModuleAddress)
 }
 
 func (suite *IntegrationTestSuite) TestForfeitOlderUnplayed() {
@@ -146,7 +151,6 @@ func (suite *IntegrationTestSuite) TestForfeitPlayedOnce() {
 	suite.setupSuiteWithOneGameForPlayMove()
 	keeper := suite.app.CheckersKeeper
 	goCtx := sdk.WrapSDKContext(suite.ctx)
-	suite.RequireBankBalance(balCarol, carol)
 	suite.msgServer.PlayMove(goCtx, &types.MsgPlayMove{
 		Creator: carol,
 		IdValue: "1",
@@ -193,6 +197,11 @@ func (suite *IntegrationTestSuite) TestForfeitPlayedOnce() {
 		{Key: "sender", Value: checkersModuleAddress},
 		{Key: "amount", Value: "11stake"},
 	}, transferEvent.Attributes[transferEventCount:])
+
+	suite.RequireBankBalance(balAlice, alice)
+	suite.RequireBankBalance(balBob, bob)
+	suite.RequireBankBalance(balCarol, carol)
+	suite.RequireBankBalance(0, checkersModuleAddress)
 }
 
 func (suite *IntegrationTestSuite) TestForfeitOlderPlayedOnce() {
@@ -518,6 +527,7 @@ func (suite *IntegrationTestSuite) TestForfeit2OldestPlayedTwiceIn1Call() {
 	keeper := suite.app.CheckersKeeper
 	goCtx := sdk.WrapSDKContext(suite.ctx)
 	suite.RequireBankBalance(balCarol, carol)
+	suite.RequireBankBalance(0, checkersModuleAddress)
 	suite.msgServer.PlayMove(goCtx, &types.MsgPlayMove{
 		Creator: carol,
 		IdValue: "1",
@@ -527,6 +537,7 @@ func (suite *IntegrationTestSuite) TestForfeit2OldestPlayedTwiceIn1Call() {
 		ToY:     3,
 	})
 	suite.RequireBankBalance(balBob, bob)
+	suite.RequireBankBalance(11, checkersModuleAddress)
 	suite.msgServer.PlayMove(goCtx, &types.MsgPlayMove{
 		Creator: bob,
 		IdValue: "1",
@@ -542,6 +553,7 @@ func (suite *IntegrationTestSuite) TestForfeit2OldestPlayedTwiceIn1Call() {
 		Wager:   12,
 	})
 	suite.RequireBankBalance(balAlice, alice)
+	suite.RequireBankBalance(22, checkersModuleAddress)
 	suite.msgServer.PlayMove(goCtx, &types.MsgPlayMove{
 		Creator: alice,
 		IdValue: "2",
@@ -558,6 +570,7 @@ func (suite *IntegrationTestSuite) TestForfeit2OldestPlayedTwiceIn1Call() {
 		ToX:     1,
 		ToY:     4,
 	})
+	suite.RequireBankBalance(46, checkersModuleAddress)
 	suite.msgServer.CreateGame(goCtx, &types.MsgCreateGame{
 		Creator: carol,
 		Red:     alice,
@@ -574,9 +587,6 @@ func (suite *IntegrationTestSuite) TestForfeit2OldestPlayedTwiceIn1Call() {
 	game2.Deadline = oldDeadline
 	keeper.SetStoredGame(suite.ctx, game2)
 	keeper.ForfeitExpiredGames(goCtx)
-	suite.RequireBankBalance(balAlice-12, alice) // Lost wager
-	suite.RequireBankBalance(balBob+11, bob)     // Won wager
-	suite.RequireBankBalance(balCarol+1, carol)  // Lost and won wagers
 
 	game1, found = keeper.GetStoredGame(suite.ctx, "1")
 	suite.Require().True(found)
@@ -657,4 +667,9 @@ func (suite *IntegrationTestSuite) TestForfeit2OldestPlayedTwiceIn1Call() {
 		{Key: "sender", Value: checkersModuleAddress},
 		{Key: "amount", Value: "24stake"},
 	}, transferAttributes)
+
+	suite.RequireBankBalance(balAlice-12, alice) // Lost wager
+	suite.RequireBankBalance(balBob+11, bob)     // Won wager
+	suite.RequireBankBalance(balCarol+1, carol)  // Lost and won wagers
+	suite.RequireBankBalance(0, checkersModuleAddress)
 }

@@ -71,6 +71,11 @@ func (suite *IntegrationTestSuite) TestPlayMoveUpToWinner() {
 	keeper := suite.app.CheckersKeeper
 	goCtx := sdk.WrapSDKContext(suite.ctx)
 
+	suite.RequireBankBalance(balAlice, alice)
+	suite.RequireBankBalance(balBob, bob)
+	suite.RequireBankBalance(balCarol, carol)
+	suite.RequireBankBalance(0, checkersModuleAddress)
+
 	for _, move := range game1moves {
 		_, err := suite.msgServer.PlayMove(goCtx, &types.MsgPlayMove{
 			Creator: getPlayer(move.player),
@@ -133,4 +138,9 @@ func (suite *IntegrationTestSuite) TestPlayMoveUpToWinner() {
 		{Key: "sender", Value: checkersModuleAddress},
 		{Key: "amount", Value: "22stake"},
 	}, transferEvent.Attributes[transferAttributesDiscardCount:])
+
+	suite.RequireBankBalance(balAlice, alice)
+	suite.RequireBankBalance(balBob-11, bob)
+	suite.RequireBankBalance(balCarol+11, carol)
+	suite.RequireBankBalance(0, checkersModuleAddress)
 }

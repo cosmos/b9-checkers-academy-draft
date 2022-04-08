@@ -36,6 +36,27 @@ func (suite *IntegrationTestSuite) TestPlayMove() {
 	}, *playMoveResponse)
 }
 
+func (suite *IntegrationTestSuite) TestPlayMovePlayerPaid() {
+	suite.setupSuiteWithOneGameForPlayMove()
+	goCtx := sdk.WrapSDKContext(suite.ctx)
+	suite.RequireBankBalance(balAlice, alice)
+	suite.RequireBankBalance(balBob, bob)
+	suite.RequireBankBalance(balCarol, carol)
+	suite.RequireBankBalance(0, checkersModuleAddress)
+	suite.msgServer.PlayMove(goCtx, &types.MsgPlayMove{
+		Creator: carol,
+		IdValue: "1",
+		FromX:   1,
+		FromY:   2,
+		ToX:     2,
+		ToY:     3,
+	})
+	suite.RequireBankBalance(balAlice, alice)
+	suite.RequireBankBalance(balBob, bob)
+	suite.RequireBankBalance(balCarol-11, carol)
+	suite.RequireBankBalance(11, checkersModuleAddress)
+}
+
 func (suite *IntegrationTestSuite) TestPlayMoveSavedGame() {
 	suite.setupSuiteWithOneGameForPlayMove()
 	keeper := suite.app.CheckersKeeper
@@ -168,6 +189,35 @@ func (suite *IntegrationTestSuite) TestPlayMove2() {
 	}, *playMoveResponse)
 }
 
+func (suite *IntegrationTestSuite) TestPlayMove2PlayerPaid() {
+	suite.setupSuiteWithOneGameForPlayMove()
+	goCtx := sdk.WrapSDKContext(suite.ctx)
+	suite.msgServer.PlayMove(goCtx, &types.MsgPlayMove{
+		Creator: carol,
+		IdValue: "1",
+		FromX:   1,
+		FromY:   2,
+		ToX:     2,
+		ToY:     3,
+	})
+	suite.RequireBankBalance(balAlice, alice)
+	suite.RequireBankBalance(balBob, bob)
+	suite.RequireBankBalance(balCarol-11, carol)
+	suite.RequireBankBalance(11, checkersModuleAddress)
+	suite.msgServer.PlayMove(goCtx, &types.MsgPlayMove{
+		Creator: bob,
+		IdValue: "1",
+		FromX:   0,
+		FromY:   5,
+		ToX:     1,
+		ToY:     4,
+	})
+	suite.RequireBankBalance(balAlice, alice)
+	suite.RequireBankBalance(balBob-11, bob)
+	suite.RequireBankBalance(balCarol-11, carol)
+	suite.RequireBankBalance(22, checkersModuleAddress)
+}
+
 func (suite *IntegrationTestSuite) TestPlayMove2SavedGame() {
 	suite.setupSuiteWithOneGameForPlayMove()
 	keeper := suite.app.CheckersKeeper
@@ -248,6 +298,43 @@ func (suite *IntegrationTestSuite) TestPlayMove3() {
 		CapturedY: 4,
 		Winner:    "*",
 	}, *playMoveResponse)
+}
+
+func (suite *IntegrationTestSuite) TestPlayMove3DidNotPay() {
+	suite.setupSuiteWithOneGameForPlayMove()
+	goCtx := sdk.WrapSDKContext(suite.ctx)
+	suite.msgServer.PlayMove(goCtx, &types.MsgPlayMove{
+		Creator: carol,
+		IdValue: "1",
+		FromX:   1,
+		FromY:   2,
+		ToX:     2,
+		ToY:     3,
+	})
+	suite.msgServer.PlayMove(goCtx, &types.MsgPlayMove{
+		Creator: bob,
+		IdValue: "1",
+		FromX:   0,
+		FromY:   5,
+		ToX:     1,
+		ToY:     4,
+	})
+	suite.RequireBankBalance(balAlice, alice)
+	suite.RequireBankBalance(balBob-11, bob)
+	suite.RequireBankBalance(balCarol-11, carol)
+	suite.RequireBankBalance(22, checkersModuleAddress)
+	suite.msgServer.PlayMove(goCtx, &types.MsgPlayMove{
+		Creator: carol,
+		IdValue: "1",
+		FromX:   2,
+		FromY:   3,
+		ToX:     0,
+		ToY:     5,
+	})
+	suite.RequireBankBalance(balAlice, alice)
+	suite.RequireBankBalance(balBob-11, bob)
+	suite.RequireBankBalance(balCarol-11, carol)
+	suite.RequireBankBalance(22, checkersModuleAddress)
 }
 
 func (suite *IntegrationTestSuite) TestPlayMove3SavedGame() {

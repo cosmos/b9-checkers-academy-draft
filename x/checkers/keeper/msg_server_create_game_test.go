@@ -20,6 +20,25 @@ func (suite *IntegrationTestSuite) TestCreateGame() {
 	}, *createResponse)
 }
 
+func (suite *IntegrationTestSuite) TestCreateGameDidNotPay() {
+	suite.setupSuiteWithBalances()
+	goCtx := sdk.WrapSDKContext(suite.ctx)
+	suite.RequireBankBalance(balAlice, alice)
+	suite.RequireBankBalance(balBob, bob)
+	suite.RequireBankBalance(balCarol, carol)
+	suite.RequireBankBalance(0, checkersModuleAddress)
+	suite.msgServer.CreateGame(goCtx, &types.MsgCreateGame{
+		Creator: alice,
+		Red:     bob,
+		Black:   carol,
+		Wager:   12,
+	})
+	suite.RequireBankBalance(balAlice, alice)
+	suite.RequireBankBalance(balBob, bob)
+	suite.RequireBankBalance(balCarol, carol)
+	suite.RequireBankBalance(0, checkersModuleAddress)
+}
+
 func (suite *IntegrationTestSuite) TestCreate1GameHasSaved() {
 	suite.setupSuiteWithBalances()
 	keeper := suite.app.CheckersKeeper

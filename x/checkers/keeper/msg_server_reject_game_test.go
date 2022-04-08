@@ -38,6 +38,19 @@ func (suite *IntegrationTestSuite) TestRejectGameByBlackNoMove() {
 	suite.Require().EqualValues(types.MsgRejectGameResponse{}, *rejectGameResponse)
 }
 
+func (suite *IntegrationTestSuite) TestRejectGameByBlackNotPaid() {
+	suite.setupSuiteWithOneGameForRejectGame()
+	goCtx := sdk.WrapSDKContext(suite.ctx)
+	suite.msgServer.RejectGame(goCtx, &types.MsgRejectGame{
+		Creator: carol,
+		IdValue: "1",
+	})
+	suite.RequireBankBalance(balAlice, alice)
+	suite.RequireBankBalance(balBob, bob)
+	suite.RequireBankBalance(balCarol, carol)
+	suite.RequireBankBalance(0, checkersModuleAddress)
+}
+
 func (suite *IntegrationTestSuite) TestRejectGameByBlackNoMoveRemovedGame() {
 	suite.setupSuiteWithOneGameForRejectGame()
 	keeper := suite.app.CheckersKeeper
@@ -86,6 +99,19 @@ func (suite *IntegrationTestSuite) TestRejectGameByRedNoMove() {
 	})
 	suite.Require().Nil(err)
 	suite.Require().EqualValues(types.MsgRejectGameResponse{}, *rejectGameResponse)
+}
+
+func (suite *IntegrationTestSuite) TestRejectGameByRedNoMoveNotPaid() {
+	suite.setupSuiteWithOneGameForRejectGame()
+	goCtx := sdk.WrapSDKContext(suite.ctx)
+	suite.msgServer.RejectGame(goCtx, &types.MsgRejectGame{
+		Creator: bob,
+		IdValue: "1",
+	})
+	suite.RequireBankBalance(balAlice, alice)
+	suite.RequireBankBalance(balBob, bob)
+	suite.RequireBankBalance(balCarol, carol)
+	suite.RequireBankBalance(0, checkersModuleAddress)
 }
 
 func (suite *IntegrationTestSuite) TestRejectGameByRedNoMoveRemovedGame() {
@@ -144,6 +170,31 @@ func (suite *IntegrationTestSuite) TestRejectGameByRedOneMove() {
 	})
 	suite.Require().Nil(err)
 	suite.Require().EqualValues(types.MsgRejectGameResponse{}, *rejectGameResponse)
+}
+
+func (suite *IntegrationTestSuite) TestRejectGameByRedOneMoveRefunded() {
+	suite.setupSuiteWithOneGameForRejectGame()
+	goCtx := sdk.WrapSDKContext(suite.ctx)
+	suite.msgServer.PlayMove(goCtx, &types.MsgPlayMove{
+		Creator: carol,
+		IdValue: "1",
+		FromX:   1,
+		FromY:   2,
+		ToX:     2,
+		ToY:     3,
+	})
+	suite.RequireBankBalance(balAlice, alice)
+	suite.RequireBankBalance(balBob, bob)
+	suite.RequireBankBalance(balCarol-11, carol)
+	suite.RequireBankBalance(11, checkersModuleAddress)
+	suite.msgServer.RejectGame(goCtx, &types.MsgRejectGame{
+		Creator: bob,
+		IdValue: "1",
+	})
+	suite.RequireBankBalance(balAlice, alice)
+	suite.RequireBankBalance(balBob, bob)
+	suite.RequireBankBalance(balCarol, carol)
+	suite.RequireBankBalance(0, checkersModuleAddress)
 }
 
 func (suite *IntegrationTestSuite) TestRejectGameByRedOneMoveRemovedGame() {
