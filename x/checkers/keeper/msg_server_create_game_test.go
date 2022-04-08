@@ -5,51 +5,11 @@ import (
 	"testing"
 
 	sdk "github.com/cosmos/cosmos-sdk/types"
-	banktypes "github.com/cosmos/cosmos-sdk/x/bank/types"
 	"github.com/stretchr/testify/require"
 	"github.com/xavierlepretre/checkers/x/checkers"
 	"github.com/xavierlepretre/checkers/x/checkers/keeper"
 	"github.com/xavierlepretre/checkers/x/checkers/types"
 )
-
-const (
-	alice    = "cosmos1jmjfq0tplp9tmx4v9uemw72y4d2wa5nr3xn9d3"
-	bob      = "cosmos1xyxs3skf3f4jfqeuv89yyaqvjc6lffavxqhc8g"
-	carol    = "cosmos1e0w5t53nrq7p66fye6c8p0ynyhf6y24l4yuxd7"
-	denom    = "stake"
-	balAlice = 50000000
-	balBob   = 20000000
-	balCarol = 10000000
-)
-
-func makeBalance(address string, balance sdk.Int) banktypes.Balance {
-	return banktypes.Balance{
-		Address: address,
-		Coins: sdk.Coins{
-			sdk.Coin{
-				Denom:  denom,
-				Amount: balance,
-			},
-		},
-	}
-}
-
-func getBankGenesis() *banktypes.GenesisState {
-	coins := []banktypes.Balance{
-		makeBalance(alice, sdk.NewInt(balAlice)),
-		makeBalance(bob, sdk.NewInt(balBob)),
-		makeBalance(carol, sdk.NewInt(balCarol)),
-	}
-	supply := banktypes.NewSupply(coins[0].Coins.Add(coins[1].Coins...).Add(coins[2].Coins...))
-
-	state := banktypes.NewGenesisState(
-		banktypes.DefaultParams(),
-		coins,
-		supply.GetTotal(),
-		[]banktypes.Metadata{})
-
-	return state
-}
 
 func setupMsgServerCreateGame(t testing.TB) (types.MsgServer, keeper.Keeper, context.Context) {
 	k, ctx := setupKeeper(t)
