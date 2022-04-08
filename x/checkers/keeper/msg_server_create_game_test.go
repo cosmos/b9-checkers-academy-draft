@@ -1,56 +1,46 @@
 package keeper_test
 
 import (
-	"context"
-	"testing"
-
 	sdk "github.com/cosmos/cosmos-sdk/types"
-	"github.com/stretchr/testify/require"
-	"github.com/xavierlepretre/checkers/x/checkers"
-	"github.com/xavierlepretre/checkers/x/checkers/keeper"
 	"github.com/xavierlepretre/checkers/x/checkers/types"
 )
 
-func setupMsgServerCreateGame(t testing.TB) (types.MsgServer, keeper.Keeper, context.Context) {
-	k, ctx := setupKeeper(t)
-	checkers.InitGenesis(ctx, *k, *types.DefaultGenesis())
-	return keeper.NewMsgServerImpl(*k), *k, sdk.WrapSDKContext(ctx)
-}
-
-func TestCreateGame(t *testing.T) {
-	msgServer, _, context := setupMsgServerCreateGame(t)
-	createResponse, err := msgServer.CreateGame(context, &types.MsgCreateGame{
+func (suite *IntegrationTestSuite) TestCreateGame() {
+	suite.setupSuiteWithBalances()
+	goCtx := sdk.WrapSDKContext(suite.ctx)
+	createResponse, err := suite.msgServer.CreateGame(goCtx, &types.MsgCreateGame{
 		Creator: alice,
 		Red:     bob,
 		Black:   carol,
 		Wager:   12,
 	})
-	require.Nil(t, err)
-	require.EqualValues(t, types.MsgCreateGameResponse{
+	suite.Require().Nil(err)
+	suite.Require().EqualValues(types.MsgCreateGameResponse{
 		IdValue: "1",
 	}, *createResponse)
 }
 
-func TestCreate1GameHasSaved(t *testing.T) {
-	msgSrvr, keeper, context := setupMsgServerCreateGame(t)
-	ctx := sdk.UnwrapSDKContext(context)
-	msgSrvr.CreateGame(context, &types.MsgCreateGame{
+func (suite *IntegrationTestSuite) TestCreate1GameHasSaved() {
+	suite.setupSuiteWithBalances()
+	keeper := suite.app.CheckersKeeper
+	goCtx := sdk.WrapSDKContext(suite.ctx)
+	suite.msgServer.CreateGame(goCtx, &types.MsgCreateGame{
 		Creator: alice,
 		Red:     bob,
 		Black:   carol,
 		Wager:   13,
 	})
-	nextGame, found := keeper.GetNextGame(ctx)
-	require.True(t, found)
-	require.EqualValues(t, types.NextGame{
+	nextGame, found := keeper.GetNextGame(suite.ctx)
+	suite.Require().True(found)
+	suite.Require().EqualValues(types.NextGame{
 		Creator:  "",
 		IdValue:  2,
 		FifoHead: "1",
 		FifoTail: "1",
 	}, nextGame)
-	game1, found1 := keeper.GetStoredGame(ctx, "1")
-	require.True(t, found1)
-	require.EqualValues(t, types.StoredGame{
+	game1, found1 := keeper.GetStoredGame(suite.ctx, "1")
+	suite.Require().True(found1)
+	suite.Require().EqualValues(types.StoredGame{
 		Creator:   alice,
 		Index:     "1",
 		Game:      "*b*b*b*b|b*b*b*b*|*b*b*b*b|********|********|r*r*r*r*|*r*r*r*r|r*r*r*r*",
@@ -60,24 +50,25 @@ func TestCreate1GameHasSaved(t *testing.T) {
 		MoveCount: uint64(0),
 		BeforeId:  "-1",
 		AfterId:   "-1",
-		Deadline:  types.FormatDeadline(ctx.BlockTime().Add(types.MaxTurnDuration)),
+		Deadline:  types.FormatDeadline(suite.ctx.BlockTime().Add(types.MaxTurnDuration)),
 		Winner:    "*",
 		Wager:     13,
 	}, game1)
 }
 
-func TestCreate1GameGetAll(t *testing.T) {
-	msgSrvr, keeper, context := setupMsgServerCreateGame(t)
-	ctx := sdk.UnwrapSDKContext(context)
-	msgSrvr.CreateGame(context, &types.MsgCreateGame{
+func (suite *IntegrationTestSuite) TestCreate1GameGetAll() {
+	suite.setupSuiteWithBalances()
+	keeper := suite.app.CheckersKeeper
+	goCtx := sdk.WrapSDKContext(suite.ctx)
+	suite.msgServer.CreateGame(goCtx, &types.MsgCreateGame{
 		Creator: alice,
 		Red:     bob,
 		Black:   carol,
 		Wager:   14,
 	})
-	games := keeper.GetAllStoredGame(ctx)
-	require.Len(t, games, 1)
-	require.EqualValues(t, types.StoredGame{
+	games := keeper.GetAllStoredGame(suite.ctx)
+	suite.Require().Len(games, 1)
+	suite.Require().EqualValues(types.StoredGame{
 		Creator:   alice,
 		Index:     "1",
 		Game:      "*b*b*b*b|b*b*b*b*|*b*b*b*b|********|********|r*r*r*r*|*r*r*r*r|r*r*r*r*",
@@ -87,26 +78,25 @@ func TestCreate1GameGetAll(t *testing.T) {
 		MoveCount: uint64(0),
 		BeforeId:  "-1",
 		AfterId:   "-1",
-		Deadline:  types.FormatDeadline(ctx.BlockTime().Add(types.MaxTurnDuration)),
+		Deadline:  types.FormatDeadline(suite.ctx.BlockTime().Add(types.MaxTurnDuration)),
 		Winner:    "*",
 		Wager:     14,
 	}, games[0])
 }
 
-func TestCreate1GameEmitted(t *testing.T) {
-	msgSrvr, _, context := setupMsgServerCreateGame(t)
-	msgSrvr.CreateGame(context, &types.MsgCreateGame{
+func (suite *IntegrationTestSuite) TestCreate1GameEmitted() {
+	suite.setupSuiteWithBalances()
+	goCtx := sdk.WrapSDKContext(suite.ctx)
+	suite.msgServer.CreateGame(goCtx, &types.MsgCreateGame{
 		Creator: alice,
 		Red:     bob,
 		Black:   carol,
 		Wager:   15,
 	})
-	ctx := sdk.UnwrapSDKContext(context)
-	require.NotNil(t, ctx)
-	events := sdk.StringifyEvents(ctx.EventManager().ABCIEvents())
-	require.Len(t, events, 1)
+	events := sdk.StringifyEvents(suite.ctx.EventManager().ABCIEvents())
+	suite.Require().Len(events, 1)
 	event := events[0]
-	require.EqualValues(t, sdk.StringEvent{
+	suite.Require().EqualValues(sdk.StringEvent{
 		Type: "message",
 		Attributes: []sdk.Attribute{
 			{Key: "module", Value: "checkers"},
@@ -120,95 +110,103 @@ func TestCreate1GameEmitted(t *testing.T) {
 	}, event)
 }
 
-func TestCreateGameRedAddressBad(t *testing.T) {
-	msgServer, _, context := setupMsgServerCreateGame(t)
-	createResponse, err := msgServer.CreateGame(context, &types.MsgCreateGame{
+func (suite *IntegrationTestSuite) TestCreateGameRedAddressBad() {
+	suite.setupSuiteWithBalances()
+	goCtx := sdk.WrapSDKContext(suite.ctx)
+
+	createResponse, err := suite.msgServer.CreateGame(goCtx, &types.MsgCreateGame{
 		Creator: alice,
 		Red:     "notanaddress",
 		Black:   carol,
 	})
-	require.Nil(t, createResponse)
-	require.Equal(t,
+	suite.Require().Nil(createResponse)
+	suite.Require().Equal(
 		"red address is invalid: notanaddress: decoding bech32 failed: invalid index of 1",
 		err.Error())
 }
 
-func TestCreateGameEmptyRedAddress(t *testing.T) {
-	msgServer, _, context := setupMsgServerCreateGame(t)
-	createResponse, err := msgServer.CreateGame(context, &types.MsgCreateGame{
+func (suite *IntegrationTestSuite) TestCreateGameEmptyRedAddress() {
+	suite.setupSuiteWithBalances()
+	goCtx := sdk.WrapSDKContext(suite.ctx)
+
+	createResponse, err := suite.msgServer.CreateGame(goCtx, &types.MsgCreateGame{
 		Creator: alice,
 		Red:     "",
 		Black:   carol,
 		Wager:   16,
 	})
-	require.Nil(t, createResponse)
-	require.Equal(t,
+	suite.Require().Nil(createResponse)
+	suite.Require().Equal(
 		"red address is invalid: : empty address string is not allowed",
 		err.Error())
 }
 
-func TestCreate3Games(t *testing.T) {
-	msgSrvr, _, context := setupMsgServerCreateGame(t)
-	msgSrvr.CreateGame(context, &types.MsgCreateGame{
+func (suite *IntegrationTestSuite) TestCreate3Games() {
+	suite.setupSuiteWithBalances()
+	goCtx := sdk.WrapSDKContext(suite.ctx)
+
+	suite.msgServer.CreateGame(goCtx, &types.MsgCreateGame{
 		Creator: alice,
 		Red:     bob,
 		Black:   carol,
 		Wager:   17,
 	})
-	createResponse2, err2 := msgSrvr.CreateGame(context, &types.MsgCreateGame{
+	createResponse2, err2 := suite.msgServer.CreateGame(goCtx, &types.MsgCreateGame{
 		Creator: bob,
 		Red:     carol,
 		Black:   alice,
 		Wager:   18,
 	})
-	require.Nil(t, err2)
-	require.EqualValues(t, types.MsgCreateGameResponse{
+	suite.Require().Nil(err2)
+	suite.Require().EqualValues(types.MsgCreateGameResponse{
 		IdValue: "2",
 	}, *createResponse2)
-	createResponse3, err3 := msgSrvr.CreateGame(context, &types.MsgCreateGame{
+	createResponse3, err3 := suite.msgServer.CreateGame(goCtx, &types.MsgCreateGame{
 		Creator: carol,
 		Red:     alice,
 		Black:   bob,
 		Wager:   19,
 	})
-	require.Nil(t, err3)
-	require.EqualValues(t, types.MsgCreateGameResponse{
+	suite.Require().Nil(err3)
+	suite.Require().EqualValues(types.MsgCreateGameResponse{
 		IdValue: "3",
 	}, *createResponse3)
 }
 
-func TestCreate3GamesHasSaved(t *testing.T) {
-	msgSrvr, keeper, context := setupMsgServerCreateGame(t)
-	ctx := sdk.UnwrapSDKContext(context)
-	msgSrvr.CreateGame(context, &types.MsgCreateGame{
+func (suite *IntegrationTestSuite) TestCreate3GamesHasSaved() {
+	suite.setupSuiteWithBalances()
+	keeper := suite.app.CheckersKeeper
+	goCtx := sdk.WrapSDKContext(suite.ctx)
+
+	suite.msgServer.CreateGame(goCtx, &types.MsgCreateGame{
 		Creator: alice,
 		Red:     bob,
 		Black:   carol,
 		Wager:   20,
 	})
-	msgSrvr.CreateGame(context, &types.MsgCreateGame{
+	suite.msgServer.CreateGame(goCtx, &types.MsgCreateGame{
 		Creator: bob,
 		Red:     carol,
 		Black:   alice,
 		Wager:   21,
 	})
-	msgSrvr.CreateGame(context, &types.MsgCreateGame{
+	suite.msgServer.CreateGame(goCtx, &types.MsgCreateGame{
 		Creator: carol,
 		Red:     alice,
 		Black:   bob,
 		Wager:   22,
 	})
-	nextGame, found := keeper.GetNextGame(ctx)
-	require.True(t, found)
-	require.EqualValues(t, types.NextGame{
+	nextGame, found := keeper.GetNextGame(suite.ctx)
+	suite.Require().True(found)
+	suite.Require().EqualValues(types.NextGame{
 		Creator:  "",
 		IdValue:  4,
 		FifoHead: "1",
 		FifoTail: "3",
 	}, nextGame)
-	game1, found1 := keeper.GetStoredGame(ctx, "1")
-	require.True(t, found1)
-	require.EqualValues(t, types.StoredGame{
+	game1, found1 := keeper.GetStoredGame(suite.ctx, "1")
+	suite.Require().True(found1)
+	suite.Require().EqualValues(types.StoredGame{
 		Creator:   alice,
 		Index:     "1",
 		Game:      "*b*b*b*b|b*b*b*b*|*b*b*b*b|********|********|r*r*r*r*|*r*r*r*r|r*r*r*r*",
@@ -218,13 +216,13 @@ func TestCreate3GamesHasSaved(t *testing.T) {
 		MoveCount: uint64(0),
 		BeforeId:  "-1",
 		AfterId:   "2",
-		Deadline:  types.FormatDeadline(ctx.BlockTime().Add(types.MaxTurnDuration)),
+		Deadline:  types.FormatDeadline(suite.ctx.BlockTime().Add(types.MaxTurnDuration)),
 		Winner:    "*",
 		Wager:     20,
 	}, game1)
-	game2, found2 := keeper.GetStoredGame(ctx, "2")
-	require.True(t, found2)
-	require.EqualValues(t, types.StoredGame{
+	game2, found2 := keeper.GetStoredGame(suite.ctx, "2")
+	suite.Require().True(found2)
+	suite.Require().EqualValues(types.StoredGame{
 		Creator:   bob,
 		Index:     "2",
 		Game:      "*b*b*b*b|b*b*b*b*|*b*b*b*b|********|********|r*r*r*r*|*r*r*r*r|r*r*r*r*",
@@ -234,13 +232,13 @@ func TestCreate3GamesHasSaved(t *testing.T) {
 		MoveCount: uint64(0),
 		BeforeId:  "1",
 		AfterId:   "3",
-		Deadline:  types.FormatDeadline(ctx.BlockTime().Add(types.MaxTurnDuration)),
+		Deadline:  types.FormatDeadline(suite.ctx.BlockTime().Add(types.MaxTurnDuration)),
 		Winner:    "*",
 		Wager:     21,
 	}, game2)
-	game3, found3 := keeper.GetStoredGame(ctx, "3")
-	require.True(t, found3)
-	require.EqualValues(t, types.StoredGame{
+	game3, found3 := keeper.GetStoredGame(suite.ctx, "3")
+	suite.Require().True(found3)
+	suite.Require().EqualValues(types.StoredGame{
 		Creator:   carol,
 		Index:     "3",
 		Game:      "*b*b*b*b|b*b*b*b*|*b*b*b*b|********|********|r*r*r*r*|*r*r*r*r|r*r*r*r*",
@@ -250,36 +248,38 @@ func TestCreate3GamesHasSaved(t *testing.T) {
 		MoveCount: uint64(0),
 		BeforeId:  "2",
 		AfterId:   "-1",
-		Deadline:  types.FormatDeadline(ctx.BlockTime().Add(types.MaxTurnDuration)),
+		Deadline:  types.FormatDeadline(suite.ctx.BlockTime().Add(types.MaxTurnDuration)),
 		Winner:    "*",
 		Wager:     22,
 	}, game3)
 }
 
-func TestCreate3GamesGetAll(t *testing.T) {
-	msgSrvr, keeper, context := setupMsgServerCreateGame(t)
-	ctx := sdk.UnwrapSDKContext(context)
-	msgSrvr.CreateGame(context, &types.MsgCreateGame{
+func (suite *IntegrationTestSuite) TestCreate3GamesGetAll() {
+	suite.setupSuiteWithBalances()
+	keeper := suite.app.CheckersKeeper
+	goCtx := sdk.WrapSDKContext(suite.ctx)
+
+	suite.msgServer.CreateGame(goCtx, &types.MsgCreateGame{
 		Creator: alice,
 		Red:     bob,
 		Black:   carol,
 		Wager:   23,
 	})
-	msgSrvr.CreateGame(context, &types.MsgCreateGame{
+	suite.msgServer.CreateGame(goCtx, &types.MsgCreateGame{
 		Creator: bob,
 		Red:     carol,
 		Black:   alice,
 		Wager:   24,
 	})
-	msgSrvr.CreateGame(context, &types.MsgCreateGame{
+	suite.msgServer.CreateGame(goCtx, &types.MsgCreateGame{
 		Creator: carol,
 		Red:     alice,
 		Black:   bob,
 		Wager:   25,
 	})
-	games := keeper.GetAllStoredGame(ctx)
-	require.Len(t, games, 3)
-	require.EqualValues(t, types.StoredGame{
+	games := keeper.GetAllStoredGame(suite.ctx)
+	suite.Require().Len(games, 3)
+	suite.Require().EqualValues(types.StoredGame{
 		Creator:   alice,
 		Index:     "1",
 		Game:      "*b*b*b*b|b*b*b*b*|*b*b*b*b|********|********|r*r*r*r*|*r*r*r*r|r*r*r*r*",
@@ -289,11 +289,11 @@ func TestCreate3GamesGetAll(t *testing.T) {
 		MoveCount: uint64(0),
 		BeforeId:  "-1",
 		AfterId:   "2",
-		Deadline:  types.FormatDeadline(ctx.BlockTime().Add(types.MaxTurnDuration)),
+		Deadline:  types.FormatDeadline(suite.ctx.BlockTime().Add(types.MaxTurnDuration)),
 		Winner:    "*",
 		Wager:     23,
 	}, games[0])
-	require.EqualValues(t, types.StoredGame{
+	suite.Require().EqualValues(types.StoredGame{
 		Creator:   bob,
 		Index:     "2",
 		Game:      "*b*b*b*b|b*b*b*b*|*b*b*b*b|********|********|r*r*r*r*|*r*r*r*r|r*r*r*r*",
@@ -303,11 +303,11 @@ func TestCreate3GamesGetAll(t *testing.T) {
 		MoveCount: uint64(0),
 		BeforeId:  "1",
 		AfterId:   "3",
-		Deadline:  types.FormatDeadline(ctx.BlockTime().Add(types.MaxTurnDuration)),
+		Deadline:  types.FormatDeadline(suite.ctx.BlockTime().Add(types.MaxTurnDuration)),
 		Winner:    "*",
 		Wager:     24,
 	}, games[1])
-	require.EqualValues(t, types.StoredGame{
+	suite.Require().EqualValues(types.StoredGame{
 		Creator:   carol,
 		Index:     "3",
 		Game:      "*b*b*b*b|b*b*b*b*|*b*b*b*b|********|********|r*r*r*r*|*r*r*r*r|r*r*r*r*",
@@ -317,7 +317,7 @@ func TestCreate3GamesGetAll(t *testing.T) {
 		MoveCount: uint64(0),
 		BeforeId:  "2",
 		AfterId:   "-1",
-		Deadline:  types.FormatDeadline(ctx.BlockTime().Add(types.MaxTurnDuration)),
+		Deadline:  types.FormatDeadline(suite.ctx.BlockTime().Add(types.MaxTurnDuration)),
 		Winner:    "*",
 		Wager:     25,
 	}, games[2])
