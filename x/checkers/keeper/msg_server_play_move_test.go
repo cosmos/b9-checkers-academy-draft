@@ -57,6 +57,31 @@ func (suite *IntegrationTestSuite) TestPlayMovePlayerPaid() {
 	suite.RequireBankBalance(11, checkersModuleAddress)
 }
 
+func (suite *IntegrationTestSuite) TestPlayMoveCannotPayFails() {
+	suite.setupSuiteWithOneGameForPlayMove()
+	goCtx := sdk.WrapSDKContext(suite.ctx)
+	suite.msgServer.CreateGame(goCtx, &types.MsgCreateGame{
+		Creator: alice,
+		Red:     bob,
+		Black:   carol,
+		Wager:   balCarol + 1,
+	})
+	suite.RequireBankBalance(balAlice, alice)
+	suite.RequireBankBalance(balBob, bob)
+	suite.RequireBankBalance(balCarol, carol)
+	suite.RequireBankBalance(0, checkersModuleAddress)
+	playMoveResponse, err := suite.msgServer.PlayMove(goCtx, &types.MsgPlayMove{
+		Creator: carol,
+		IdValue: "2",
+		FromX:   1,
+		FromY:   2,
+		ToX:     2,
+		ToY:     3,
+	})
+	suite.Require().Nil(playMoveResponse)
+	suite.Require().Equal("black cannot pay the wager: 10000000stake is smaller than 10000001stake: insufficient funds", err.Error())
+}
+
 func (suite *IntegrationTestSuite) TestPlayMoveSavedGame() {
 	suite.setupSuiteWithOneGameForPlayMove()
 	keeper := suite.app.CheckersKeeper
@@ -216,6 +241,39 @@ func (suite *IntegrationTestSuite) TestPlayMove2PlayerPaid() {
 	suite.RequireBankBalance(balBob-11, bob)
 	suite.RequireBankBalance(balCarol-11, carol)
 	suite.RequireBankBalance(22, checkersModuleAddress)
+}
+
+func (suite *IntegrationTestSuite) TestPlayMove2CannotPayFails() {
+	suite.setupSuiteWithOneGameForPlayMove()
+	goCtx := sdk.WrapSDKContext(suite.ctx)
+	suite.msgServer.CreateGame(goCtx, &types.MsgCreateGame{
+		Creator: alice,
+		Red:     carol,
+		Black:   bob,
+		Wager:   balCarol + 1,
+	})
+	suite.RequireBankBalance(balAlice, alice)
+	suite.RequireBankBalance(balBob, bob)
+	suite.RequireBankBalance(balCarol, carol)
+	suite.RequireBankBalance(0, checkersModuleAddress)
+	suite.msgServer.PlayMove(goCtx, &types.MsgPlayMove{
+		Creator: bob,
+		IdValue: "2",
+		FromX:   1,
+		FromY:   2,
+		ToX:     2,
+		ToY:     3,
+	})
+	playMoveResponse, err := suite.msgServer.PlayMove(goCtx, &types.MsgPlayMove{
+		Creator: carol,
+		IdValue: "2",
+		FromX:   0,
+		FromY:   5,
+		ToX:     1,
+		ToY:     4,
+	})
+	suite.Require().Nil(playMoveResponse)
+	suite.Require().Equal("red cannot pay the wager: 10000000stake is smaller than 10000001stake: insufficient funds", err.Error())
 }
 
 func (suite *IntegrationTestSuite) TestPlayMove2SavedGame() {
