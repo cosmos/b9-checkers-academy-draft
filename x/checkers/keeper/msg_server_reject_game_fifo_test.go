@@ -7,7 +7,6 @@ import (
 
 func (suite *IntegrationTestSuite) TestRejectSecondGameHasSavedFifo() {
 	suite.setupSuiteWithOneGameForRejectGame()
-	keeper := suite.app.CheckersKeeper
 	goCtx := sdk.WrapSDKContext(suite.ctx)
 	suite.msgServer.CreateGame(goCtx, &types.MsgCreateGame{
 		Creator: bob,
@@ -19,6 +18,7 @@ func (suite *IntegrationTestSuite) TestRejectSecondGameHasSavedFifo() {
 		Creator: carol,
 		IdValue: "1",
 	})
+	keeper := suite.app.CheckersKeeper
 	nextGame, found := keeper.GetNextGame(suite.ctx)
 	suite.Require().True(found)
 	suite.Require().EqualValues(types.NextGame{
@@ -47,7 +47,6 @@ func (suite *IntegrationTestSuite) TestRejectSecondGameHasSavedFifo() {
 
 func (suite *IntegrationTestSuite) TestRejectMiddleGameHasSavedFifo() {
 	suite.setupSuiteWithOneGameForRejectGame()
-	keeper := suite.app.CheckersKeeper
 	goCtx := sdk.WrapSDKContext(suite.ctx)
 	suite.msgServer.CreateGame(goCtx, &types.MsgCreateGame{
 		Creator: bob,
@@ -65,6 +64,7 @@ func (suite *IntegrationTestSuite) TestRejectMiddleGameHasSavedFifo() {
 		Creator: carol,
 		IdValue: "2",
 	})
+	keeper := suite.app.CheckersKeeper
 	nextGame, found := keeper.GetNextGame(suite.ctx)
 	suite.Require().True(found)
 	suite.Require().EqualValues(types.NextGame{

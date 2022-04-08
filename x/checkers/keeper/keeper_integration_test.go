@@ -15,14 +15,14 @@ import (
 )
 
 const (
+	transferEventCount            = 3 // As emitted by the bank
 	createEventCount              = 7
-	playEventCountFirst           = 8
+	playEventCountFirst           = 8 // Extra "sender" attribute emitted by the bank
 	playEventCountNext            = 7
-	transferEventCount            = 3
 	rejectEventCount              = 4
-	rejectEventCountWithTransfer  = 5
+	rejectEventCountWithTransfer  = 5 // Extra "sender" attribute emitted by the bank
 	forfeitEventCount             = 4
-	forfeitEventCountWithTransfer = 5
+	forfeitEventCountWithTransfer = 5 // Extra "sender" attribute emitted by the bank
 	alice                         = "cosmos1jmjfq0tplp9tmx4v9uemw72y4d2wa5nr3xn9d3"
 	bob                           = "cosmos1xyxs3skf3f4jfqeuv89yyaqvjc6lffavxqhc8g"
 	carol                         = "cosmos1e0w5t53nrq7p66fye6c8p0ynyhf6y24l4yuxd7"
@@ -66,13 +66,13 @@ func (suite *IntegrationTestSuite) SetupTest() {
 	suite.queryClient = queryClient
 }
 
-func makeBalance(address string, balance sdk.Int) banktypes.Balance {
+func makeBalance(address string, balance int64) banktypes.Balance {
 	return banktypes.Balance{
 		Address: address,
 		Coins: sdk.Coins{
 			sdk.Coin{
 				Denom:  sdk.DefaultBondDenom,
-				Amount: balance,
+				Amount: sdk.NewInt(balance),
 			},
 		},
 	}
@@ -80,9 +80,9 @@ func makeBalance(address string, balance sdk.Int) banktypes.Balance {
 
 func getBankGenesis() *banktypes.GenesisState {
 	coins := []banktypes.Balance{
-		makeBalance(alice, sdk.NewInt(balAlice)),
-		makeBalance(bob, sdk.NewInt(balBob)),
-		makeBalance(carol, sdk.NewInt(balCarol)),
+		makeBalance(alice, balAlice),
+		makeBalance(bob, balBob),
+		makeBalance(carol, balCarol),
 	}
 	supply := banktypes.NewSupply(coins[0].Coins.Add(coins[1].Coins...).Add(coins[2].Coins...))
 

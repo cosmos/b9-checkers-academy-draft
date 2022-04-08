@@ -57,6 +57,57 @@ func (suite *IntegrationTestSuite) TestPlayMovePlayerPaid() {
 	suite.RequireBankBalance(11, checkersModuleAddress)
 }
 
+func (suite *IntegrationTestSuite) TestPlayMovePlayerPaidEvenZero() {
+	suite.setupSuiteWithBalances()
+	goCtx := sdk.WrapSDKContext(suite.ctx)
+	suite.msgServer.CreateGame(goCtx, &types.MsgCreateGame{
+		Creator: alice,
+		Red:     bob,
+		Black:   carol,
+		Wager:   0,
+	})
+	suite.RequireBankBalance(balAlice, alice)
+	suite.RequireBankBalance(balBob, bob)
+	suite.RequireBankBalance(balCarol, carol)
+	suite.RequireBankBalance(0, checkersModuleAddress)
+	suite.msgServer.PlayMove(goCtx, &types.MsgPlayMove{
+		Creator: carol,
+		IdValue: "1",
+		FromX:   1,
+		FromY:   2,
+		ToX:     2,
+		ToY:     3,
+	})
+	suite.RequireBankBalance(balAlice, alice)
+	suite.RequireBankBalance(balBob, bob)
+	suite.RequireBankBalance(balCarol, carol)
+	suite.RequireBankBalance(0, checkersModuleAddress)
+
+	events := sdk.StringifyEvents(suite.ctx.EventManager().ABCIEvents())
+	suite.Require().Len(events, 2)
+
+	playEvent := events[0]
+	suite.Require().Equal(playEvent.Type, "message")
+	suite.Require().EqualValues([]sdk.Attribute{
+		{Key: "sender", Value: carol},
+		{Key: "module", Value: "checkers"},
+		{Key: "action", Value: "MovePlayed"},
+		{Key: "Creator", Value: carol},
+		{Key: "IdValue", Value: "1"},
+		{Key: "CapturedX", Value: "-1"},
+		{Key: "CapturedY", Value: "-1"},
+		{Key: "Winner", Value: "*"},
+	}, playEvent.Attributes[createEventCount:])
+
+	transferEvent := events[1]
+	suite.Require().Equal(transferEvent.Type, "transfer")
+	suite.Require().EqualValues([]sdk.Attribute{
+		{Key: "recipient", Value: checkersModuleAddress},
+		{Key: "sender", Value: carol},
+		{Key: "amount", Value: ""},
+	}, transferEvent.Attributes)
+}
+
 func (suite *IntegrationTestSuite) TestPlayMoveCannotPayFails() {
 	suite.setupSuiteWithOneGameForPlayMove()
 	goCtx := sdk.WrapSDKContext(suite.ctx)
@@ -84,7 +135,6 @@ func (suite *IntegrationTestSuite) TestPlayMoveCannotPayFails() {
 
 func (suite *IntegrationTestSuite) TestPlayMoveSavedGame() {
 	suite.setupSuiteWithOneGameForPlayMove()
-	keeper := suite.app.CheckersKeeper
 	goCtx := sdk.WrapSDKContext(suite.ctx)
 	suite.msgServer.PlayMove(goCtx, &types.MsgPlayMove{
 		Creator: carol,
@@ -94,6 +144,7 @@ func (suite *IntegrationTestSuite) TestPlayMoveSavedGame() {
 		ToX:     2,
 		ToY:     3,
 	})
+	keeper := suite.app.CheckersKeeper
 	nextGame, found := keeper.GetNextGame(suite.ctx)
 	suite.Require().True(found)
 	suite.Require().EqualValues(types.NextGame{
@@ -278,7 +329,6 @@ func (suite *IntegrationTestSuite) TestPlayMove2CannotPayFails() {
 
 func (suite *IntegrationTestSuite) TestPlayMove2SavedGame() {
 	suite.setupSuiteWithOneGameForPlayMove()
-	keeper := suite.app.CheckersKeeper
 	goCtx := sdk.WrapSDKContext(suite.ctx)
 	suite.msgServer.PlayMove(goCtx, &types.MsgPlayMove{
 		Creator: carol,
@@ -296,6 +346,7 @@ func (suite *IntegrationTestSuite) TestPlayMove2SavedGame() {
 		ToX:     1,
 		ToY:     4,
 	})
+	keeper := suite.app.CheckersKeeper
 	nextGame, found := keeper.GetNextGame(suite.ctx)
 	suite.Require().True(found)
 	suite.Require().EqualValues(types.NextGame{
@@ -397,7 +448,6 @@ func (suite *IntegrationTestSuite) TestPlayMove3DidNotPay() {
 
 func (suite *IntegrationTestSuite) TestPlayMove3SavedGame() {
 	suite.setupSuiteWithOneGameForPlayMove()
-	keeper := suite.app.CheckersKeeper
 	goCtx := sdk.WrapSDKContext(suite.ctx)
 	suite.msgServer.PlayMove(goCtx, &types.MsgPlayMove{
 		Creator: carol,
@@ -423,6 +473,7 @@ func (suite *IntegrationTestSuite) TestPlayMove3SavedGame() {
 		ToX:     0,
 		ToY:     5,
 	})
+	keeper := suite.app.CheckersKeeper
 	nextGame, found := keeper.GetNextGame(suite.ctx)
 	suite.Require().True(found)
 	suite.Require().EqualValues(types.NextGame{

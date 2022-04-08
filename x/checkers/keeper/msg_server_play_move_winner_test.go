@@ -68,7 +68,6 @@ func getPlayer(color string) string {
 
 func (suite *IntegrationTestSuite) TestPlayMoveUpToWinner() {
 	suite.setupSuiteWithOneGameForPlayMove()
-	keeper := suite.app.CheckersKeeper
 	goCtx := sdk.WrapSDKContext(suite.ctx)
 
 	suite.RequireBankBalance(balAlice, alice)
@@ -88,6 +87,7 @@ func (suite *IntegrationTestSuite) TestPlayMoveUpToWinner() {
 		suite.Require().Nil(err)
 	}
 
+	keeper := suite.app.CheckersKeeper
 	nextGame, found := keeper.GetNextGame(suite.ctx)
 	suite.Require().True(found)
 	suite.Require().EqualValues(types.NextGame{

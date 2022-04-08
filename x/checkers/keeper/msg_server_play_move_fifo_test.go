@@ -7,7 +7,6 @@ import (
 
 func (suite *IntegrationTestSuite) TestPlayMove2Games1MoveHasSavedFifo() {
 	suite.setupSuiteWithOneGameForPlayMove()
-	keeper := suite.app.CheckersKeeper
 	goCtx := sdk.WrapSDKContext(suite.ctx)
 	suite.msgServer.CreateGame(goCtx, &types.MsgCreateGame{
 		Creator: bob,
@@ -24,6 +23,7 @@ func (suite *IntegrationTestSuite) TestPlayMove2Games1MoveHasSavedFifo() {
 		ToX:     2,
 		ToY:     3,
 	})
+	keeper := suite.app.CheckersKeeper
 	nextGame1, found1 := keeper.GetNextGame(suite.ctx)
 	suite.Require().True(found1)
 	suite.Require().EqualValues(types.NextGame{
@@ -68,7 +68,6 @@ func (suite *IntegrationTestSuite) TestPlayMove2Games1MoveHasSavedFifo() {
 
 func (suite *IntegrationTestSuite) TestPlayMove2Games2MovesHasSavedFifo() {
 	suite.setupSuiteWithOneGameForPlayMove()
-	keeper := suite.app.CheckersKeeper
 	goCtx := sdk.WrapSDKContext(suite.ctx)
 	suite.msgServer.CreateGame(goCtx, &types.MsgCreateGame{
 		Creator: bob,
@@ -93,6 +92,7 @@ func (suite *IntegrationTestSuite) TestPlayMove2Games2MovesHasSavedFifo() {
 		ToX:     2,
 		ToY:     3,
 	})
+	keeper := suite.app.CheckersKeeper
 	nextGame1, found1 := keeper.GetNextGame(suite.ctx)
 	suite.Require().True(found1)
 	suite.Require().EqualValues(types.NextGame{

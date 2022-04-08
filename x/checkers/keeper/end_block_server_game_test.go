@@ -9,9 +9,9 @@ import (
 
 func (suite *IntegrationTestSuite) TestForfeitUnplayed() {
 	suite.setupSuiteWithOneGameForPlayMove()
-	keeper := suite.app.CheckersKeeper
 	goCtx := sdk.WrapSDKContext(suite.ctx)
 
+	keeper := suite.app.CheckersKeeper
 	game1, found := keeper.GetStoredGame(suite.ctx, "1")
 	suite.Require().True(found)
 	game1.Deadline = types.FormatDeadline(suite.ctx.BlockTime().Add(time.Duration(-1)))
@@ -49,7 +49,6 @@ func (suite *IntegrationTestSuite) TestForfeitUnplayed() {
 
 func (suite *IntegrationTestSuite) TestForfeitOlderUnplayed() {
 	suite.setupSuiteWithOneGameForPlayMove()
-	keeper := suite.app.CheckersKeeper
 	goCtx := sdk.WrapSDKContext(suite.ctx)
 	suite.msgServer.CreateGame(goCtx, &types.MsgCreateGame{
 		Creator: bob,
@@ -57,6 +56,7 @@ func (suite *IntegrationTestSuite) TestForfeitOlderUnplayed() {
 		Black:   alice,
 		Wager:   12,
 	})
+	keeper := suite.app.CheckersKeeper
 	game1, found := keeper.GetStoredGame(suite.ctx, "1")
 	suite.Require().True(found)
 	game1.Deadline = types.FormatDeadline(suite.ctx.BlockTime().Add(time.Duration(-1)))
@@ -89,7 +89,6 @@ func (suite *IntegrationTestSuite) TestForfeitOlderUnplayed() {
 
 func (suite *IntegrationTestSuite) TestForfeit2OldestUnplayedIn1Call() {
 	suite.setupSuiteWithOneGameForPlayMove()
-	keeper := suite.app.CheckersKeeper
 	goCtx := sdk.WrapSDKContext(suite.ctx)
 	suite.msgServer.CreateGame(goCtx, &types.MsgCreateGame{
 		Creator: bob,
@@ -103,6 +102,7 @@ func (suite *IntegrationTestSuite) TestForfeit2OldestUnplayedIn1Call() {
 		Black:   bob,
 		Wager:   13,
 	})
+	keeper := suite.app.CheckersKeeper
 	game1, found := keeper.GetStoredGame(suite.ctx, "1")
 	suite.Require().True(found)
 	game1.Deadline = types.FormatDeadline(suite.ctx.BlockTime().Add(time.Duration(-1)))
@@ -149,7 +149,6 @@ func (suite *IntegrationTestSuite) TestForfeit2OldestUnplayedIn1Call() {
 
 func (suite *IntegrationTestSuite) TestForfeitPlayedOnce() {
 	suite.setupSuiteWithOneGameForPlayMove()
-	keeper := suite.app.CheckersKeeper
 	goCtx := sdk.WrapSDKContext(suite.ctx)
 	suite.msgServer.PlayMove(goCtx, &types.MsgPlayMove{
 		Creator: carol,
@@ -159,6 +158,7 @@ func (suite *IntegrationTestSuite) TestForfeitPlayedOnce() {
 		ToX:     2,
 		ToY:     3,
 	})
+	keeper := suite.app.CheckersKeeper
 	game1, found := keeper.GetStoredGame(suite.ctx, "1")
 	suite.Require().True(found)
 	game1.Deadline = types.FormatDeadline(suite.ctx.BlockTime().Add(time.Duration(-1)))
@@ -206,7 +206,6 @@ func (suite *IntegrationTestSuite) TestForfeitPlayedOnce() {
 
 func (suite *IntegrationTestSuite) TestForfeitOlderPlayedOnce() {
 	suite.setupSuiteWithOneGameForPlayMove()
-	keeper := suite.app.CheckersKeeper
 	goCtx := sdk.WrapSDKContext(suite.ctx)
 	suite.RequireBankBalance(balCarol, carol)
 	suite.msgServer.PlayMove(goCtx, &types.MsgPlayMove{
@@ -223,6 +222,7 @@ func (suite *IntegrationTestSuite) TestForfeitOlderPlayedOnce() {
 		Black:   alice,
 		Wager:   12,
 	})
+	keeper := suite.app.CheckersKeeper
 	game1, found := keeper.GetStoredGame(suite.ctx, "1")
 	suite.Require().True(found)
 	game1.Deadline = types.FormatDeadline(suite.ctx.BlockTime().Add(time.Duration(-1)))
@@ -263,9 +263,55 @@ func (suite *IntegrationTestSuite) TestForfeitOlderPlayedOnce() {
 	}, transferEvent.Attributes[transferEventCount:])
 }
 
+func (suite *IntegrationTestSuite) TestForfeitOlderPlayedOncePaidEvenZero() {
+	suite.setupSuiteWithBalances()
+	goCtx := sdk.WrapSDKContext(suite.ctx)
+	suite.msgServer.CreateGame(goCtx, &types.MsgCreateGame{
+		Creator: alice,
+		Red:     bob,
+		Black:   carol,
+		Wager:   0,
+	})
+	suite.RequireBankBalance(balCarol, carol)
+	suite.msgServer.PlayMove(goCtx, &types.MsgPlayMove{
+		Creator: carol,
+		IdValue: "1",
+		FromX:   1,
+		FromY:   2,
+		ToX:     2,
+		ToY:     3,
+	})
+	keeper := suite.app.CheckersKeeper
+	game1, _ := keeper.GetStoredGame(suite.ctx, "1")
+	game1.Deadline = types.FormatDeadline(suite.ctx.BlockTime().Add(time.Duration(-1)))
+	keeper.SetStoredGame(suite.ctx, game1)
+	keeper.ForfeitExpiredGames(goCtx)
+	suite.RequireBankBalance(balCarol, carol) // Refunded
+
+	events := sdk.StringifyEvents(suite.ctx.EventManager().ABCIEvents())
+	suite.Require().Len(events, 2)
+
+	forfeitEvent := events[0]
+	suite.Require().Equal(forfeitEvent.Type, "message")
+	suite.Require().EqualValues([]sdk.Attribute{
+		{Key: "sender", Value: checkersModuleAddress},
+		{Key: "module", Value: "checkers"},
+		{Key: "action", Value: "GameForfeited"},
+		{Key: "IdValue", Value: "1"},
+		{Key: "Winner", Value: "*"},
+	}, forfeitEvent.Attributes[createEventCount+playEventCountFirst:])
+
+	transferEvent := events[1]
+	suite.Require().Equal(transferEvent.Type, "transfer")
+	suite.Require().EqualValues([]sdk.Attribute{
+		{Key: "recipient", Value: carol},
+		{Key: "sender", Value: checkersModuleAddress},
+		{Key: "amount", Value: ""},
+	}, transferEvent.Attributes[transferEventCount:])
+}
+
 func (suite *IntegrationTestSuite) TestForfeit2OldestPlayedOnceIn1Call() {
 	suite.setupSuiteWithOneGameForPlayMove()
-	keeper := suite.app.CheckersKeeper
 	goCtx := sdk.WrapSDKContext(suite.ctx)
 	suite.RequireBankBalance(balCarol, carol)
 	suite.msgServer.PlayMove(goCtx, &types.MsgPlayMove{
@@ -297,6 +343,7 @@ func (suite *IntegrationTestSuite) TestForfeit2OldestPlayedOnceIn1Call() {
 		Black:   bob,
 		Wager:   13,
 	})
+	keeper := suite.app.CheckersKeeper
 	game1, found := keeper.GetStoredGame(suite.ctx, "1")
 	suite.Require().True(found)
 	game1.Deadline = types.FormatDeadline(suite.ctx.BlockTime().Add(time.Duration(-1)))
@@ -362,7 +409,6 @@ func (suite *IntegrationTestSuite) TestForfeit2OldestPlayedOnceIn1Call() {
 
 func (suite *IntegrationTestSuite) TestForfeitPlayedTwice() {
 	suite.setupSuiteWithOneGameForPlayMove()
-	keeper := suite.app.CheckersKeeper
 	goCtx := sdk.WrapSDKContext(suite.ctx)
 	suite.RequireBankBalance(balCarol, carol)
 	suite.msgServer.PlayMove(goCtx, &types.MsgPlayMove{
@@ -382,6 +428,7 @@ func (suite *IntegrationTestSuite) TestForfeitPlayedTwice() {
 		ToX:     1,
 		ToY:     4,
 	})
+	keeper := suite.app.CheckersKeeper
 	game1, found := keeper.GetStoredGame(suite.ctx, "1")
 	suite.Require().True(found)
 	oldDeadline := types.FormatDeadline(suite.ctx.BlockTime().Add(time.Duration(-1)))
@@ -440,7 +487,6 @@ func (suite *IntegrationTestSuite) TestForfeitPlayedTwice() {
 
 func (suite *IntegrationTestSuite) TestForfeitOlderPlayedTwice() {
 	suite.setupSuiteWithOneGameForPlayMove()
-	keeper := suite.app.CheckersKeeper
 	goCtx := sdk.WrapSDKContext(suite.ctx)
 	suite.RequireBankBalance(balCarol, carol)
 	suite.msgServer.PlayMove(goCtx, &types.MsgPlayMove{
@@ -466,6 +512,7 @@ func (suite *IntegrationTestSuite) TestForfeitOlderPlayedTwice() {
 		Black:   alice,
 		Wager:   12,
 	})
+	keeper := suite.app.CheckersKeeper
 	game1, found := keeper.GetStoredGame(suite.ctx, "1")
 	suite.Require().True(found)
 	oldDeadline := types.FormatDeadline(suite.ctx.BlockTime().Add(time.Duration(-1)))
@@ -522,9 +569,66 @@ func (suite *IntegrationTestSuite) TestForfeitOlderPlayedTwice() {
 	}, transferEvent.Attributes[2*transferEventCount:])
 }
 
+func (suite *IntegrationTestSuite) TestForfeitOlderPlayedTwicePaidEvenZero() {
+	suite.setupSuiteWithBalances()
+	goCtx := sdk.WrapSDKContext(suite.ctx)
+	suite.msgServer.CreateGame(goCtx, &types.MsgCreateGame{
+		Creator: alice,
+		Red:     bob,
+		Black:   carol,
+		Wager:   0,
+	})
+	suite.RequireBankBalance(balCarol, carol)
+	suite.msgServer.PlayMove(goCtx, &types.MsgPlayMove{
+		Creator: carol,
+		IdValue: "1",
+		FromX:   1,
+		FromY:   2,
+		ToX:     2,
+		ToY:     3,
+	})
+	suite.RequireBankBalance(balBob, bob)
+	suite.msgServer.PlayMove(goCtx, &types.MsgPlayMove{
+		Creator: bob,
+		IdValue: "1",
+		FromX:   0,
+		FromY:   5,
+		ToX:     1,
+		ToY:     4,
+	})
+	keeper := suite.app.CheckersKeeper
+	game1, _ := keeper.GetStoredGame(suite.ctx, "1")
+	oldDeadline := types.FormatDeadline(suite.ctx.BlockTime().Add(time.Duration(-1)))
+	game1.Deadline = oldDeadline
+	keeper.SetStoredGame(suite.ctx, game1)
+	keeper.ForfeitExpiredGames(goCtx)
+	suite.RequireBankBalance(balBob, bob)     // No wagers to win
+	suite.RequireBankBalance(balCarol, carol) // No wagers to lose
+
+	events := sdk.StringifyEvents(suite.ctx.EventManager().ABCIEvents())
+	suite.Require().Len(events, 2)
+
+	forfeitEvent := events[0]
+	suite.Require().Equal(forfeitEvent.Type, "message")
+	suite.Require().EqualValues([]sdk.Attribute{
+		{Key: "sender", Value: checkersModuleAddress},
+		{Key: "module", Value: "checkers"},
+		{Key: "action", Value: "GameForfeited"},
+		{Key: "IdValue", Value: "1"},
+		{Key: "Winner", Value: "r"},
+	}, forfeitEvent.Attributes[createEventCount+2*playEventCountFirst:])
+
+	transferEvent := events[1]
+	suite.Require().Equal(transferEvent.Type, "transfer")
+	suite.Require().EqualValues([]sdk.Attribute{
+		{Key: "recipient", Value: bob},
+		{Key: "sender", Value: checkersModuleAddress},
+		{Key: "amount", Value: ""},
+	}, transferEvent.Attributes[2*transferEventCount:])
+}
+
 func (suite *IntegrationTestSuite) TestForfeit2OldestPlayedTwiceIn1Call() {
 	suite.setupSuiteWithOneGameForPlayMove()
-	keeper := suite.app.CheckersKeeper
 	goCtx := sdk.WrapSDKContext(suite.ctx)
 	suite.RequireBankBalance(balCarol, carol)
 	suite.RequireBankBalance(0, checkersModuleAddress)
@@ -577,6 +681,7 @@ func (suite *IntegrationTestSuite) TestForfeit2OldestPlayedTwiceIn1Call() {
 		Black:   bob,
 		Wager:   13,
 	})
+	keeper := suite.app.CheckersKeeper
 	game1, found := keeper.GetStoredGame(suite.ctx, "1")
 	suite.Require().True(found)
 	oldDeadline := types.FormatDeadline(suite.ctx.BlockTime().Add(time.Duration(-1)))

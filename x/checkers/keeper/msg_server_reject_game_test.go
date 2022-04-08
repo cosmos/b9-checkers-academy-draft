@@ -53,12 +53,12 @@ func (suite *IntegrationTestSuite) TestRejectGameByBlackNotPaid() {
 
 func (suite *IntegrationTestSuite) TestRejectGameByBlackNoMoveRemovedGame() {
 	suite.setupSuiteWithOneGameForRejectGame()
-	keeper := suite.app.CheckersKeeper
 	goCtx := sdk.WrapSDKContext(suite.ctx)
 	suite.msgServer.RejectGame(goCtx, &types.MsgRejectGame{
 		Creator: carol,
 		IdValue: "1",
 	})
+	keeper := suite.app.CheckersKeeper
 	nextGame, found := keeper.GetNextGame(suite.ctx)
 	suite.Require().True(found)
 	suite.Require().EqualValues(types.NextGame{
@@ -116,12 +116,12 @@ func (suite *IntegrationTestSuite) TestRejectGameByRedNoMoveNotPaid() {
 
 func (suite *IntegrationTestSuite) TestRejectGameByRedNoMoveRemovedGame() {
 	suite.setupSuiteWithOneGameForRejectGame()
-	keeper := suite.app.CheckersKeeper
 	goCtx := sdk.WrapSDKContext(suite.ctx)
 	suite.msgServer.RejectGame(goCtx, &types.MsgRejectGame{
 		Creator: bob,
 		IdValue: "1",
 	})
+	keeper := suite.app.CheckersKeeper
 	nextGame, found := keeper.GetNextGame(suite.ctx)
 	suite.Require().True(found)
 	suite.Require().EqualValues(types.NextGame{
@@ -199,7 +199,6 @@ func (suite *IntegrationTestSuite) TestRejectGameByRedOneMoveRefunded() {
 
 func (suite *IntegrationTestSuite) TestRejectGameByRedOneMoveRemovedGame() {
 	suite.setupSuiteWithOneGameForRejectGame()
-	keeper := suite.app.CheckersKeeper
 	goCtx := sdk.WrapSDKContext(suite.ctx)
 	suite.msgServer.PlayMove(goCtx, &types.MsgPlayMove{
 		Creator: carol,
@@ -213,6 +212,7 @@ func (suite *IntegrationTestSuite) TestRejectGameByRedOneMoveRemovedGame() {
 		Creator: bob,
 		IdValue: "1",
 	})
+	keeper := suite.app.CheckersKeeper
 	nextGame, found := keeper.GetNextGame(suite.ctx)
 	suite.Require().True(found)
 	suite.Require().EqualValues(types.NextGame{
@@ -260,6 +260,56 @@ func (suite *IntegrationTestSuite) TestRejectGameByRedOneMoveEmitted() {
 		{Key: "recipient", Value: carol},
 		{Key: "sender", Value: checkersModuleAddress},
 		{Key: "amount", Value: "11stake"},
+	}, transferEvent.Attributes[transferEventCount:])
+}
+
+func (suite *IntegrationTestSuite) TestRejectGameByRedOneMoveEvenZero() {
+	suite.setupSuiteWithBalances()
+	goCtx := sdk.WrapSDKContext(suite.ctx)
+	suite.msgServer.CreateGame(goCtx, &types.MsgCreateGame{
+		Creator: alice,
+		Red:     bob,
+		Black:   carol,
+		Wager:   0,
+	})
+	suite.msgServer.PlayMove(goCtx, &types.MsgPlayMove{
+		Creator: carol,
+		IdValue: "1",
+		FromX:   1,
+		FromY:   2,
+		ToX:     2,
+		ToY:     3,
+	})
+	suite.msgServer.RejectGame(goCtx, &types.MsgRejectGame{
+		Creator: bob,
+		IdValue: "1",
+	})
+
+	suite.RequireBankBalance(balAlice, alice)
+	suite.RequireBankBalance(balBob, bob)
+	suite.RequireBankBalance(balCarol, carol)
+	suite.RequireBankBalance(0, checkersModuleAddress)
+
+	events := sdk.StringifyEvents(suite.ctx.EventManager().ABCIEvents())
+	suite.Require().Len(events, 2)
+
+	rejectEvent := events[0]
+	suite.Require().Equal(rejectEvent.Type, "message")
+	rejectAttributesDiscardCount := createEventCount + playEventCountFirst
+	suite.Require().EqualValues([]sdk.Attribute{
+		{Key: "sender", Value: checkersModuleAddress},
+		{Key: "module", Value: "checkers"},
+		{Key: "action", Value: "GameRejected"},
+		{Key: "Creator", Value: bob},
+		{Key: "IdValue", Value: "1"},
+	}, rejectEvent.Attributes[rejectAttributesDiscardCount:])
+
+	transferEvent := events[1]
+	suite.Require().Equal(transferEvent.Type, "transfer")
+	suite.Require().EqualValues([]sdk.Attribute{
+		{Key: "recipient", Value: carol},
+		{Key: "sender", Value: checkersModuleAddress},
+		{Key: "amount", Value: ""},
 	}, transferEvent.Attributes[transferEventCount:])
 }
 

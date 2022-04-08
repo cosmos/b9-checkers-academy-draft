@@ -41,7 +41,6 @@ func (suite *IntegrationTestSuite) TestCreateGameDidNotPay() {
 
 func (suite *IntegrationTestSuite) TestCreate1GameHasSaved() {
 	suite.setupSuiteWithBalances()
-	keeper := suite.app.CheckersKeeper
 	goCtx := sdk.WrapSDKContext(suite.ctx)
 	suite.msgServer.CreateGame(goCtx, &types.MsgCreateGame{
 		Creator: alice,
@@ -49,6 +48,7 @@ func (suite *IntegrationTestSuite) TestCreate1GameHasSaved() {
 		Black:   carol,
 		Wager:   13,
 	})
+	keeper := suite.app.CheckersKeeper
 	nextGame, found := keeper.GetNextGame(suite.ctx)
 	suite.Require().True(found)
 	suite.Require().EqualValues(types.NextGame{
@@ -77,7 +77,6 @@ func (suite *IntegrationTestSuite) TestCreate1GameHasSaved() {
 
 func (suite *IntegrationTestSuite) TestCreate1GameGetAll() {
 	suite.setupSuiteWithBalances()
-	keeper := suite.app.CheckersKeeper
 	goCtx := sdk.WrapSDKContext(suite.ctx)
 	suite.msgServer.CreateGame(goCtx, &types.MsgCreateGame{
 		Creator: alice,
@@ -85,6 +84,7 @@ func (suite *IntegrationTestSuite) TestCreate1GameGetAll() {
 		Black:   carol,
 		Wager:   14,
 	})
+	keeper := suite.app.CheckersKeeper
 	games := keeper.GetAllStoredGame(suite.ctx)
 	suite.Require().Len(games, 1)
 	suite.Require().EqualValues(types.StoredGame{
@@ -194,7 +194,6 @@ func (suite *IntegrationTestSuite) TestCreate3Games() {
 
 func (suite *IntegrationTestSuite) TestCreate3GamesHasSaved() {
 	suite.setupSuiteWithBalances()
-	keeper := suite.app.CheckersKeeper
 	goCtx := sdk.WrapSDKContext(suite.ctx)
 
 	suite.msgServer.CreateGame(goCtx, &types.MsgCreateGame{
@@ -215,6 +214,7 @@ func (suite *IntegrationTestSuite) TestCreate3GamesHasSaved() {
 		Black:   bob,
 		Wager:   22,
 	})
+	keeper := suite.app.CheckersKeeper
 	nextGame, found := keeper.GetNextGame(suite.ctx)
 	suite.Require().True(found)
 	suite.Require().EqualValues(types.NextGame{
@@ -275,7 +275,6 @@ func (suite *IntegrationTestSuite) TestCreate3GamesHasSaved() {
 
 func (suite *IntegrationTestSuite) TestCreate3GamesGetAll() {
 	suite.setupSuiteWithBalances()
-	keeper := suite.app.CheckersKeeper
 	goCtx := sdk.WrapSDKContext(suite.ctx)
 
 	suite.msgServer.CreateGame(goCtx, &types.MsgCreateGame{
@@ -296,6 +295,7 @@ func (suite *IntegrationTestSuite) TestCreate3GamesGetAll() {
 		Black:   bob,
 		Wager:   25,
 	})
+	keeper := suite.app.CheckersKeeper
 	games := keeper.GetAllStoredGame(suite.ctx)
 	suite.Require().Len(games, 3)
 	suite.Require().EqualValues(types.StoredGame{

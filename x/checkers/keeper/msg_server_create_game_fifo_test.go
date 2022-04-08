@@ -7,7 +7,6 @@ import (
 
 func (suite *IntegrationTestSuite) TestCreate3GamesHasSavedFifo() {
 	suite.setupSuiteWithBalances()
-	keeper := suite.app.CheckersKeeper
 	context := sdk.WrapSDKContext(suite.ctx)
 	suite.msgServer.CreateGame(context, &types.MsgCreateGame{
 		Creator: alice,
@@ -22,6 +21,7 @@ func (suite *IntegrationTestSuite) TestCreate3GamesHasSavedFifo() {
 		Black:   alice,
 		Wager:   12,
 	})
+	keeper := suite.app.CheckersKeeper
 	nextGame2, found2 := keeper.GetNextGame(suite.ctx)
 	suite.Require().True(found2)
 	suite.Require().EqualValues(types.NextGame{
