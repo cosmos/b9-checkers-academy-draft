@@ -1,143 +1,153 @@
 package keeper_test
 
 import (
-	"testing"
 	"time"
 
 	sdk "github.com/cosmos/cosmos-sdk/types"
-	"github.com/stretchr/testify/require"
 	"github.com/xavierlepretre/checkers/x/checkers/types"
 )
 
-func TestForfeitUnplayed(t *testing.T) {
-	_, keeper, context := setupMsgServerWithOneGameForPlayMove(t)
-	ctx := sdk.UnwrapSDKContext(context)
-	game1, found := keeper.GetStoredGame(ctx, "1")
-	require.True(t, found)
-	game1.Deadline = types.FormatDeadline(ctx.BlockTime().Add(time.Duration(-1)))
-	keeper.SetStoredGame(ctx, game1)
-	keeper.ForfeitExpiredGames(context)
+func (suite *IntegrationTestSuite) TestForfeitUnplayed() {
+	suite.setupSuiteWithOneGameForPlayMove()
+	keeper := suite.app.CheckersKeeper
+	goCtx := sdk.WrapSDKContext(suite.ctx)
 
-	_, found = keeper.GetStoredGame(ctx, "1")
-	require.False(t, found)
+	game1, found := keeper.GetStoredGame(suite.ctx, "1")
+	suite.Require().True(found)
+	game1.Deadline = types.FormatDeadline(suite.ctx.BlockTime().Add(time.Duration(-1)))
+	keeper.SetStoredGame(suite.ctx, game1)
+	keeper.ForfeitExpiredGames(goCtx)
 
-	nextGame, found := keeper.GetNextGame(ctx)
-	require.True(t, found)
-	require.EqualValues(t, types.NextGame{
+	_, found = keeper.GetStoredGame(suite.ctx, "1")
+	suite.Require().False(found)
+
+	nextGame, found := keeper.GetNextGame(suite.ctx)
+	suite.Require().True(found)
+	suite.Require().EqualValues(types.NextGame{
 		Creator:  "",
 		IdValue:  2,
 		FifoHead: "-1",
 		FifoTail: "-1",
 	}, nextGame)
-	events := sdk.StringifyEvents(ctx.EventManager().ABCIEvents())
-	require.Len(t, events, 1)
-	event := events[0]
-	require.Equal(t, event.Type, "message")
-	require.EqualValues(t, []sdk.Attribute{
+	events := sdk.StringifyEvents(suite.ctx.EventManager().ABCIEvents())
+	suite.Require().Len(events, 1)
+
+	forfeitEvent := events[0]
+	suite.Require().Equal(forfeitEvent.Type, "message")
+	suite.Require().EqualValues([]sdk.Attribute{
 		{Key: "module", Value: "checkers"},
 		{Key: "action", Value: "GameForfeited"},
 		{Key: "IdValue", Value: "1"},
 		{Key: "Winner", Value: "*"},
-	}, event.Attributes[7:])
+	}, forfeitEvent.Attributes[createEventCount:])
 }
 
-func TestForfeitOlderUnplayed(t *testing.T) {
-	msgServer, keeper, context := setupMsgServerWithOneGameForPlayMove(t)
-	msgServer.CreateGame(context, &types.MsgCreateGame{
+func (suite *IntegrationTestSuite) TestForfeitOlderUnplayed() {
+	suite.setupSuiteWithOneGameForPlayMove()
+	keeper := suite.app.CheckersKeeper
+	goCtx := sdk.WrapSDKContext(suite.ctx)
+	suite.msgServer.CreateGame(goCtx, &types.MsgCreateGame{
 		Creator: bob,
 		Red:     carol,
 		Black:   alice,
 		Wager:   12,
 	})
-	ctx := sdk.UnwrapSDKContext(context)
-	game1, found := keeper.GetStoredGame(ctx, "1")
-	require.True(t, found)
-	game1.Deadline = types.FormatDeadline(ctx.BlockTime().Add(time.Duration(-1)))
-	keeper.SetStoredGame(ctx, game1)
-	keeper.ForfeitExpiredGames(context)
+	game1, found := keeper.GetStoredGame(suite.ctx, "1")
+	suite.Require().True(found)
+	game1.Deadline = types.FormatDeadline(suite.ctx.BlockTime().Add(time.Duration(-1)))
+	keeper.SetStoredGame(suite.ctx, game1)
+	keeper.ForfeitExpiredGames(goCtx)
 
-	_, found = keeper.GetStoredGame(ctx, "1")
-	require.False(t, found)
+	_, found = keeper.GetStoredGame(suite.ctx, "1")
+	suite.Require().False(found)
 
-	nextGame, found := keeper.GetNextGame(ctx)
-	require.True(t, found)
-	require.EqualValues(t, types.NextGame{
+	nextGame, found := keeper.GetNextGame(suite.ctx)
+	suite.Require().True(found)
+	suite.Require().EqualValues(types.NextGame{
 		Creator:  "",
 		IdValue:  3,
 		FifoHead: "2",
 		FifoTail: "2",
 	}, nextGame)
-	events := sdk.StringifyEvents(ctx.EventManager().ABCIEvents())
-	require.Len(t, events, 1)
-	event := events[0]
-	require.Equal(t, event.Type, "message")
-	require.EqualValues(t, []sdk.Attribute{
+	events := sdk.StringifyEvents(suite.ctx.EventManager().ABCIEvents())
+	suite.Require().Len(events, 1)
+
+	forfeitEvent := events[0]
+	suite.Require().Equal(forfeitEvent.Type, "message")
+	suite.Require().EqualValues([]sdk.Attribute{
 		{Key: "module", Value: "checkers"},
 		{Key: "action", Value: "GameForfeited"},
 		{Key: "IdValue", Value: "1"},
 		{Key: "Winner", Value: "*"},
-	}, event.Attributes[14:])
+	}, forfeitEvent.Attributes[2*createEventCount:])
 }
 
-func TestForfeit2OldestUnplayedIn1Call(t *testing.T) {
-	msgServer, keeper, context := setupMsgServerWithOneGameForPlayMove(t)
-	msgServer.CreateGame(context, &types.MsgCreateGame{
+func (suite *IntegrationTestSuite) TestForfeit2OldestUnplayedIn1Call() {
+	suite.setupSuiteWithOneGameForPlayMove()
+	keeper := suite.app.CheckersKeeper
+	goCtx := sdk.WrapSDKContext(suite.ctx)
+	suite.msgServer.CreateGame(goCtx, &types.MsgCreateGame{
 		Creator: bob,
 		Red:     carol,
 		Black:   alice,
 		Wager:   12,
 	})
-	msgServer.CreateGame(context, &types.MsgCreateGame{
+	suite.msgServer.CreateGame(goCtx, &types.MsgCreateGame{
 		Creator: carol,
 		Red:     alice,
 		Black:   bob,
 		Wager:   13,
 	})
-	ctx := sdk.UnwrapSDKContext(context)
-	game1, found := keeper.GetStoredGame(ctx, "1")
-	require.True(t, found)
-	game1.Deadline = types.FormatDeadline(ctx.BlockTime().Add(time.Duration(-1)))
-	keeper.SetStoredGame(ctx, game1)
-	game2, found := keeper.GetStoredGame(ctx, "2")
-	require.True(t, found)
-	game2.Deadline = types.FormatDeadline(ctx.BlockTime().Add(time.Duration(-1)))
-	keeper.SetStoredGame(ctx, game2)
-	keeper.ForfeitExpiredGames(context)
+	game1, found := keeper.GetStoredGame(suite.ctx, "1")
+	suite.Require().True(found)
+	game1.Deadline = types.FormatDeadline(suite.ctx.BlockTime().Add(time.Duration(-1)))
+	keeper.SetStoredGame(suite.ctx, game1)
+	game2, found := keeper.GetStoredGame(suite.ctx, "2")
+	suite.Require().True(found)
+	game2.Deadline = types.FormatDeadline(suite.ctx.BlockTime().Add(time.Duration(-1)))
+	keeper.SetStoredGame(suite.ctx, game2)
+	keeper.ForfeitExpiredGames(goCtx)
 
-	_, found = keeper.GetStoredGame(ctx, "1")
-	require.False(t, found)
-	_, found = keeper.GetStoredGame(ctx, "2")
-	require.False(t, found)
+	_, found = keeper.GetStoredGame(suite.ctx, "1")
+	suite.Require().False(found)
+	_, found = keeper.GetStoredGame(suite.ctx, "2")
+	suite.Require().False(found)
 
-	nextGame, found := keeper.GetNextGame(ctx)
-	require.True(t, found)
-	require.EqualValues(t, types.NextGame{
+	nextGame, found := keeper.GetNextGame(suite.ctx)
+	suite.Require().True(found)
+	suite.Require().EqualValues(types.NextGame{
 		Creator:  "",
 		IdValue:  4,
 		FifoHead: "3",
 		FifoTail: "3",
 	}, nextGame)
-	events := sdk.StringifyEvents(ctx.EventManager().ABCIEvents())
-	require.Len(t, events, 1)
-	event := events[0]
-	require.Equal(t, event.Type, "message")
-	require.EqualValues(t, []sdk.Attribute{
+	events := sdk.StringifyEvents(suite.ctx.EventManager().ABCIEvents())
+	suite.Require().Len(events, 1)
+
+	forfeitEvent := events[0]
+	suite.Require().Equal(forfeitEvent.Type, "message")
+	forfeitAttributes := forfeitEvent.Attributes[3*createEventCount:]
+	suite.Require().EqualValues([]sdk.Attribute{
 		{Key: "module", Value: "checkers"},
 		{Key: "action", Value: "GameForfeited"},
 		{Key: "IdValue", Value: "1"},
 		{Key: "Winner", Value: "*"},
-	}, event.Attributes[21:25])
-	require.EqualValues(t, []sdk.Attribute{
+	}, forfeitAttributes[:4])
+	forfeitAttributes = forfeitAttributes[4:]
+	suite.Require().EqualValues([]sdk.Attribute{
 		{Key: "module", Value: "checkers"},
 		{Key: "action", Value: "GameForfeited"},
 		{Key: "IdValue", Value: "2"},
 		{Key: "Winner", Value: "*"},
-	}, event.Attributes[25:])
+	}, forfeitAttributes)
 }
 
-func TestForfeitPlayedOnce(t *testing.T) {
-	msgServer, keeper, context := setupMsgServerWithOneGameForPlayMove(t)
-	msgServer.PlayMove(context, &types.MsgPlayMove{
+func (suite *IntegrationTestSuite) TestForfeitPlayedOnce() {
+	suite.setupSuiteWithOneGameForPlayMove()
+	keeper := suite.app.CheckersKeeper
+	goCtx := sdk.WrapSDKContext(suite.ctx)
+	suite.RequireBankBalance(balCarol, carol)
+	suite.msgServer.PlayMove(goCtx, &types.MsgPlayMove{
 		Creator: carol,
 		IdValue: "1",
 		FromX:   1,
@@ -145,39 +155,52 @@ func TestForfeitPlayedOnce(t *testing.T) {
 		ToX:     2,
 		ToY:     3,
 	})
-	ctx := sdk.UnwrapSDKContext(context)
-	game1, found := keeper.GetStoredGame(ctx, "1")
-	require.True(t, found)
-	game1.Deadline = types.FormatDeadline(ctx.BlockTime().Add(time.Duration(-1)))
-	keeper.SetStoredGame(ctx, game1)
-	keeper.ForfeitExpiredGames(context)
+	game1, found := keeper.GetStoredGame(suite.ctx, "1")
+	suite.Require().True(found)
+	game1.Deadline = types.FormatDeadline(suite.ctx.BlockTime().Add(time.Duration(-1)))
+	keeper.SetStoredGame(suite.ctx, game1)
+	keeper.ForfeitExpiredGames(goCtx)
+	suite.RequireBankBalance(balCarol, carol) // Refunded
 
-	_, found = keeper.GetStoredGame(ctx, "1")
-	require.False(t, found)
+	_, found = keeper.GetStoredGame(suite.ctx, "1")
+	suite.Require().False(found)
 
-	nextGame, found := keeper.GetNextGame(ctx)
-	require.True(t, found)
-	require.EqualValues(t, types.NextGame{
+	nextGame, found := keeper.GetNextGame(suite.ctx)
+	suite.Require().True(found)
+	suite.Require().EqualValues(types.NextGame{
 		Creator:  "",
 		IdValue:  2,
 		FifoHead: "-1",
 		FifoTail: "-1",
 	}, nextGame)
-	events := sdk.StringifyEvents(ctx.EventManager().ABCIEvents())
-	require.Len(t, events, 1)
-	event := events[0]
-	require.Equal(t, event.Type, "message")
-	require.EqualValues(t, []sdk.Attribute{
+
+	events := sdk.StringifyEvents(suite.ctx.EventManager().ABCIEvents())
+	suite.Require().Len(events, 2)
+	forfeitEvent := events[0]
+	suite.Require().Equal(forfeitEvent.Type, "message")
+	suite.Require().EqualValues([]sdk.Attribute{
+		{Key: "sender", Value: checkersModuleAddress},
 		{Key: "module", Value: "checkers"},
 		{Key: "action", Value: "GameForfeited"},
 		{Key: "IdValue", Value: "1"},
 		{Key: "Winner", Value: "*"},
-	}, event.Attributes[14:])
+	}, forfeitEvent.Attributes[createEventCount+playEventCountFirst:])
+
+	transferEvent := events[1]
+	suite.Require().Equal(transferEvent.Type, "transfer")
+	suite.Require().EqualValues([]sdk.Attribute{
+		{Key: "recipient", Value: carol},
+		{Key: "sender", Value: checkersModuleAddress},
+		{Key: "amount", Value: "11stake"},
+	}, transferEvent.Attributes[transferEventCount:])
 }
 
-func TestForfeitOlderPlayedOnce(t *testing.T) {
-	msgServer, keeper, context := setupMsgServerWithOneGameForPlayMove(t)
-	msgServer.PlayMove(context, &types.MsgPlayMove{
+func (suite *IntegrationTestSuite) TestForfeitOlderPlayedOnce() {
+	suite.setupSuiteWithOneGameForPlayMove()
+	keeper := suite.app.CheckersKeeper
+	goCtx := sdk.WrapSDKContext(suite.ctx)
+	suite.RequireBankBalance(balCarol, carol)
+	suite.msgServer.PlayMove(goCtx, &types.MsgPlayMove{
 		Creator: carol,
 		IdValue: "1",
 		FromX:   1,
@@ -185,45 +208,58 @@ func TestForfeitOlderPlayedOnce(t *testing.T) {
 		ToX:     2,
 		ToY:     3,
 	})
-	msgServer.CreateGame(context, &types.MsgCreateGame{
+	suite.msgServer.CreateGame(goCtx, &types.MsgCreateGame{
 		Creator: bob,
 		Red:     carol,
 		Black:   alice,
 		Wager:   12,
 	})
-	ctx := sdk.UnwrapSDKContext(context)
-	game1, found := keeper.GetStoredGame(ctx, "1")
-	require.True(t, found)
-	game1.Deadline = types.FormatDeadline(ctx.BlockTime().Add(time.Duration(-1)))
-	keeper.SetStoredGame(ctx, game1)
-	keeper.ForfeitExpiredGames(context)
+	game1, found := keeper.GetStoredGame(suite.ctx, "1")
+	suite.Require().True(found)
+	game1.Deadline = types.FormatDeadline(suite.ctx.BlockTime().Add(time.Duration(-1)))
+	keeper.SetStoredGame(suite.ctx, game1)
+	keeper.ForfeitExpiredGames(goCtx)
+	suite.RequireBankBalance(balCarol, carol) // Refunded
 
-	_, found = keeper.GetStoredGame(ctx, "1")
-	require.False(t, found)
+	_, found = keeper.GetStoredGame(suite.ctx, "1")
+	suite.Require().False(found)
 
-	nextGame, found := keeper.GetNextGame(ctx)
-	require.True(t, found)
-	require.EqualValues(t, types.NextGame{
+	nextGame, found := keeper.GetNextGame(suite.ctx)
+	suite.Require().True(found)
+	suite.Require().EqualValues(types.NextGame{
 		Creator:  "",
 		IdValue:  3,
 		FifoHead: "2",
 		FifoTail: "2",
 	}, nextGame)
-	events := sdk.StringifyEvents(ctx.EventManager().ABCIEvents())
-	require.Len(t, events, 1)
-	event := events[0]
-	require.Equal(t, event.Type, "message")
-	require.EqualValues(t, []sdk.Attribute{
+	events := sdk.StringifyEvents(suite.ctx.EventManager().ABCIEvents())
+	suite.Require().Len(events, 2)
+
+	forfeitEvent := events[0]
+	suite.Require().Equal(forfeitEvent.Type, "message")
+	suite.Require().EqualValues([]sdk.Attribute{
+		{Key: "sender", Value: checkersModuleAddress},
 		{Key: "module", Value: "checkers"},
 		{Key: "action", Value: "GameForfeited"},
 		{Key: "IdValue", Value: "1"},
 		{Key: "Winner", Value: "*"},
-	}, event.Attributes[21:])
+	}, forfeitEvent.Attributes[2*createEventCount+playEventCountFirst:])
+
+	transferEvent := events[1]
+	suite.Require().Equal(transferEvent.Type, "transfer")
+	suite.Require().EqualValues([]sdk.Attribute{
+		{Key: "recipient", Value: carol},
+		{Key: "sender", Value: checkersModuleAddress},
+		{Key: "amount", Value: "11stake"},
+	}, transferEvent.Attributes[transferEventCount:])
 }
 
-func TestForfeit2OldestPlayedOnceIn1Call(t *testing.T) {
-	msgServer, keeper, context := setupMsgServerWithOneGameForPlayMove(t)
-	msgServer.PlayMove(context, &types.MsgPlayMove{
+func (suite *IntegrationTestSuite) TestForfeit2OldestPlayedOnceIn1Call() {
+	suite.setupSuiteWithOneGameForPlayMove()
+	keeper := suite.app.CheckersKeeper
+	goCtx := sdk.WrapSDKContext(suite.ctx)
+	suite.RequireBankBalance(balCarol, carol)
+	suite.msgServer.PlayMove(goCtx, &types.MsgPlayMove{
 		Creator: carol,
 		IdValue: "1",
 		FromX:   1,
@@ -231,13 +267,14 @@ func TestForfeit2OldestPlayedOnceIn1Call(t *testing.T) {
 		ToX:     2,
 		ToY:     3,
 	})
-	msgServer.CreateGame(context, &types.MsgCreateGame{
+	suite.msgServer.CreateGame(goCtx, &types.MsgCreateGame{
 		Creator: bob,
 		Red:     carol,
 		Black:   alice,
 		Wager:   12,
 	})
-	msgServer.PlayMove(context, &types.MsgPlayMove{
+	suite.RequireBankBalance(balAlice, alice)
+	suite.msgServer.PlayMove(goCtx, &types.MsgPlayMove{
 		Creator: alice,
 		IdValue: "2",
 		FromX:   1,
@@ -245,57 +282,81 @@ func TestForfeit2OldestPlayedOnceIn1Call(t *testing.T) {
 		ToX:     2,
 		ToY:     3,
 	})
-	msgServer.CreateGame(context, &types.MsgCreateGame{
+	suite.msgServer.CreateGame(goCtx, &types.MsgCreateGame{
 		Creator: carol,
 		Red:     alice,
 		Black:   bob,
 		Wager:   13,
 	})
-	ctx := sdk.UnwrapSDKContext(context)
-	game1, found := keeper.GetStoredGame(ctx, "1")
-	require.True(t, found)
-	game1.Deadline = types.FormatDeadline(ctx.BlockTime().Add(time.Duration(-1)))
-	keeper.SetStoredGame(ctx, game1)
-	game2, found := keeper.GetStoredGame(ctx, "2")
-	require.True(t, found)
-	game2.Deadline = types.FormatDeadline(ctx.BlockTime().Add(time.Duration(-1)))
-	keeper.SetStoredGame(ctx, game2)
-	keeper.ForfeitExpiredGames(context)
+	game1, found := keeper.GetStoredGame(suite.ctx, "1")
+	suite.Require().True(found)
+	game1.Deadline = types.FormatDeadline(suite.ctx.BlockTime().Add(time.Duration(-1)))
+	keeper.SetStoredGame(suite.ctx, game1)
+	game2, found := keeper.GetStoredGame(suite.ctx, "2")
+	suite.Require().True(found)
+	game2.Deadline = types.FormatDeadline(suite.ctx.BlockTime().Add(time.Duration(-1)))
+	keeper.SetStoredGame(suite.ctx, game2)
+	keeper.ForfeitExpiredGames(goCtx)
+	suite.RequireBankBalance(balAlice, alice) // Refunded
+	suite.RequireBankBalance(balCarol, carol) // Refunded
 
-	_, found = keeper.GetStoredGame(ctx, "1")
-	require.False(t, found)
-	_, found = keeper.GetStoredGame(ctx, "2")
-	require.False(t, found)
+	_, found = keeper.GetStoredGame(suite.ctx, "1")
+	suite.Require().False(found)
+	_, found = keeper.GetStoredGame(suite.ctx, "2")
+	suite.Require().False(found)
 
-	nextGame, found := keeper.GetNextGame(ctx)
-	require.True(t, found)
-	require.EqualValues(t, types.NextGame{
+	nextGame, found := keeper.GetNextGame(suite.ctx)
+	suite.Require().True(found)
+	suite.Require().EqualValues(types.NextGame{
 		Creator:  "",
 		IdValue:  4,
 		FifoHead: "3",
 		FifoTail: "3",
 	}, nextGame)
-	events := sdk.StringifyEvents(ctx.EventManager().ABCIEvents())
-	require.Len(t, events, 1)
-	event := events[0]
-	require.Equal(t, event.Type, "message")
-	require.EqualValues(t, []sdk.Attribute{
+	events := sdk.StringifyEvents(suite.ctx.EventManager().ABCIEvents())
+	suite.Require().Len(events, 2)
+
+	forfeitEvent := events[0]
+	suite.Require().Equal(forfeitEvent.Type, "message")
+	forfeitAttributes := forfeitEvent.Attributes[3*createEventCount+2*playEventCountFirst:]
+	suite.Require().EqualValues([]sdk.Attribute{
+		{Key: "sender", Value: checkersModuleAddress},
 		{Key: "module", Value: "checkers"},
 		{Key: "action", Value: "GameForfeited"},
 		{Key: "IdValue", Value: "1"},
 		{Key: "Winner", Value: "*"},
-	}, event.Attributes[35:39])
-	require.EqualValues(t, []sdk.Attribute{
+	}, forfeitAttributes[:5])
+	forfeitAttributes = forfeitAttributes[5:]
+	suite.Require().EqualValues([]sdk.Attribute{
+		{Key: "sender", Value: checkersModuleAddress},
 		{Key: "module", Value: "checkers"},
 		{Key: "action", Value: "GameForfeited"},
 		{Key: "IdValue", Value: "2"},
 		{Key: "Winner", Value: "*"},
-	}, event.Attributes[39:])
+	}, forfeitAttributes)
+
+	transferEvent := events[1]
+	suite.Require().Equal(transferEvent.Type, "transfer")
+	transferAttributes := transferEvent.Attributes[2*transferEventCount:]
+	suite.Require().EqualValues([]sdk.Attribute{
+		{Key: "recipient", Value: carol},
+		{Key: "sender", Value: checkersModuleAddress},
+		{Key: "amount", Value: "11stake"},
+	}, transferAttributes[:3])
+	transferAttributes = transferAttributes[3:]
+	suite.Require().EqualValues([]sdk.Attribute{
+		{Key: "recipient", Value: alice},
+		{Key: "sender", Value: checkersModuleAddress},
+		{Key: "amount", Value: "12stake"},
+	}, transferAttributes)
 }
 
-func TestForfeitPlayedTwice(t *testing.T) {
-	msgServer, keeper, context := setupMsgServerWithOneGameForPlayMove(t)
-	msgServer.PlayMove(context, &types.MsgPlayMove{
+func (suite *IntegrationTestSuite) TestForfeitPlayedTwice() {
+	suite.setupSuiteWithOneGameForPlayMove()
+	keeper := suite.app.CheckersKeeper
+	goCtx := sdk.WrapSDKContext(suite.ctx)
+	suite.RequireBankBalance(balCarol, carol)
+	suite.msgServer.PlayMove(goCtx, &types.MsgPlayMove{
 		Creator: carol,
 		IdValue: "1",
 		FromX:   1,
@@ -303,7 +364,8 @@ func TestForfeitPlayedTwice(t *testing.T) {
 		ToX:     2,
 		ToY:     3,
 	})
-	msgServer.PlayMove(context, &types.MsgPlayMove{
+	suite.RequireBankBalance(balBob, bob)
+	suite.msgServer.PlayMove(goCtx, &types.MsgPlayMove{
 		Creator: bob,
 		IdValue: "1",
 		FromX:   0,
@@ -311,17 +373,18 @@ func TestForfeitPlayedTwice(t *testing.T) {
 		ToX:     1,
 		ToY:     4,
 	})
-	ctx := sdk.UnwrapSDKContext(context)
-	game1, found := keeper.GetStoredGame(ctx, "1")
-	require.True(t, found)
-	oldDeadline := types.FormatDeadline(ctx.BlockTime().Add(time.Duration(-1)))
+	game1, found := keeper.GetStoredGame(suite.ctx, "1")
+	suite.Require().True(found)
+	oldDeadline := types.FormatDeadline(suite.ctx.BlockTime().Add(time.Duration(-1)))
 	game1.Deadline = oldDeadline
-	keeper.SetStoredGame(ctx, game1)
-	keeper.ForfeitExpiredGames(context)
+	keeper.SetStoredGame(suite.ctx, game1)
+	keeper.ForfeitExpiredGames(goCtx)
+	suite.RequireBankBalance(balBob+11, bob)     // Won wager
+	suite.RequireBankBalance(balCarol-11, carol) // Lost wager
 
-	game1, found = keeper.GetStoredGame(ctx, "1")
-	require.True(t, found)
-	require.EqualValues(t, types.StoredGame{
+	game1, found = keeper.GetStoredGame(suite.ctx, "1")
+	suite.Require().True(found)
+	suite.Require().EqualValues(types.StoredGame{
 		Creator:   alice,
 		Index:     "1",
 		Game:      "*b*b*b*b|b*b*b*b*|***b*b*b|**b*****|*r******|**r*r*r*|*r*r*r*r|r*r*r*r*",
@@ -336,29 +399,42 @@ func TestForfeitPlayedTwice(t *testing.T) {
 		Wager:     11,
 	}, game1)
 
-	nextGame, found := keeper.GetNextGame(ctx)
-	require.True(t, found)
-	require.EqualValues(t, types.NextGame{
+	nextGame, found := keeper.GetNextGame(suite.ctx)
+	suite.Require().True(found)
+	suite.Require().EqualValues(types.NextGame{
 		Creator:  "",
 		IdValue:  2,
 		FifoHead: "-1",
 		FifoTail: "-1",
 	}, nextGame)
-	events := sdk.StringifyEvents(ctx.EventManager().ABCIEvents())
-	require.Len(t, events, 1)
-	event := events[0]
-	require.Equal(t, event.Type, "message")
-	require.EqualValues(t, []sdk.Attribute{
+	events := sdk.StringifyEvents(suite.ctx.EventManager().ABCIEvents())
+	suite.Require().Len(events, 2)
+
+	forfeitEvent := events[0]
+	suite.Require().Equal(forfeitEvent.Type, "message")
+	suite.Require().EqualValues([]sdk.Attribute{
+		{Key: "sender", Value: checkersModuleAddress},
 		{Key: "module", Value: "checkers"},
 		{Key: "action", Value: "GameForfeited"},
 		{Key: "IdValue", Value: "1"},
 		{Key: "Winner", Value: "r"},
-	}, event.Attributes[21:])
+	}, forfeitEvent.Attributes[createEventCount+2*playEventCountFirst:])
+
+	transferEvent := events[1]
+	suite.Require().Equal(transferEvent.Type, "transfer")
+	suite.Require().EqualValues([]sdk.Attribute{
+		{Key: "recipient", Value: bob},
+		{Key: "sender", Value: checkersModuleAddress},
+		{Key: "amount", Value: "22stake"},
+	}, transferEvent.Attributes[2*transferEventCount:])
 }
 
-func TestForfeitOlderPlayedTwice(t *testing.T) {
-	msgServer, keeper, context := setupMsgServerWithOneGameForPlayMove(t)
-	msgServer.PlayMove(context, &types.MsgPlayMove{
+func (suite *IntegrationTestSuite) TestForfeitOlderPlayedTwice() {
+	suite.setupSuiteWithOneGameForPlayMove()
+	keeper := suite.app.CheckersKeeper
+	goCtx := sdk.WrapSDKContext(suite.ctx)
+	suite.RequireBankBalance(balCarol, carol)
+	suite.msgServer.PlayMove(goCtx, &types.MsgPlayMove{
 		Creator: carol,
 		IdValue: "1",
 		FromX:   1,
@@ -366,7 +442,8 @@ func TestForfeitOlderPlayedTwice(t *testing.T) {
 		ToX:     2,
 		ToY:     3,
 	})
-	msgServer.PlayMove(context, &types.MsgPlayMove{
+	suite.RequireBankBalance(balBob, bob)
+	suite.msgServer.PlayMove(goCtx, &types.MsgPlayMove{
 		Creator: bob,
 		IdValue: "1",
 		FromX:   0,
@@ -374,23 +451,24 @@ func TestForfeitOlderPlayedTwice(t *testing.T) {
 		ToX:     1,
 		ToY:     4,
 	})
-	msgServer.CreateGame(context, &types.MsgCreateGame{
+	suite.msgServer.CreateGame(goCtx, &types.MsgCreateGame{
 		Creator: bob,
 		Red:     carol,
 		Black:   alice,
 		Wager:   12,
 	})
-	ctx := sdk.UnwrapSDKContext(context)
-	game1, found := keeper.GetStoredGame(ctx, "1")
-	require.True(t, found)
-	oldDeadline := types.FormatDeadline(ctx.BlockTime().Add(time.Duration(-1)))
+	game1, found := keeper.GetStoredGame(suite.ctx, "1")
+	suite.Require().True(found)
+	oldDeadline := types.FormatDeadline(suite.ctx.BlockTime().Add(time.Duration(-1)))
 	game1.Deadline = oldDeadline
-	keeper.SetStoredGame(ctx, game1)
-	keeper.ForfeitExpiredGames(context)
+	keeper.SetStoredGame(suite.ctx, game1)
+	keeper.ForfeitExpiredGames(goCtx)
+	suite.RequireBankBalance(balBob+11, bob)     // Won wager
+	suite.RequireBankBalance(balCarol-11, carol) // Lost wager
 
-	game1, found = keeper.GetStoredGame(ctx, "1")
-	require.True(t, found)
-	require.EqualValues(t, types.StoredGame{
+	game1, found = keeper.GetStoredGame(suite.ctx, "1")
+	suite.Require().True(found)
+	suite.Require().EqualValues(types.StoredGame{
 		Creator:   alice,
 		Index:     "1",
 		Game:      "*b*b*b*b|b*b*b*b*|***b*b*b|**b*****|*r******|**r*r*r*|*r*r*r*r|r*r*r*r*",
@@ -405,29 +483,42 @@ func TestForfeitOlderPlayedTwice(t *testing.T) {
 		Wager:     11,
 	}, game1)
 
-	nextGame, found := keeper.GetNextGame(ctx)
-	require.True(t, found)
-	require.EqualValues(t, types.NextGame{
+	nextGame, found := keeper.GetNextGame(suite.ctx)
+	suite.Require().True(found)
+	suite.Require().EqualValues(types.NextGame{
 		Creator:  "",
 		IdValue:  3,
 		FifoHead: "2",
 		FifoTail: "2",
 	}, nextGame)
-	events := sdk.StringifyEvents(ctx.EventManager().ABCIEvents())
-	require.Len(t, events, 1)
-	event := events[0]
-	require.Equal(t, event.Type, "message")
-	require.EqualValues(t, []sdk.Attribute{
+	events := sdk.StringifyEvents(suite.ctx.EventManager().ABCIEvents())
+	suite.Require().Len(events, 2)
+
+	forfeitEvent := events[0]
+	suite.Require().Equal(forfeitEvent.Type, "message")
+	suite.Require().EqualValues([]sdk.Attribute{
+		{Key: "sender", Value: checkersModuleAddress},
 		{Key: "module", Value: "checkers"},
 		{Key: "action", Value: "GameForfeited"},
 		{Key: "IdValue", Value: "1"},
 		{Key: "Winner", Value: "r"},
-	}, event.Attributes[28:])
+	}, forfeitEvent.Attributes[2*createEventCount+2*playEventCountFirst:])
+
+	transferEvent := events[1]
+	suite.Require().Equal(transferEvent.Type, "transfer")
+	suite.Require().EqualValues([]sdk.Attribute{
+		{Key: "recipient", Value: bob},
+		{Key: "sender", Value: checkersModuleAddress},
+		{Key: "amount", Value: "22stake"},
+	}, transferEvent.Attributes[2*transferEventCount:])
 }
 
-func TestForfeit2OldestPlayedTwiceIn1Call(t *testing.T) {
-	msgServer, keeper, context := setupMsgServerWithOneGameForPlayMove(t)
-	msgServer.PlayMove(context, &types.MsgPlayMove{
+func (suite *IntegrationTestSuite) TestForfeit2OldestPlayedTwiceIn1Call() {
+	suite.setupSuiteWithOneGameForPlayMove()
+	keeper := suite.app.CheckersKeeper
+	goCtx := sdk.WrapSDKContext(suite.ctx)
+	suite.RequireBankBalance(balCarol, carol)
+	suite.msgServer.PlayMove(goCtx, &types.MsgPlayMove{
 		Creator: carol,
 		IdValue: "1",
 		FromX:   1,
@@ -435,7 +526,8 @@ func TestForfeit2OldestPlayedTwiceIn1Call(t *testing.T) {
 		ToX:     2,
 		ToY:     3,
 	})
-	msgServer.PlayMove(context, &types.MsgPlayMove{
+	suite.RequireBankBalance(balBob, bob)
+	suite.msgServer.PlayMove(goCtx, &types.MsgPlayMove{
 		Creator: bob,
 		IdValue: "1",
 		FromX:   0,
@@ -443,13 +535,14 @@ func TestForfeit2OldestPlayedTwiceIn1Call(t *testing.T) {
 		ToX:     1,
 		ToY:     4,
 	})
-	msgServer.CreateGame(context, &types.MsgCreateGame{
+	suite.msgServer.CreateGame(goCtx, &types.MsgCreateGame{
 		Creator: bob,
 		Red:     carol,
 		Black:   alice,
 		Wager:   12,
 	})
-	msgServer.PlayMove(context, &types.MsgPlayMove{
+	suite.RequireBankBalance(balAlice, alice)
+	suite.msgServer.PlayMove(goCtx, &types.MsgPlayMove{
 		Creator: alice,
 		IdValue: "2",
 		FromX:   1,
@@ -457,7 +550,7 @@ func TestForfeit2OldestPlayedTwiceIn1Call(t *testing.T) {
 		ToX:     2,
 		ToY:     3,
 	})
-	msgServer.PlayMove(context, &types.MsgPlayMove{
+	suite.msgServer.PlayMove(goCtx, &types.MsgPlayMove{
 		Creator: carol,
 		IdValue: "2",
 		FromX:   0,
@@ -465,27 +558,29 @@ func TestForfeit2OldestPlayedTwiceIn1Call(t *testing.T) {
 		ToX:     1,
 		ToY:     4,
 	})
-	msgServer.CreateGame(context, &types.MsgCreateGame{
+	suite.msgServer.CreateGame(goCtx, &types.MsgCreateGame{
 		Creator: carol,
 		Red:     alice,
 		Black:   bob,
 		Wager:   13,
 	})
-	ctx := sdk.UnwrapSDKContext(context)
-	game1, found := keeper.GetStoredGame(ctx, "1")
-	require.True(t, found)
-	oldDeadline := types.FormatDeadline(ctx.BlockTime().Add(time.Duration(-1)))
+	game1, found := keeper.GetStoredGame(suite.ctx, "1")
+	suite.Require().True(found)
+	oldDeadline := types.FormatDeadline(suite.ctx.BlockTime().Add(time.Duration(-1)))
 	game1.Deadline = oldDeadline
-	keeper.SetStoredGame(ctx, game1)
-	game2, found := keeper.GetStoredGame(ctx, "2")
-	require.True(t, found)
+	keeper.SetStoredGame(suite.ctx, game1)
+	game2, found := keeper.GetStoredGame(suite.ctx, "2")
+	suite.Require().True(found)
 	game2.Deadline = oldDeadline
-	keeper.SetStoredGame(ctx, game2)
-	keeper.ForfeitExpiredGames(context)
+	keeper.SetStoredGame(suite.ctx, game2)
+	keeper.ForfeitExpiredGames(goCtx)
+	suite.RequireBankBalance(balAlice-12, alice) // Lost wager
+	suite.RequireBankBalance(balBob+11, bob)     // Won wager
+	suite.RequireBankBalance(balCarol+1, carol)  // Lost and won wagers
 
-	game1, found = keeper.GetStoredGame(ctx, "1")
-	require.True(t, found)
-	require.EqualValues(t, types.StoredGame{
+	game1, found = keeper.GetStoredGame(suite.ctx, "1")
+	suite.Require().True(found)
+	suite.Require().EqualValues(types.StoredGame{
 		Creator:   alice,
 		Index:     "1",
 		Game:      "*b*b*b*b|b*b*b*b*|***b*b*b|**b*****|*r******|**r*r*r*|*r*r*r*r|r*r*r*r*",
@@ -500,9 +595,9 @@ func TestForfeit2OldestPlayedTwiceIn1Call(t *testing.T) {
 		Wager:     11,
 	}, game1)
 
-	game2, found = keeper.GetStoredGame(ctx, "2")
-	require.True(t, found)
-	require.EqualValues(t, types.StoredGame{
+	game2, found = keeper.GetStoredGame(suite.ctx, "2")
+	suite.Require().True(found)
+	suite.Require().EqualValues(types.StoredGame{
 		Creator:   bob,
 		Index:     "2",
 		Game:      "*b*b*b*b|b*b*b*b*|***b*b*b|**b*****|*r******|**r*r*r*|*r*r*r*r|r*r*r*r*",
@@ -517,29 +612,49 @@ func TestForfeit2OldestPlayedTwiceIn1Call(t *testing.T) {
 		Wager:     12,
 	}, game2)
 
-	nextGame, found := keeper.GetNextGame(ctx)
-	require.True(t, found)
-	require.EqualValues(t, types.NextGame{
+	nextGame, found := keeper.GetNextGame(suite.ctx)
+	suite.Require().True(found)
+	suite.Require().EqualValues(types.NextGame{
 		Creator:  "",
 		IdValue:  4,
 		FifoHead: "3",
 		FifoTail: "3",
 	}, nextGame)
 
-	events := sdk.StringifyEvents(ctx.EventManager().ABCIEvents())
-	require.Len(t, events, 1)
-	event := events[0]
-	require.Equal(t, event.Type, "message")
-	require.EqualValues(t, []sdk.Attribute{
+	events := sdk.StringifyEvents(suite.ctx.EventManager().ABCIEvents())
+	suite.Require().Len(events, 2)
+
+	forfeitEvent := events[0]
+	suite.Require().Equal(forfeitEvent.Type, "message")
+	forfeitAttributes := forfeitEvent.Attributes[3*createEventCount+4*playEventCountFirst:]
+	suite.Require().EqualValues([]sdk.Attribute{
+		{Key: "sender", Value: checkersModuleAddress},
 		{Key: "module", Value: "checkers"},
 		{Key: "action", Value: "GameForfeited"},
 		{Key: "IdValue", Value: "1"},
 		{Key: "Winner", Value: "r"},
-	}, event.Attributes[49:53])
-	require.EqualValues(t, []sdk.Attribute{
+	}, forfeitAttributes[:5])
+	forfeitAttributes = forfeitAttributes[5:]
+	suite.Require().EqualValues([]sdk.Attribute{
+		{Key: "sender", Value: checkersModuleAddress},
 		{Key: "module", Value: "checkers"},
 		{Key: "action", Value: "GameForfeited"},
 		{Key: "IdValue", Value: "2"},
 		{Key: "Winner", Value: "r"},
-	}, event.Attributes[53:])
+	}, forfeitAttributes)
+
+	transferEvent := events[1]
+	suite.Require().Equal(transferEvent.Type, "transfer")
+	transferAttributes := transferEvent.Attributes[4*transferEventCount:]
+	suite.Require().EqualValues([]sdk.Attribute{
+		{Key: "recipient", Value: bob},
+		{Key: "sender", Value: checkersModuleAddress},
+		{Key: "amount", Value: "22stake"},
+	}, transferAttributes[:3])
+	transferAttributes = transferAttributes[3:]
+	suite.Require().EqualValues([]sdk.Attribute{
+		{Key: "recipient", Value: carol},
+		{Key: "sender", Value: checkersModuleAddress},
+		{Key: "amount", Value: "24stake"},
+	}, transferAttributes)
 }
