@@ -1,139 +1,136 @@
 package keeper_test
 
 import (
-	"context"
-	"testing"
-
 	sdk "github.com/cosmos/cosmos-sdk/types"
-	"github.com/stretchr/testify/require"
-	"github.com/xavierlepretre/checkers/x/checkers"
-	"github.com/xavierlepretre/checkers/x/checkers/keeper"
 	"github.com/xavierlepretre/checkers/x/checkers/types"
 )
 
-func setupMsgServerWithOneGameForRejectGame(t testing.TB) (types.MsgServer, keeper.Keeper, context.Context) {
-	k, ctx := setupKeeper(t)
-	checkers.InitGenesis(ctx, *k, *types.DefaultGenesis())
-	server := keeper.NewMsgServerImpl(*k)
-	context := sdk.WrapSDKContext(ctx)
-	server.CreateGame(context, &types.MsgCreateGame{
+func (suite *IntegrationTestSuite) setupSuiteWithOneGameForRejectGame() {
+	suite.setupSuiteWithBalances()
+	goCtx := sdk.WrapSDKContext(suite.ctx)
+	suite.msgServer.CreateGame(goCtx, &types.MsgCreateGame{
 		Creator: alice,
 		Red:     bob,
 		Black:   carol,
 		Wager:   11,
 	})
-	return server, *k, context
 }
 
-func TestRejectGameWrongByCreator(t *testing.T) {
-	msgServer, _, context := setupMsgServerWithOneGameForRejectGame(t)
-	rejectGameResponse, err := msgServer.RejectGame(context, &types.MsgRejectGame{
+func (suite *IntegrationTestSuite) TestRejectGameWrongByCreator() {
+	suite.setupSuiteWithOneGameForRejectGame()
+	goCtx := sdk.WrapSDKContext(suite.ctx)
+	rejectGameResponse, err := suite.msgServer.RejectGame(goCtx, &types.MsgRejectGame{
 		Creator: alice,
 		IdValue: "1",
 	})
-	require.Nil(t, rejectGameResponse)
-	require.Equal(t, "message creator is not a player: %s", err.Error())
+	suite.Require().Nil(rejectGameResponse)
+	suite.Require().Equal("message creator is not a player: %s", err.Error())
 }
 
-func TestRejectGameByBlackNoMove(t *testing.T) {
-	msgServer, _, context := setupMsgServerWithOneGameForRejectGame(t)
-	rejectGameResponse, err := msgServer.RejectGame(context, &types.MsgRejectGame{
+func (suite *IntegrationTestSuite) TestRejectGameByBlackNoMove() {
+	suite.setupSuiteWithOneGameForRejectGame()
+	goCtx := sdk.WrapSDKContext(suite.ctx)
+	rejectGameResponse, err := suite.msgServer.RejectGame(goCtx, &types.MsgRejectGame{
 		Creator: carol,
 		IdValue: "1",
 	})
-	require.Nil(t, err)
-	require.EqualValues(t, types.MsgRejectGameResponse{}, *rejectGameResponse)
+	suite.Require().Nil(err)
+	suite.Require().EqualValues(types.MsgRejectGameResponse{}, *rejectGameResponse)
 }
 
-func TestRejectGameByBlackNoMoveRemovedGame(t *testing.T) {
-	msgServer, keeper, context := setupMsgServerWithOneGameForRejectGame(t)
-	msgServer.RejectGame(context, &types.MsgRejectGame{
+func (suite *IntegrationTestSuite) TestRejectGameByBlackNoMoveRemovedGame() {
+	suite.setupSuiteWithOneGameForRejectGame()
+	keeper := suite.app.CheckersKeeper
+	goCtx := sdk.WrapSDKContext(suite.ctx)
+	suite.msgServer.RejectGame(goCtx, &types.MsgRejectGame{
 		Creator: carol,
 		IdValue: "1",
 	})
-	nextGame, found := keeper.GetNextGame(sdk.UnwrapSDKContext(context))
-	require.True(t, found)
-	require.EqualValues(t, types.NextGame{
+	nextGame, found := keeper.GetNextGame(suite.ctx)
+	suite.Require().True(found)
+	suite.Require().EqualValues(types.NextGame{
 		Creator:  "",
 		IdValue:  2,
 		FifoHead: "-1",
 		FifoTail: "-1",
 	}, nextGame)
-	_, found = keeper.GetStoredGame(sdk.UnwrapSDKContext(context), "1")
-	require.False(t, found)
+	_, found = keeper.GetStoredGame(suite.ctx, "1")
+	suite.Require().False(found)
 }
 
-func TestRejectGameByBlackNoMoveEmitted(t *testing.T) {
-	msgServer, _, context := setupMsgServerWithOneGameForRejectGame(t)
-	msgServer.RejectGame(context, &types.MsgRejectGame{
+func (suite *IntegrationTestSuite) TestRejectGameByBlackNoMoveEmitted() {
+	suite.setupSuiteWithOneGameForRejectGame()
+	goCtx := sdk.WrapSDKContext(suite.ctx)
+	suite.msgServer.RejectGame(goCtx, &types.MsgRejectGame{
 		Creator: carol,
 		IdValue: "1",
 	})
-	ctx := sdk.UnwrapSDKContext(context)
-	require.NotNil(t, ctx)
-	events := sdk.StringifyEvents(ctx.EventManager().ABCIEvents())
-	require.Len(t, events, 1)
+	events := sdk.StringifyEvents(suite.ctx.EventManager().ABCIEvents())
+	suite.Require().Len(events, 1)
 	event := events[0]
-	require.Equal(t, event.Type, "message")
-	require.EqualValues(t, []sdk.Attribute{
+	suite.Require().Equal(event.Type, "message")
+	suite.Require().EqualValues([]sdk.Attribute{
 		{Key: "module", Value: "checkers"},
 		{Key: "action", Value: "GameRejected"},
 		{Key: "Creator", Value: carol},
 		{Key: "IdValue", Value: "1"},
-	}, event.Attributes[7:])
+	}, event.Attributes[createEventCount:])
 }
 
-func TestRejectGameByRedNoMove(t *testing.T) {
-	msgServer, _, context := setupMsgServerWithOneGameForRejectGame(t)
-	rejectGameResponse, err := msgServer.RejectGame(context, &types.MsgRejectGame{
+func (suite *IntegrationTestSuite) TestRejectGameByRedNoMove() {
+	suite.setupSuiteWithOneGameForRejectGame()
+	goCtx := sdk.WrapSDKContext(suite.ctx)
+	rejectGameResponse, err := suite.msgServer.RejectGame(goCtx, &types.MsgRejectGame{
 		Creator: bob,
 		IdValue: "1",
 	})
-	require.Nil(t, err)
-	require.EqualValues(t, types.MsgRejectGameResponse{}, *rejectGameResponse)
+	suite.Require().Nil(err)
+	suite.Require().EqualValues(types.MsgRejectGameResponse{}, *rejectGameResponse)
 }
 
-func TestRejectGameByRedNoMoveRemovedGame(t *testing.T) {
-	msgServer, keeper, context := setupMsgServerWithOneGameForRejectGame(t)
-	msgServer.RejectGame(context, &types.MsgRejectGame{
+func (suite *IntegrationTestSuite) TestRejectGameByRedNoMoveRemovedGame() {
+	suite.setupSuiteWithOneGameForRejectGame()
+	keeper := suite.app.CheckersKeeper
+	goCtx := sdk.WrapSDKContext(suite.ctx)
+	suite.msgServer.RejectGame(goCtx, &types.MsgRejectGame{
 		Creator: bob,
 		IdValue: "1",
 	})
-	nextGame, found := keeper.GetNextGame(sdk.UnwrapSDKContext(context))
-	require.True(t, found)
-	require.EqualValues(t, types.NextGame{
+	nextGame, found := keeper.GetNextGame(suite.ctx)
+	suite.Require().True(found)
+	suite.Require().EqualValues(types.NextGame{
 		Creator:  "",
 		IdValue:  2,
 		FifoHead: "-1",
 		FifoTail: "-1",
 	}, nextGame)
-	_, found = keeper.GetStoredGame(sdk.UnwrapSDKContext(context), "1")
-	require.False(t, found)
+	_, found = keeper.GetStoredGame(suite.ctx, "1")
+	suite.Require().False(found)
 }
 
-func TestRejectGameByRedNoMoveEmitted(t *testing.T) {
-	msgServer, _, context := setupMsgServerWithOneGameForRejectGame(t)
-	msgServer.RejectGame(context, &types.MsgRejectGame{
+func (suite *IntegrationTestSuite) TestRejectGameByRedNoMoveEmitted() {
+	suite.setupSuiteWithOneGameForRejectGame()
+	goCtx := sdk.WrapSDKContext(suite.ctx)
+	suite.msgServer.RejectGame(goCtx, &types.MsgRejectGame{
 		Creator: bob,
 		IdValue: "1",
 	})
-	ctx := sdk.UnwrapSDKContext(context)
-	require.NotNil(t, ctx)
-	events := sdk.StringifyEvents(ctx.EventManager().ABCIEvents())
-	require.Len(t, events, 1)
+	events := sdk.StringifyEvents(suite.ctx.EventManager().ABCIEvents())
+	suite.Require().Len(events, 1)
 	event := events[0]
-	require.Equal(t, event.Type, "message")
-	require.EqualValues(t, []sdk.Attribute{
+	suite.Require().Equal(event.Type, "message")
+	suite.Require().EqualValues([]sdk.Attribute{
 		{Key: "module", Value: "checkers"},
 		{Key: "action", Value: "GameRejected"},
 		{Key: "Creator", Value: bob},
 		{Key: "IdValue", Value: "1"},
-	}, event.Attributes[7:])
+	}, event.Attributes[createEventCount:])
 }
 
-func TestRejectGameByRedOneMove(t *testing.T) {
-	msgServer, _, context := setupMsgServerWithOneGameForRejectGame(t)
-	msgServer.PlayMove(context, &types.MsgPlayMove{
+func (suite *IntegrationTestSuite) TestRejectGameByRedOneMove() {
+	suite.setupSuiteWithOneGameForRejectGame()
+	goCtx := sdk.WrapSDKContext(suite.ctx)
+	suite.msgServer.PlayMove(goCtx, &types.MsgPlayMove{
 		Creator: carol,
 		IdValue: "1",
 		FromX:   1,
@@ -141,17 +138,19 @@ func TestRejectGameByRedOneMove(t *testing.T) {
 		ToX:     2,
 		ToY:     3,
 	})
-	rejectGameResponse, err := msgServer.RejectGame(context, &types.MsgRejectGame{
+	rejectGameResponse, err := suite.msgServer.RejectGame(goCtx, &types.MsgRejectGame{
 		Creator: bob,
 		IdValue: "1",
 	})
-	require.Nil(t, err)
-	require.EqualValues(t, types.MsgRejectGameResponse{}, *rejectGameResponse)
+	suite.Require().Nil(err)
+	suite.Require().EqualValues(types.MsgRejectGameResponse{}, *rejectGameResponse)
 }
 
-func TestRejectGameByRedOneMoveRemovedGame(t *testing.T) {
-	msgServer, keeper, context := setupMsgServerWithOneGameForRejectGame(t)
-	msgServer.PlayMove(context, &types.MsgPlayMove{
+func (suite *IntegrationTestSuite) TestRejectGameByRedOneMoveRemovedGame() {
+	suite.setupSuiteWithOneGameForRejectGame()
+	keeper := suite.app.CheckersKeeper
+	goCtx := sdk.WrapSDKContext(suite.ctx)
+	suite.msgServer.PlayMove(goCtx, &types.MsgPlayMove{
 		Creator: carol,
 		IdValue: "1",
 		FromX:   1,
@@ -159,25 +158,26 @@ func TestRejectGameByRedOneMoveRemovedGame(t *testing.T) {
 		ToX:     2,
 		ToY:     3,
 	})
-	msgServer.RejectGame(context, &types.MsgRejectGame{
+	suite.msgServer.RejectGame(goCtx, &types.MsgRejectGame{
 		Creator: bob,
 		IdValue: "1",
 	})
-	nextGame, found := keeper.GetNextGame(sdk.UnwrapSDKContext(context))
-	require.True(t, found)
-	require.EqualValues(t, types.NextGame{
+	nextGame, found := keeper.GetNextGame(suite.ctx)
+	suite.Require().True(found)
+	suite.Require().EqualValues(types.NextGame{
 		Creator:  "",
 		IdValue:  2,
 		FifoHead: "-1",
 		FifoTail: "-1",
 	}, nextGame)
-	_, found = keeper.GetStoredGame(sdk.UnwrapSDKContext(context), "1")
-	require.False(t, found)
+	_, found = keeper.GetStoredGame(suite.ctx, "1")
+	suite.Require().False(found)
 }
 
-func TestRejectGameByRedOneMoveEmitted(t *testing.T) {
-	msgServer, _, context := setupMsgServerWithOneGameForRejectGame(t)
-	msgServer.PlayMove(context, &types.MsgPlayMove{
+func (suite *IntegrationTestSuite) TestRejectGameByRedOneMoveEmitted() {
+	suite.setupSuiteWithOneGameForRejectGame()
+	goCtx := sdk.WrapSDKContext(suite.ctx)
+	suite.msgServer.PlayMove(goCtx, &types.MsgPlayMove{
 		Creator: carol,
 		IdValue: "1",
 		FromX:   1,
@@ -185,27 +185,37 @@ func TestRejectGameByRedOneMoveEmitted(t *testing.T) {
 		ToX:     2,
 		ToY:     3,
 	})
-	msgServer.RejectGame(context, &types.MsgRejectGame{
+	suite.msgServer.RejectGame(goCtx, &types.MsgRejectGame{
 		Creator: bob,
 		IdValue: "1",
 	})
-	ctx := sdk.UnwrapSDKContext(context)
-	require.NotNil(t, ctx)
-	events := sdk.StringifyEvents(ctx.EventManager().ABCIEvents())
-	require.Len(t, events, 1)
-	event := events[0]
-	require.Equal(t, event.Type, "message")
-	require.EqualValues(t, []sdk.Attribute{
+	events := sdk.StringifyEvents(suite.ctx.EventManager().ABCIEvents())
+	suite.Require().Len(events, 2)
+
+	rejectEvent := events[0]
+	suite.Require().Equal(rejectEvent.Type, "message")
+	rejectAttributesDiscardCount := createEventCount + playEventCountFirst
+	suite.Require().EqualValues([]sdk.Attribute{
+		{Key: "sender", Value: checkersModuleAddress},
 		{Key: "module", Value: "checkers"},
 		{Key: "action", Value: "GameRejected"},
 		{Key: "Creator", Value: bob},
 		{Key: "IdValue", Value: "1"},
-	}, event.Attributes[14:])
+	}, rejectEvent.Attributes[rejectAttributesDiscardCount:])
+
+	transferEvent := events[1]
+	suite.Require().Equal(transferEvent.Type, "transfer")
+	suite.Require().EqualValues([]sdk.Attribute{
+		{Key: "recipient", Value: carol},
+		{Key: "sender", Value: checkersModuleAddress},
+		{Key: "amount", Value: "11stake"},
+	}, transferEvent.Attributes[transferEventCount:])
 }
 
-func TestRejectGameByBlackWrongOneMove(t *testing.T) {
-	msgServer, _, context := setupMsgServerWithOneGameForRejectGame(t)
-	msgServer.PlayMove(context, &types.MsgPlayMove{
+func (suite *IntegrationTestSuite) TestRejectGameByBlackWrongOneMove() {
+	suite.setupSuiteWithOneGameForRejectGame()
+	goCtx := sdk.WrapSDKContext(suite.ctx)
+	suite.msgServer.PlayMove(goCtx, &types.MsgPlayMove{
 		Creator: carol,
 		IdValue: "1",
 		FromX:   1,
@@ -213,17 +223,18 @@ func TestRejectGameByBlackWrongOneMove(t *testing.T) {
 		ToX:     2,
 		ToY:     3,
 	})
-	rejectGameResponse, err := msgServer.RejectGame(context, &types.MsgRejectGame{
+	rejectGameResponse, err := suite.msgServer.RejectGame(goCtx, &types.MsgRejectGame{
 		Creator: carol,
 		IdValue: "1",
 	})
-	require.Nil(t, rejectGameResponse)
-	require.Equal(t, "black player has already played", err.Error())
+	suite.Require().Nil(rejectGameResponse)
+	suite.Require().Equal("black player has already played", err.Error())
 }
 
-func TestRejectGameByRedWrong2Moves(t *testing.T) {
-	msgServer, _, context := setupMsgServerWithOneGameForRejectGame(t)
-	msgServer.PlayMove(context, &types.MsgPlayMove{
+func (suite *IntegrationTestSuite) TestRejectGameByRedWrong2Moves() {
+	suite.setupSuiteWithOneGameForRejectGame()
+	goCtx := sdk.WrapSDKContext(suite.ctx)
+	suite.msgServer.PlayMove(goCtx, &types.MsgPlayMove{
 		Creator: carol,
 		IdValue: "1",
 		FromX:   1,
@@ -231,7 +242,7 @@ func TestRejectGameByRedWrong2Moves(t *testing.T) {
 		ToX:     2,
 		ToY:     3,
 	})
-	msgServer.PlayMove(context, &types.MsgPlayMove{
+	suite.msgServer.PlayMove(goCtx, &types.MsgPlayMove{
 		Creator: bob,
 		IdValue: "1",
 		FromX:   0,
@@ -239,10 +250,10 @@ func TestRejectGameByRedWrong2Moves(t *testing.T) {
 		ToX:     1,
 		ToY:     4,
 	})
-	rejectGameResponse, err := msgServer.RejectGame(context, &types.MsgRejectGame{
+	rejectGameResponse, err := suite.msgServer.RejectGame(goCtx, &types.MsgRejectGame{
 		Creator: bob,
 		IdValue: "1",
 	})
-	require.Nil(t, rejectGameResponse)
-	require.Equal(t, "red player has already played", err.Error())
+	suite.Require().Nil(rejectGameResponse)
+	suite.Require().Equal("red player has already played", err.Error())
 }
