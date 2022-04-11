@@ -145,3 +145,45 @@ func (suite *IntegrationTestSuite) TestPlayMoveUpToWinner() {
 	suite.RequireBankBalance(balCarol+11, carol)
 	suite.RequireBankBalance(0, checkersModuleAddress)
 }
+
+func (suite *IntegrationTestSuite) TestPlayMoveUpToWinnerForeignToken() {
+	suite.setupSuiteWithBalances()
+	goCtx := sdk.WrapSDKContext(suite.ctx)
+	suite.msgServer.CreateGame(goCtx, &types.MsgCreateGame{
+		Creator: alice,
+		Red:     bob,
+		Black:   carol,
+		Wager:   1,
+		Token:   foreignToken,
+	})
+
+	suite.RequireBankBalance(balAlice, alice)
+	suite.RequireBankBalance(balBob, bob)
+	suite.RequireBankBalance(balCarol, carol)
+	suite.RequireBankBalance(0, checkersModuleAddress)
+	suite.RequireBankBalanceIn(balTokenAlice, alice, foreignToken)
+	suite.RequireBankBalanceIn(balTokenBob, bob, foreignToken)
+	suite.RequireBankBalanceIn(balTokenCarol, carol, foreignToken)
+	suite.RequireBankBalanceIn(0, checkersModuleAddress, foreignToken)
+
+	for _, move := range game1moves {
+		_, err := suite.msgServer.PlayMove(goCtx, &types.MsgPlayMove{
+			Creator: getPlayer(move.player),
+			IdValue: "1",
+			FromX:   move.fromX,
+			FromY:   move.fromY,
+			ToX:     move.toX,
+			ToY:     move.toY,
+		})
+		suite.Require().Nil(err)
+	}
+
+	suite.RequireBankBalance(balAlice, alice)
+	suite.RequireBankBalance(balBob, bob)
+	suite.RequireBankBalance(balCarol, carol)
+	suite.RequireBankBalance(0, checkersModuleAddress)
+	suite.RequireBankBalanceIn(balTokenAlice, alice, foreignToken)
+	suite.RequireBankBalanceIn(balTokenBob-1, bob, foreignToken)
+	suite.RequireBankBalanceIn(balTokenCarol+1, carol, foreignToken)
+	suite.RequireBankBalanceIn(0, checkersModuleAddress, foreignToken)
+}

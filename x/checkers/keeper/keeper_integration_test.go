@@ -29,6 +29,10 @@ const (
 	balAlice                      = 50000000
 	balBob                        = 20000000
 	balCarol                      = 10000000
+	foreignToken                  = "foreignToken"
+	balTokenAlice                 = 5
+	balTokenBob                   = 2
+	balTokenCarol                 = 1
 )
 
 var (
@@ -66,7 +70,7 @@ func (suite *IntegrationTestSuite) SetupTest() {
 	suite.queryClient = queryClient
 }
 
-func makeBalance(address string, balance int64) banktypes.Balance {
+func makeBalance(address string, balance int64, balanceToken int64) banktypes.Balance {
 	return banktypes.Balance{
 		Address: address,
 		Coins: sdk.Coins{
@@ -74,15 +78,19 @@ func makeBalance(address string, balance int64) banktypes.Balance {
 				Denom:  sdk.DefaultBondDenom,
 				Amount: sdk.NewInt(balance),
 			},
+			sdk.Coin{
+				Denom:  foreignToken,
+				Amount: sdk.NewInt(balanceToken),
+			},
 		},
 	}
 }
 
 func getBankGenesis() *banktypes.GenesisState {
 	coins := []banktypes.Balance{
-		makeBalance(alice, balAlice),
-		makeBalance(bob, balBob),
-		makeBalance(carol, balCarol),
+		makeBalance(alice, balAlice, balTokenAlice),
+		makeBalance(bob, balBob, balTokenBob),
+		makeBalance(carol, balCarol, balTokenCarol),
 	}
 	supply := banktypes.NewSupply(coins[0].Coins.Add(coins[1].Coins...).Add(coins[2].Coins...))
 
@@ -100,9 +108,13 @@ func (suite *IntegrationTestSuite) setupSuiteWithBalances() {
 }
 
 func (suite *IntegrationTestSuite) RequireBankBalance(expected int, atAddress string) {
+	suite.RequireBankBalanceIn(expected, atAddress, sdk.DefaultBondDenom)
+}
+
+func (suite *IntegrationTestSuite) RequireBankBalanceIn(expected int, atAddress string, denom string) {
 	sdkAdd, err := sdk.AccAddressFromBech32(atAddress)
 	suite.Require().Nil(err, "Address %s failed to parse")
 	suite.Require().Equal(
 		int64(expected),
-		suite.app.BankKeeper.GetBalance(suite.ctx, sdkAdd, sdk.DefaultBondDenom).Amount.Int64())
+		suite.app.BankKeeper.GetBalance(suite.ctx, sdkAdd, denom).Amount.Int64())
 }

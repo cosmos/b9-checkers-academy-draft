@@ -493,6 +493,58 @@ func (suite *IntegrationTestSuite) TestForfeitPlayedTwice() {
 	}, transferEvent.Attributes[2*transferEventCount:])
 }
 
+func (suite *IntegrationTestSuite) TestForfeitPlayedTwiceForeignToken() {
+	suite.setupSuiteWithBalances()
+	goCtx := sdk.WrapSDKContext(suite.ctx)
+	suite.msgServer.CreateGame(goCtx, &types.MsgCreateGame{
+		Creator: alice,
+		Red:     bob,
+		Black:   carol,
+		Wager:   1,
+		Token:   foreignToken,
+	})
+	suite.msgServer.PlayMove(goCtx, &types.MsgPlayMove{
+		Creator: carol,
+		IdValue: "1",
+		FromX:   1,
+		FromY:   2,
+		ToX:     2,
+		ToY:     3,
+	})
+	suite.RequireBankBalance(balBob, bob)
+	suite.msgServer.PlayMove(goCtx, &types.MsgPlayMove{
+		Creator: bob,
+		IdValue: "1",
+		FromX:   0,
+		FromY:   5,
+		ToX:     1,
+		ToY:     4,
+	})
+	suite.RequireBankBalance(balAlice, alice)
+	suite.RequireBankBalance(balBob, bob)
+	suite.RequireBankBalance(balCarol, carol)
+	suite.RequireBankBalance(0, checkersModuleAddress)
+	suite.RequireBankBalanceIn(balTokenAlice, alice, foreignToken)
+	suite.RequireBankBalanceIn(balTokenBob-1, bob, foreignToken)
+	suite.RequireBankBalanceIn(balTokenCarol-1, carol, foreignToken)
+	suite.RequireBankBalanceIn(2, checkersModuleAddress, foreignToken)
+	keeper := suite.app.CheckersKeeper
+	game1, found := keeper.GetStoredGame(suite.ctx, "1")
+	suite.Require().True(found)
+	oldDeadline := types.FormatDeadline(suite.ctx.BlockTime().Add(time.Duration(-1)))
+	game1.Deadline = oldDeadline
+	keeper.SetStoredGame(suite.ctx, game1)
+	keeper.ForfeitExpiredGames(goCtx)
+	suite.RequireBankBalance(balAlice, alice)
+	suite.RequireBankBalance(balBob, bob)
+	suite.RequireBankBalance(balCarol, carol)
+	suite.RequireBankBalance(0, checkersModuleAddress)
+	suite.RequireBankBalanceIn(balTokenAlice, alice, foreignToken)
+	suite.RequireBankBalanceIn(balTokenBob+1, bob, foreignToken)     // Won wager
+	suite.RequireBankBalanceIn(balTokenCarol-1, carol, foreignToken) // Lost wager
+	suite.RequireBankBalanceIn(0, checkersModuleAddress, foreignToken)
+}
+
 func (suite *IntegrationTestSuite) TestForfeitOlderPlayedTwice() {
 	suite.setupSuiteWithOneGameForPlayMove()
 	goCtx := sdk.WrapSDKContext(suite.ctx)
