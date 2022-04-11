@@ -13,6 +13,7 @@ func (suite *IntegrationTestSuite) setupSuiteWithOneGameForRejectGame() {
 		Red:     bob,
 		Black:   carol,
 		Wager:   11,
+		Token:   sdk.DefaultBondDenom,
 	})
 }
 
@@ -99,7 +100,7 @@ func (suite *IntegrationTestSuite) TestRejectGameByBlackConsumedGas() {
 		IdValue: "1",
 	})
 	gasAfter := suite.ctx.GasMeter().GasConsumed()
-	suite.Require().Equal(uint64(6_116+0), gasAfter-gasBefore)
+	suite.Require().Equal(uint64(6_137+0), gasAfter-gasBefore)
 }
 
 func (suite *IntegrationTestSuite) TestRejectGameByRedNoMove() {
@@ -283,6 +284,7 @@ func (suite *IntegrationTestSuite) TestRejectGameByRedOneMoveEvenZero() {
 		Red:     bob,
 		Black:   carol,
 		Wager:   0,
+		Token:   sdk.DefaultBondDenom,
 	})
 	suite.msgServer.PlayMove(goCtx, &types.MsgPlayMove{
 		Creator: carol,

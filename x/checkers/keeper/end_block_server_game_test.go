@@ -55,6 +55,7 @@ func (suite *IntegrationTestSuite) TestForfeitOlderUnplayed() {
 		Red:     carol,
 		Black:   alice,
 		Wager:   12,
+		Token:   sdk.DefaultBondDenom,
 	})
 	keeper := suite.app.CheckersKeeper
 	game1, found := keeper.GetStoredGame(suite.ctx, "1")
@@ -95,12 +96,14 @@ func (suite *IntegrationTestSuite) TestForfeit2OldestUnplayedIn1Call() {
 		Red:     carol,
 		Black:   alice,
 		Wager:   12,
+		Token:   sdk.DefaultBondDenom,
 	})
 	suite.msgServer.CreateGame(goCtx, &types.MsgCreateGame{
 		Creator: carol,
 		Red:     alice,
 		Black:   bob,
 		Wager:   13,
+		Token:   sdk.DefaultBondDenom,
 	})
 	keeper := suite.app.CheckersKeeper
 	game1, found := keeper.GetStoredGame(suite.ctx, "1")
@@ -221,6 +224,7 @@ func (suite *IntegrationTestSuite) TestForfeitOlderPlayedOnce() {
 		Red:     carol,
 		Black:   alice,
 		Wager:   12,
+		Token:   sdk.DefaultBondDenom,
 	})
 	keeper := suite.app.CheckersKeeper
 	game1, found := keeper.GetStoredGame(suite.ctx, "1")
@@ -271,6 +275,7 @@ func (suite *IntegrationTestSuite) TestForfeitOlderPlayedOncePaidEvenZero() {
 		Red:     bob,
 		Black:   carol,
 		Wager:   0,
+		Token:   sdk.DefaultBondDenom,
 	})
 	suite.RequireBankBalance(balCarol, carol)
 	suite.msgServer.PlayMove(goCtx, &types.MsgPlayMove{
@@ -327,6 +332,7 @@ func (suite *IntegrationTestSuite) TestForfeit2OldestPlayedOnceIn1Call() {
 		Red:     carol,
 		Black:   alice,
 		Wager:   12,
+		Token:   sdk.DefaultBondDenom,
 	})
 	suite.RequireBankBalance(balAlice, alice)
 	suite.msgServer.PlayMove(goCtx, &types.MsgPlayMove{
@@ -342,6 +348,7 @@ func (suite *IntegrationTestSuite) TestForfeit2OldestPlayedOnceIn1Call() {
 		Red:     alice,
 		Black:   bob,
 		Wager:   13,
+		Token:   sdk.DefaultBondDenom,
 	})
 	keeper := suite.app.CheckersKeeper
 	game1, found := keeper.GetStoredGame(suite.ctx, "1")
@@ -453,6 +460,7 @@ func (suite *IntegrationTestSuite) TestForfeitPlayedTwice() {
 		Deadline:  oldDeadline,
 		Winner:    "r",
 		Wager:     11,
+		Token:     "stake",
 	}, game1)
 
 	nextGame, found := keeper.GetNextGame(suite.ctx)
@@ -511,6 +519,7 @@ func (suite *IntegrationTestSuite) TestForfeitOlderPlayedTwice() {
 		Red:     carol,
 		Black:   alice,
 		Wager:   12,
+		Token:   sdk.DefaultBondDenom,
 	})
 	keeper := suite.app.CheckersKeeper
 	game1, found := keeper.GetStoredGame(suite.ctx, "1")
@@ -537,6 +546,7 @@ func (suite *IntegrationTestSuite) TestForfeitOlderPlayedTwice() {
 		Deadline:  oldDeadline,
 		Winner:    "r",
 		Wager:     11,
+		Token:     "stake",
 	}, game1)
 
 	nextGame, found := keeper.GetNextGame(suite.ctx)
@@ -577,6 +587,7 @@ func (suite *IntegrationTestSuite) TestForfeitOlderPlayedTwicePaidEvenZero() {
 		Red:     bob,
 		Black:   carol,
 		Wager:   0,
+		Token:   sdk.DefaultBondDenom,
 	})
 	suite.RequireBankBalance(balCarol, carol)
 	suite.msgServer.PlayMove(goCtx, &types.MsgPlayMove{
@@ -655,6 +666,7 @@ func (suite *IntegrationTestSuite) TestForfeit2OldestPlayedTwiceIn1Call() {
 		Red:     carol,
 		Black:   alice,
 		Wager:   12,
+		Token:   sdk.DefaultBondDenom,
 	})
 	suite.RequireBankBalance(balAlice, alice)
 	suite.RequireBankBalance(22, checkersModuleAddress)
@@ -680,6 +692,7 @@ func (suite *IntegrationTestSuite) TestForfeit2OldestPlayedTwiceIn1Call() {
 		Red:     alice,
 		Black:   bob,
 		Wager:   13,
+		Token:   sdk.DefaultBondDenom,
 	})
 	keeper := suite.app.CheckersKeeper
 	game1, found := keeper.GetStoredGame(suite.ctx, "1")
@@ -708,6 +721,7 @@ func (suite *IntegrationTestSuite) TestForfeit2OldestPlayedTwiceIn1Call() {
 		Deadline:  oldDeadline,
 		Winner:    "r",
 		Wager:     11,
+		Token:     "stake",
 	}, game1)
 
 	game2, found = keeper.GetStoredGame(suite.ctx, "2")
@@ -725,6 +739,7 @@ func (suite *IntegrationTestSuite) TestForfeit2OldestPlayedTwiceIn1Call() {
 		Deadline:  oldDeadline,
 		Winner:    "r",
 		Wager:     12,
+		Token:     "stake",
 	}, game2)
 
 	nextGame, found := keeper.GetNextGame(suite.ctx)

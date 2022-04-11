@@ -16,7 +16,7 @@ import (
 
 const (
 	transferEventCount            = 3 // As emitted by the bank
-	createEventCount              = 7
+	createEventCount              = 8
 	playEventCountFirst           = 8 // Extra "sender" attribute emitted by the bank
 	playEventCountNext            = 7
 	rejectEventCount              = 4

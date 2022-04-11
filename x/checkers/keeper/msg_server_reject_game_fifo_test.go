@@ -13,6 +13,7 @@ func (suite *IntegrationTestSuite) TestRejectSecondGameHasSavedFifo() {
 		Red:     carol,
 		Black:   alice,
 		Wager:   12,
+		Token:   sdk.DefaultBondDenom,
 	})
 	suite.msgServer.RejectGame(goCtx, &types.MsgRejectGame{
 		Creator: carol,
@@ -42,6 +43,7 @@ func (suite *IntegrationTestSuite) TestRejectSecondGameHasSavedFifo() {
 		Deadline:  types.FormatDeadline(suite.ctx.BlockTime().Add(types.MaxTurnDuration)),
 		Winner:    "*",
 		Wager:     12,
+		Token:     "stake",
 	}, game2)
 }
 
@@ -53,12 +55,14 @@ func (suite *IntegrationTestSuite) TestRejectMiddleGameHasSavedFifo() {
 		Red:     carol,
 		Black:   alice,
 		Wager:   12,
+		Token:   sdk.DefaultBondDenom,
 	})
 	suite.msgServer.CreateGame(goCtx, &types.MsgCreateGame{
 		Creator: carol,
 		Red:     alice,
 		Black:   bob,
 		Wager:   13,
+		Token:   sdk.DefaultBondDenom,
 	})
 	suite.msgServer.RejectGame(goCtx, &types.MsgRejectGame{
 		Creator: carol,
@@ -88,6 +92,7 @@ func (suite *IntegrationTestSuite) TestRejectMiddleGameHasSavedFifo() {
 		Deadline:  types.FormatDeadline(suite.ctx.BlockTime().Add(types.MaxTurnDuration)),
 		Winner:    "*",
 		Wager:     11,
+		Token:     "stake",
 	}, game1)
 	game3, found3 := keeper.GetStoredGame(suite.ctx, "3")
 	suite.Require().True(found3)
@@ -104,5 +109,6 @@ func (suite *IntegrationTestSuite) TestRejectMiddleGameHasSavedFifo() {
 		Deadline:  types.FormatDeadline(suite.ctx.BlockTime().Add(types.MaxTurnDuration)),
 		Winner:    "*",
 		Wager:     13,
+		Token:     "stake",
 	}, game3)
 }

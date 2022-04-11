@@ -112,6 +112,7 @@ func (suite *IntegrationTestSuite) TestPlayMoveUpToWinner() {
 		Deadline:  types.FormatDeadline(suite.ctx.BlockTime().Add(types.MaxTurnDuration)),
 		Winner:    "b",
 		Wager:     11,
+		Token:     "stake",
 	}, game1)
 	events := sdk.StringifyEvents(suite.ctx.EventManager().ABCIEvents())
 	suite.Require().Len(events, 2)
