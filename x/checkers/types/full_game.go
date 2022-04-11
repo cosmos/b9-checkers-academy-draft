@@ -43,7 +43,7 @@ func (storedGame *StoredGame) GetDeadlineAsTime() (deadline time.Time, err error
 }
 
 func GetNextDeadline(ctx sdk.Context) time.Time {
-	return ctx.BlockTime().Add(MaxTurnDurationInSeconds)
+	return ctx.BlockTime().Add(MaxTurnDuration)
 }
 
 func FormatDeadline(deadline time.Time) string {
@@ -60,8 +60,8 @@ func (storedGame *StoredGame) GetPlayerAddress(color string) (address sdk.AccAdd
 		return nil, false, err
 	}
 	address, found = map[string]sdk.AccAddress{
-		rules.RED_PLAYER.Color:   red,
-		rules.BLACK_PLAYER.Color: black,
+		rules.PieceStrings[rules.RED_PLAYER]:   red,
+		rules.PieceStrings[rules.BLACK_PLAYER]: black,
 	}[color]
 	return address, found, nil
 }

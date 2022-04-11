@@ -5,8 +5,8 @@ import (
 	"github.com/xavierlepretre/checkers/x/checkers/types"
 )
 
-func (suite *IntegrationTestSuite) TestPlayMove2Games1MoveHasSavedFifo() {
-	suite.setupSuiteWithOneGameForPlayMove()
+func (suite *IntegrationTestSuite) TestRejectSecondGameHasSavedFifo() {
+	suite.setupSuiteWithOneGameForRejectGame()
 	goCtx := sdk.WrapSDKContext(suite.ctx)
 	suite.msgServer.CreateGame(goCtx, &types.MsgCreateGame{
 		Creator: bob,
@@ -15,41 +15,19 @@ func (suite *IntegrationTestSuite) TestPlayMove2Games1MoveHasSavedFifo() {
 		Wager:   12,
 		Token:   sdk.DefaultBondDenom,
 	})
-
-	suite.msgServer.PlayMove(goCtx, &types.MsgPlayMove{
+	suite.msgServer.RejectGame(goCtx, &types.MsgRejectGame{
 		Creator: carol,
 		IdValue: "1",
-		FromX:   1,
-		FromY:   2,
-		ToX:     2,
-		ToY:     3,
 	})
 	keeper := suite.app.CheckersKeeper
-	nextGame1, found1 := keeper.GetNextGame(suite.ctx)
-	suite.Require().True(found1)
+	nextGame, found := keeper.GetNextGame(suite.ctx)
+	suite.Require().True(found)
 	suite.Require().EqualValues(types.NextGame{
 		Creator:  "",
 		IdValue:  3,
 		FifoHead: "2",
-		FifoTail: "1",
-	}, nextGame1)
-	game1, found1 := keeper.GetStoredGame(suite.ctx, "1")
-	suite.Require().True(found1)
-	suite.Require().EqualValues(types.StoredGame{
-		Creator:   alice,
-		Index:     "1",
-		Game:      "*b*b*b*b|b*b*b*b*|***b*b*b|**b*****|********|r*r*r*r*|*r*r*r*r|r*r*r*r*",
-		Turn:      "r",
-		Red:       bob,
-		Black:     carol,
-		MoveCount: uint64(1),
-		BeforeId:  "2",
-		AfterId:   "-1",
-		Deadline:  types.FormatDeadline(suite.ctx.BlockTime().Add(types.MaxTurnDuration)),
-		Winner:    "*",
-		Wager:     11,
-		Token:     "stake",
-	}, game1)
+		FifoTail: "2",
+	}, nextGame)
 	game2, found2 := keeper.GetStoredGame(suite.ctx, "2")
 	suite.Require().True(found2)
 	suite.Require().EqualValues(types.StoredGame{
@@ -61,7 +39,7 @@ func (suite *IntegrationTestSuite) TestPlayMove2Games1MoveHasSavedFifo() {
 		Black:     alice,
 		MoveCount: uint64(0),
 		BeforeId:  "-1",
-		AfterId:   "1",
+		AfterId:   "-1",
 		Deadline:  types.FormatDeadline(suite.ctx.BlockTime().Add(types.MaxTurnDuration)),
 		Winner:    "*",
 		Wager:     12,
@@ -69,8 +47,8 @@ func (suite *IntegrationTestSuite) TestPlayMove2Games1MoveHasSavedFifo() {
 	}, game2)
 }
 
-func (suite *IntegrationTestSuite) TestPlayMove2Games2MovesHasSavedFifo() {
-	suite.setupSuiteWithOneGameForPlayMove()
+func (suite *IntegrationTestSuite) TestRejectMiddleGameHasSavedFifo() {
+	suite.setupSuiteWithOneGameForRejectGame()
 	goCtx := sdk.WrapSDKContext(suite.ctx)
 	suite.msgServer.CreateGame(goCtx, &types.MsgCreateGame{
 		Creator: bob,
@@ -79,64 +57,58 @@ func (suite *IntegrationTestSuite) TestPlayMove2Games2MovesHasSavedFifo() {
 		Wager:   12,
 		Token:   sdk.DefaultBondDenom,
 	})
-	suite.msgServer.PlayMove(goCtx, &types.MsgPlayMove{
+	suite.msgServer.CreateGame(goCtx, &types.MsgCreateGame{
 		Creator: carol,
-		IdValue: "1",
-		FromX:   1,
-		FromY:   2,
-		ToX:     2,
-		ToY:     3,
+		Red:     alice,
+		Black:   bob,
+		Wager:   13,
+		Token:   sdk.DefaultBondDenom,
 	})
-
-	suite.msgServer.PlayMove(goCtx, &types.MsgPlayMove{
-		Creator: alice,
+	suite.msgServer.RejectGame(goCtx, &types.MsgRejectGame{
+		Creator: carol,
 		IdValue: "2",
-		FromX:   1,
-		FromY:   2,
-		ToX:     2,
-		ToY:     3,
 	})
 	keeper := suite.app.CheckersKeeper
-	nextGame1, found1 := keeper.GetNextGame(suite.ctx)
-	suite.Require().True(found1)
+	nextGame, found := keeper.GetNextGame(suite.ctx)
+	suite.Require().True(found)
 	suite.Require().EqualValues(types.NextGame{
 		Creator:  "",
-		IdValue:  3,
+		IdValue:  4,
 		FifoHead: "1",
-		FifoTail: "2",
-	}, nextGame1)
+		FifoTail: "3",
+	}, nextGame)
 	game1, found1 := keeper.GetStoredGame(suite.ctx, "1")
 	suite.Require().True(found1)
 	suite.Require().EqualValues(types.StoredGame{
 		Creator:   alice,
 		Index:     "1",
-		Game:      "*b*b*b*b|b*b*b*b*|***b*b*b|**b*****|********|r*r*r*r*|*r*r*r*r|r*r*r*r*",
-		Turn:      "r",
+		Game:      "*b*b*b*b|b*b*b*b*|*b*b*b*b|********|********|r*r*r*r*|*r*r*r*r|r*r*r*r*",
+		Turn:      "b",
 		Red:       bob,
 		Black:     carol,
-		MoveCount: uint64(1),
+		MoveCount: uint64(0),
 		BeforeId:  "-1",
-		AfterId:   "2",
+		AfterId:   "3",
 		Deadline:  types.FormatDeadline(suite.ctx.BlockTime().Add(types.MaxTurnDuration)),
 		Winner:    "*",
 		Wager:     11,
 		Token:     "stake",
 	}, game1)
-	game2, found2 := keeper.GetStoredGame(suite.ctx, "2")
-	suite.Require().True(found2)
+	game3, found3 := keeper.GetStoredGame(suite.ctx, "3")
+	suite.Require().True(found3)
 	suite.Require().EqualValues(types.StoredGame{
-		Creator:   bob,
-		Index:     "2",
-		Game:      "*b*b*b*b|b*b*b*b*|***b*b*b|**b*****|********|r*r*r*r*|*r*r*r*r|r*r*r*r*",
-		Turn:      "r",
-		Red:       carol,
-		Black:     alice,
-		MoveCount: uint64(1),
+		Creator:   carol,
+		Index:     "3",
+		Game:      "*b*b*b*b|b*b*b*b*|*b*b*b*b|********|********|r*r*r*r*|*r*r*r*r|r*r*r*r*",
+		Turn:      "b",
+		Red:       alice,
+		Black:     bob,
+		MoveCount: uint64(0),
 		BeforeId:  "1",
 		AfterId:   "-1",
 		Deadline:  types.FormatDeadline(suite.ctx.BlockTime().Add(types.MaxTurnDuration)),
 		Winner:    "*",
-		Wager:     12,
+		Wager:     13,
 		Token:     "stake",
-	}, game2)
+	}, game3)
 }
