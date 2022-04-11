@@ -57,6 +57,22 @@ func (suite *IntegrationTestSuite) TestPlayMovePlayerPaid() {
 	suite.RequireBankBalance(11, checkersModuleAddress)
 }
 
+func (suite *IntegrationTestSuite) TestPlayMoveConsumedGas() {
+	suite.setupSuiteWithOneGameForPlayMove()
+	goCtx := sdk.WrapSDKContext(suite.ctx)
+	gasBefore := suite.ctx.GasMeter().GasConsumed()
+	suite.msgServer.PlayMove(goCtx, &types.MsgPlayMove{
+		Creator: carol,
+		IdValue: "1",
+		FromX:   1,
+		FromY:   2,
+		ToX:     2,
+		ToY:     3,
+	})
+	gasAfter := suite.ctx.GasMeter().GasConsumed()
+	suite.Require().Equal(uint64(33_230+10), gasAfter-gasBefore)
+}
+
 func (suite *IntegrationTestSuite) TestPlayMovePlayerPaidEvenZero() {
 	suite.setupSuiteWithBalances()
 	goCtx := sdk.WrapSDKContext(suite.ctx)
@@ -106,6 +122,28 @@ func (suite *IntegrationTestSuite) TestPlayMovePlayerPaidEvenZero() {
 		{Key: "sender", Value: carol},
 		{Key: "amount", Value: ""},
 	}, transferEvent.Attributes)
+}
+
+func (suite *IntegrationTestSuite) TestPlayMoveGasConsumedNoWager() {
+	suite.setupSuiteWithBalances()
+	goCtx := sdk.WrapSDKContext(suite.ctx)
+	suite.msgServer.CreateGame(goCtx, &types.MsgCreateGame{
+		Creator: alice,
+		Red:     bob,
+		Black:   carol,
+		Wager:   0,
+	})
+	gasBefore := suite.ctx.GasMeter().GasConsumed()
+	suite.msgServer.PlayMove(goCtx, &types.MsgPlayMove{
+		Creator: carol,
+		IdValue: "1",
+		FromX:   1,
+		FromY:   2,
+		ToX:     2,
+		ToY:     3,
+	})
+	gasAfter := suite.ctx.GasMeter().GasConsumed()
+	suite.Require().Equal(uint64(26_303+10), gasAfter-gasBefore)
 }
 
 func (suite *IntegrationTestSuite) TestPlayMoveCannotPayFails() {
