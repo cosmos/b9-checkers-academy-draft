@@ -26,7 +26,7 @@ func (k Keeper) CanPlayMove(goCtx context.Context, req *types.QueryCanPlayMoveRe
 	}
 
 	// Is the game already won? Can happen when it is forfeited.
-	if storedGame.Winner != rules.NO_PLAYER.Color {
+	if storedGame.Winner != rules.PieceStrings[rules.NO_PLAYER] {
 		return &types.QueryCanPlayMoveResponse{
 			Possible: false,
 			Reason:   types.ErrGameFinished.Error(),
