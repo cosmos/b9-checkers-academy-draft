@@ -5,7 +5,7 @@ import {
     Event,
     Tendermint34Client,
 } from "@cosmjs/tendermint-rpc"
-import { StargateClient } from "@cosmjs/stargate"
+import { StargateClient, StargateClientOptions } from "@cosmjs/stargate"
 import {
     Attribute,
     StringEvent,
@@ -14,13 +14,19 @@ import {
 export class MyStargateClient extends StargateClient {
     private readonly myTmClient: Tendermint34Client
 
-    public static async connect(endpoint: string): Promise<MyStargateClient> {
+    public static async connect(
+        endpoint: string,
+        options: StargateClientOptions = {}
+    ): Promise<MyStargateClient> {
         const tmClient = await Tendermint34Client.connect(endpoint)
-        return new MyStargateClient(tmClient)
+        return new MyStargateClient(tmClient, options)
     }
 
-    protected constructor(tmClient: Tendermint34Client) {
-        super(tmClient)
+    protected constructor(
+        tmClient: Tendermint34Client,
+        options: StargateClientOptions
+    ) {
+        super(tmClient, options)
         this.myTmClient = tmClient
     }
 
