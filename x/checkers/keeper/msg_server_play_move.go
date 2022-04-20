@@ -19,13 +19,17 @@ func (k msgServer) PlayMove(goCtx context.Context, msg *types.MsgPlayMove) (*typ
 	}
 
 	// Is it an expected player?
+	isRed := strings.Compare(storedGame.Red, msg.Creator) == 0
+	isBlack := strings.Compare(storedGame.Black, msg.Creator) == 0
 	var player rules.Player
-	if strings.Compare(storedGame.Red, msg.Creator) == 0 {
-		player = rules.RED_PLAYER
-	} else if strings.Compare(storedGame.Black, msg.Creator) == 0 {
-		player = rules.BLACK_PLAYER
-	} else {
+	if !isRed && !isBlack {
 		return nil, types.ErrCreatorNotPlayer
+	} else if isRed && isBlack {
+		player = rules.StringPieces[storedGame.Turn].Player
+	} else if isRed {
+		player = rules.RED_PLAYER
+	} else {
+		player = rules.BLACK_PLAYER
 	}
 
 	// Is it the player's turn?
