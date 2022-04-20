@@ -45,6 +45,7 @@ func (suite *IntegrationTestSuite) TestPlayMoveSameBlackRed() {
 		Red:     bob,
 		Black:   bob,
 		Wager:   11,
+		Token:   sdk.DefaultBondDenom,
 	})
 	playMoveResponse, err := suite.msgServer.PlayMove(goCtx, &types.MsgPlayMove{
 		Creator: bob,
