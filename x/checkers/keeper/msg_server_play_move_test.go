@@ -50,6 +50,7 @@ func TestPlayMoveSameBlackRed(t *testing.T) {
 		Creator: alice,
 		Red:     bob,
 		Black:   bob,
+		Wager:   11,
 	})
 	playMoveResponse, err := msgServer.PlayMove(context, &types.MsgPlayMove{
 		Creator: bob,
