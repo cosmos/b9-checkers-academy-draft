@@ -47,6 +47,41 @@ curl https://get.starport.network/xavierlepretre/checkers@latest! | sudo bash
 ```
 `xavierlepretre/checkers` should match the `username` and `repo_name` of the Github repository to which the source code was pushed. Learn more about [the install process](https://github.com/allinbits/starport-installer).
 
+## Submodules
+
+From the `cosmjs-elements` branch onward, there is a submodule linking the `client` folder to the [GUI repository](https://github.com/cosmos/academy-checkers-ui).
+
+* To clone this repository and checkout the submodule at the same time (this is optional), run
+    
+    ```sh
+    $ git clone --recurse-submodules THIS_REPO
+    ```
+
+    Or `--recursive` if your Git version is `< 2.13`.
+
+* If you want to checkout the submodule at a later date, run:
+
+    ```sh
+    $ git submodule update --init
+    ```
+
+### Make updates
+
+The submodule is checked at a specific commit. If you are a maintainer of this repository and want to change the submodule's commit, then you have to commit this new information. To do this:
+
+```sh
+# Go to client
+$ cd client
+# Checkout the version you want
+$ git checkout xxyy
+# Return to the main repository
+$ cd ..
+# Add the submodule to git's list
+$ git add client
+```
+
+From there, proceed as you usually proceed to `commit` and `push`.
+
 ## Progressive feature branches
 
 * `starport-start`
