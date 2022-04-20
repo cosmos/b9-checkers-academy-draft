@@ -44,6 +44,30 @@ func TestPlayMove(t *testing.T) {
 	}, *playMoveResponse)
 }
 
+func TestPlayMoveSameBlackRed(t *testing.T) {
+	msgServer, _, context := setupMsgServerCreateGame(t)
+	msgServer.CreateGame(context, &types.MsgCreateGame{
+		Creator: alice,
+		Red:     bob,
+		Black:   bob,
+	})
+	playMoveResponse, err := msgServer.PlayMove(context, &types.MsgPlayMove{
+		Creator: bob,
+		IdValue: "1",
+		FromX:   1,
+		FromY:   2,
+		ToX:     2,
+		ToY:     3,
+	})
+	require.Nil(t, err)
+	require.EqualValues(t, types.MsgPlayMoveResponse{
+		IdValue:   "1",
+		CapturedX: -1,
+		CapturedY: -1,
+		Winner:    rules.NO_PLAYER.Color,
+	}, *playMoveResponse)
+}
+
 func TestPlayMoveSavedGame(t *testing.T) {
 	msgServer, keeper, context := setupMsgServerWithOneGameForPlayMove(t)
 	ctx := sdk.UnwrapSDKContext(context)
