@@ -26,10 +26,10 @@ EXPOSE 1317 4500 26657
 
 WORKDIR /home/checkers
 
-ENTRYPOINT [ "bash", "-c" ]
+# ENTRYPOINT [ "bash", "-c" ]
 
 # Create the image
-# $ docker build ./Dockerfile-ubuntu -t checkers_i
+# $ docker build -f Dockerfile-ubuntu . -t checkers_i
 # To test only
 # $ docker run --rm -it -v $(pwd):/home/checkers checkers_i bash -c 
 # To build container
