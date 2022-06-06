@@ -8,7 +8,6 @@ import (
 	"github.com/stretchr/testify/require"
 	"github.com/xavierlepretre/checkers/x/checkers"
 	"github.com/xavierlepretre/checkers/x/checkers/keeper"
-	"github.com/xavierlepretre/checkers/x/checkers/rules"
 	"github.com/xavierlepretre/checkers/x/checkers/types"
 )
 
@@ -40,7 +39,7 @@ func TestPlayMove(t *testing.T) {
 		IdValue:   "1",
 		CapturedX: -1,
 		CapturedY: -1,
-		Winner:    rules.NO_PLAYER.Color,
+		Winner:    "*",
 	}, *playMoveResponse)
 }
 
@@ -64,7 +63,7 @@ func TestPlayMoveSameBlackRed(t *testing.T) {
 		IdValue:   "1",
 		CapturedX: -1,
 		CapturedY: -1,
-		Winner:    rules.NO_PLAYER.Color,
+		Winner:    "*",
 	}, *playMoveResponse)
 }
 
@@ -147,7 +146,7 @@ func TestPlayMove2(t *testing.T) {
 		IdValue:   "1",
 		CapturedX: -1,
 		CapturedY: -1,
-		Winner:    rules.NO_PLAYER.Color,
+		Winner:    "*",
 	}, *playMoveResponse)
 }
 
@@ -218,7 +217,7 @@ func TestPlayMove3(t *testing.T) {
 		IdValue:   "1",
 		CapturedX: 1,
 		CapturedY: 4,
-		Winner:    rules.NO_PLAYER.Color,
+		Winner:    "*",
 	}, *playMoveResponse)
 }
 
