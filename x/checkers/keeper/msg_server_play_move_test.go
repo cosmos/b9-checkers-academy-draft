@@ -63,7 +63,7 @@ func TestPlayMoveSameBlackRed(t *testing.T) {
 		IdValue:   "1",
 		CapturedX: -1,
 		CapturedY: -1,
-		Winner:    rules.NO_PLAYER.Color,
+		Winner:    "*",
 	}, *playMoveResponse)
 }
 
