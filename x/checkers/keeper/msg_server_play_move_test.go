@@ -147,7 +147,7 @@ func TestPlayMoveEmitted(t *testing.T) {
 		{Key: "IdValue", Value: "1"},
 		{Key: "CapturedX", Value: "-1"},
 		{Key: "CapturedY", Value: "-1"},
-		{Key: "Winner", Value: "NO_PLAYER"},
+		{Key: "Winner", Value: "*"},
 	}, event.Attributes[6:])
 }
 
