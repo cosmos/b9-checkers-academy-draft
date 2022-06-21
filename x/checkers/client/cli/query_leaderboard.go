@@ -1,12 +1,12 @@
 package cli
 
 import (
-    "context"
+	"context"
 
+	"github.com/b9lab/checkers/x/checkers/types"
 	"github.com/cosmos/cosmos-sdk/client"
 	"github.com/cosmos/cosmos-sdk/client/flags"
 	"github.com/spf13/cobra"
-    "github.com/xavierlepretre/checkers/x/checkers/types"
 )
 
 func CmdShowLeaderboard() *cobra.Command {
@@ -15,22 +15,22 @@ func CmdShowLeaderboard() *cobra.Command {
 		Short: "shows leaderboard",
 		Args:  cobra.NoArgs,
 		RunE: func(cmd *cobra.Command, args []string) error {
-            clientCtx := client.GetClientContextFromCmd(cmd)
+			clientCtx := client.GetClientContextFromCmd(cmd)
 
-            queryClient := types.NewQueryClient(clientCtx)
+			queryClient := types.NewQueryClient(clientCtx)
 
-            params := &types.QueryGetLeaderboardRequest{}
+			params := &types.QueryGetLeaderboardRequest{}
 
-            res, err := queryClient.Leaderboard(context.Background(), params)
-            if err != nil {
-                return err
-            }
+			res, err := queryClient.Leaderboard(context.Background(), params)
+			if err != nil {
+				return err
+			}
 
-            return clientCtx.PrintProto(res)
+			return clientCtx.PrintProto(res)
 		},
 	}
 
 	flags.AddQueryFlagsToCmd(cmd)
 
-    return cmd
+	return cmd
 }

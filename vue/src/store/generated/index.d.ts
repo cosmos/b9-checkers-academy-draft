@@ -1,4 +1,5 @@
 declare const _default: {
+    B9LabCheckersB9LabCheckersCheckers: (store: any) => void;
     CosmosCosmosSdkCosmosBankV1Beta1: (store: any) => void;
     CosmosCosmosSdkCosmosBaseAbciV1Beta1: (store: any) => void;
     CosmosCosmosSdkCosmosBaseV1Beta1: (store: any) => void;
@@ -13,6 +14,5 @@ declare const _default: {
     CosmosCosmosSdkIbcCoreChannelV1: (store: any) => void;
     CosmosCosmosSdkIbcCoreClientV1: (store: any) => void;
     CosmosCosmosSdkIbcCoreConnectionV1: (store: any) => void;
-    XavierlepretreCheckersXavierlepretreCheckersCheckers: (store: any) => void;
 };
 export default _default;

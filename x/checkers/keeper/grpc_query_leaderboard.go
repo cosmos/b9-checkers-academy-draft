@@ -3,8 +3,8 @@ package keeper
 import (
 	"context"
 
+	"github.com/b9lab/checkers/x/checkers/types"
 	sdk "github.com/cosmos/cosmos-sdk/types"
-	"github.com/xavierlepretre/checkers/x/checkers/types"
 	"google.golang.org/grpc/codes"
 	"google.golang.org/grpc/status"
 )
@@ -17,7 +17,7 @@ func (k Keeper) Leaderboard(c context.Context, req *types.QueryGetLeaderboardReq
 
 	val, found := k.GetLeaderboard(ctx)
 	if !found {
-	    return nil, status.Error(codes.InvalidArgument, "not found")
+		return nil, status.Error(codes.InvalidArgument, "not found")
 	}
 
 	return &types.QueryGetLeaderboardResponse{Leaderboard: &val}, nil

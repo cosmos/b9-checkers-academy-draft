@@ -4,9 +4,9 @@ import (
 	"context"
 	"strconv"
 
+	rules "github.com/b9lab/checkers/x/checkers/rules"
+	"github.com/b9lab/checkers/x/checkers/types"
 	sdk "github.com/cosmos/cosmos-sdk/types"
-	rules "github.com/xavierlepretre/checkers/x/checkers/rules"
-	"github.com/xavierlepretre/checkers/x/checkers/types"
 )
 
 func (k msgServer) CreateGame(goCtx context.Context, msg *types.MsgCreateGame) (*types.MsgCreateGameResponse, error) {
@@ -22,14 +22,14 @@ func (k msgServer) CreateGame(goCtx context.Context, msg *types.MsgCreateGame) (
 		Creator:   msg.Creator,
 		Index:     newIndex,
 		Game:      newGame.String(),
-		Turn:      newGame.Turn.Color,
+		Turn:      rules.PieceStrings[newGame.Turn],
 		Red:       msg.Red,
 		Black:     msg.Black,
 		MoveCount: 0,
 		BeforeId:  types.NoFifoIdKey,
 		AfterId:   types.NoFifoIdKey,
 		Deadline:  types.FormatDeadline(types.GetNextDeadline(ctx)),
-		Winner:    rules.NO_PLAYER.Color,
+		Winner:    rules.PieceStrings[rules.NO_PLAYER],
 		Wager:     msg.Wager,
 		Token:     msg.Token,
 	}
