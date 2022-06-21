@@ -5,6 +5,7 @@ import (
 	"testing"
 	"time"
 
+	"github.com/b9lab/checkers/x/checkers/types"
 	codectypes "github.com/cosmos/cosmos-sdk/codec/types"
 	cryptocodec "github.com/cosmos/cosmos-sdk/crypto/codec"
 	servertypes "github.com/cosmos/cosmos-sdk/server/types"
@@ -18,7 +19,6 @@ import (
 	tmproto "github.com/tendermint/tendermint/proto/tendermint/types"
 	tmtypes "github.com/tendermint/tendermint/types"
 	dbm "github.com/tendermint/tm-db"
-	"github.com/xavierlepretre/checkers/x/checkers/types"
 )
 
 var DefaultConsensusParams = &abci.ConsensusParams{

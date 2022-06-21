@@ -1,9 +1,9 @@
 package app
 
 import (
+	appparams "github.com/b9lab/checkers/app/params"
 	"github.com/cosmos/cosmos-sdk/std"
 	"github.com/tendermint/spm/cosmoscmd"
-	appparams "github.com/xavierlepretre/checkers/app/params"
 )
 
 // MakeTestEncodingConfig creates an EncodingConfig for testing.

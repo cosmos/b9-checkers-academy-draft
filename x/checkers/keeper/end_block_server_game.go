@@ -5,9 +5,9 @@ import (
 	"fmt"
 	"strings"
 
+	rules "github.com/b9lab/checkers/x/checkers/rules"
+	"github.com/b9lab/checkers/x/checkers/types"
 	sdk "github.com/cosmos/cosmos-sdk/types"
-	rules "github.com/xavierlepretre/checkers/x/checkers/rules"
-	"github.com/xavierlepretre/checkers/x/checkers/types"
 )
 
 func (k Keeper) ForfeitExpiredGames(goCtx context.Context) {

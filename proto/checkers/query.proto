@@ -1,5 +1,5 @@
 syntax = "proto3";
-package xavierlepretre.checkers.checkers;
+package b9lab.checkers.checkers;
 
 import "google/api/annotations.proto";
 import "cosmos/base/query/v1beta1/pagination.proto";
@@ -7,7 +7,7 @@ import "cosmos/base/query/v1beta1/pagination.proto";
 import "checkers/stored_game.proto";
 import "checkers/next_game.proto";
 
-option go_package = "github.com/xavierlepretre/checkers/x/checkers/types";
+option go_package = "github.com/b9lab/checkers/x/checkers/types";
 
 // Query defines the gRPC querier service.
 service Query {
@@ -15,22 +15,22 @@ service Query {
 
 	// Queries a list of canPlayMove items.
 	rpc CanPlayMove(QueryCanPlayMoveRequest) returns (QueryCanPlayMoveResponse) {
-		option (google.api.http).get = "/xavierlepretre/checkers/checkers/canPlayMove";
+		option (google.api.http).get = "/b9lab/checkers/checkers/canPlayMove";
 	}
 
 	// Queries a storedGame by index.
 	rpc StoredGame(QueryGetStoredGameRequest) returns (QueryGetStoredGameResponse) {
-		option (google.api.http).get = "/xavierlepretre/checkers/checkers/storedGame/{index}";
+		option (google.api.http).get = "/b9lab/checkers/checkers/storedGame/{index}";
 	}
 
 	// Queries a list of storedGame items.
 	rpc StoredGameAll(QueryAllStoredGameRequest) returns (QueryAllStoredGameResponse) {
-		option (google.api.http).get = "/xavierlepretre/checkers/checkers/storedGame";
+		option (google.api.http).get = "/b9lab/checkers/checkers/storedGame";
 	}
 
 	// Queries a nextGame by index.
 	rpc NextGame(QueryGetNextGameRequest) returns (QueryGetNextGameResponse) {
-		option (google.api.http).get = "/xavierlepretre/checkers/checkers/nextGame";
+		option (google.api.http).get = "/b9lab/checkers/checkers/nextGame";
 	}
 
 }

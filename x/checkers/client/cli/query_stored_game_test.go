@@ -13,9 +13,9 @@ import (
 	"google.golang.org/grpc/codes"
 	"google.golang.org/grpc/status"
 
-	"github.com/xavierlepretre/checkers/testutil/network"
-	"github.com/xavierlepretre/checkers/x/checkers/client/cli"
-	"github.com/xavierlepretre/checkers/x/checkers/types"
+	"github.com/b9lab/checkers/testutil/network"
+	"github.com/b9lab/checkers/x/checkers/client/cli"
+	"github.com/b9lab/checkers/x/checkers/types"
 )
 
 func networkWithStoredGameObjects(t *testing.T, n int) (*network.Network, []*types.StoredGame) {
