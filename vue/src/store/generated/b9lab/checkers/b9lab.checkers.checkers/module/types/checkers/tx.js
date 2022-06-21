@@ -1,6 +1,6 @@
 /* eslint-disable */
 import { Reader, Writer } from 'protobufjs/minimal';
-export const protobufPackage = 'xavierlepretre.checkers.checkers';
+export const protobufPackage = 'b9lab.checkers.checkers';
 const baseMsgCreateGame = { creator: '', red: '', black: '' };
 export const MsgCreateGame = {
     encode(message, writer = Writer.create()) {
@@ -147,7 +147,7 @@ export class MsgClientImpl {
     }
     CreateGame(request) {
         const data = MsgCreateGame.encode(request).finish();
-        const promise = this.rpc.request('xavierlepretre.checkers.checkers.Msg', 'CreateGame', data);
+        const promise = this.rpc.request('b9lab.checkers.checkers.Msg', 'CreateGame', data);
         return promise.then((data) => MsgCreateGameResponse.decode(new Reader(data)));
     }
 }
