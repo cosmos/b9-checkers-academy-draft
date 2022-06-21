@@ -1,4 +1,5 @@
 // THIS FILE IS GENERATED AUTOMATICALLY. DO NOT MODIFY.
+import B9LabCheckersB9LabCheckersCheckers from './b9lab/checkers/b9lab.checkers.checkers';
 import CosmosCosmosSdkCosmosBankV1Beta1 from './cosmos/cosmos-sdk/cosmos.bank.v1beta1';
 import CosmosCosmosSdkCosmosBaseAbciV1Beta1 from './cosmos/cosmos-sdk/cosmos.base.abci.v1beta1';
 import CosmosCosmosSdkCosmosBaseV1Beta1 from './cosmos/cosmos-sdk/cosmos.base.v1beta1';
@@ -13,8 +14,8 @@ import CosmosCosmosSdkIbcApplicationsTransferV1 from './cosmos/cosmos-sdk/ibc.ap
 import CosmosCosmosSdkIbcCoreChannelV1 from './cosmos/cosmos-sdk/ibc.core.channel.v1';
 import CosmosCosmosSdkIbcCoreClientV1 from './cosmos/cosmos-sdk/ibc.core.client.v1';
 import CosmosCosmosSdkIbcCoreConnectionV1 from './cosmos/cosmos-sdk/ibc.core.connection.v1';
-import XavierlepretreCheckersXavierlepretreCheckersCheckers from './xavierlepretre/checkers/xavierlepretre.checkers.checkers';
 export default {
+    B9LabCheckersB9LabCheckersCheckers: load(B9LabCheckersB9LabCheckersCheckers, 'b9lab.checkers.checkers'),
     CosmosCosmosSdkCosmosBankV1Beta1: load(CosmosCosmosSdkCosmosBankV1Beta1, 'cosmos.bank.v1beta1'),
     CosmosCosmosSdkCosmosBaseAbciV1Beta1: load(CosmosCosmosSdkCosmosBaseAbciV1Beta1, 'cosmos.base.abci.v1beta1'),
     CosmosCosmosSdkCosmosBaseV1Beta1: load(CosmosCosmosSdkCosmosBaseV1Beta1, 'cosmos.base.v1beta1'),
@@ -29,7 +30,6 @@ export default {
     CosmosCosmosSdkIbcCoreChannelV1: load(CosmosCosmosSdkIbcCoreChannelV1, 'ibc.core.channel.v1'),
     CosmosCosmosSdkIbcCoreClientV1: load(CosmosCosmosSdkIbcCoreClientV1, 'ibc.core.client.v1'),
     CosmosCosmosSdkIbcCoreConnectionV1: load(CosmosCosmosSdkIbcCoreConnectionV1, 'ibc.core.connection.v1'),
-    XavierlepretreCheckersXavierlepretreCheckersCheckers: load(XavierlepretreCheckersXavierlepretreCheckersCheckers, 'xavierlepretre.checkers.checkers'),
 };
 function load(mod, fullns) {
     return function init(store) {
