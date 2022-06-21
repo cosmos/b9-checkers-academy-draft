@@ -5,10 +5,10 @@ import (
 	"fmt"
 	"strings"
 
+	rules "github.com/b9lab/checkers/x/checkers/rules"
+	"github.com/b9lab/checkers/x/checkers/types"
 	sdk "github.com/cosmos/cosmos-sdk/types"
 	sdkerrors "github.com/cosmos/cosmos-sdk/types/errors"
-	rules "github.com/xavierlepretre/checkers/x/checkers/rules"
-	"github.com/xavierlepretre/checkers/x/checkers/types"
 	"google.golang.org/grpc/codes"
 	"google.golang.org/grpc/status"
 )
@@ -26,7 +26,7 @@ func (k Keeper) CanPlayMove(goCtx context.Context, req *types.QueryCanPlayMoveRe
 	}
 
 	// Is the game already won? Can happen when it is forfeited.
-	if storedGame.Winner != rules.NO_PLAYER.Color {
+	if storedGame.Winner != rules.PieceStrings[rules.NO_PLAYER] {
 		return &types.QueryCanPlayMoveResponse{
 			Possible: false,
 			Reason:   types.ErrGameFinished.Error(),
@@ -35,9 +35,9 @@ func (k Keeper) CanPlayMove(goCtx context.Context, req *types.QueryCanPlayMoveRe
 
 	// Is it an expected player?
 	var player rules.Player
-	if strings.Compare(rules.RED_PLAYER.Color, req.Player) == 0 {
+	if strings.Compare(rules.PieceStrings[rules.RED_PLAYER], req.Player) == 0 {
 		player = rules.RED_PLAYER
-	} else if strings.Compare(rules.BLACK_PLAYER.Color, req.Player) == 0 {
+	} else if strings.Compare(rules.PieceStrings[rules.BLACK_PLAYER], req.Player) == 0 {
 		player = rules.BLACK_PLAYER
 	} else {
 		return &types.QueryCanPlayMoveResponse{

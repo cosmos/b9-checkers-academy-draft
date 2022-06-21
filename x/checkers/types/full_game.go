@@ -1,11 +1,13 @@
 package types
 
 import (
+	"errors"
+	"fmt"
 	"time"
 
+	"github.com/b9lab/checkers/x/checkers/rules"
 	sdk "github.com/cosmos/cosmos-sdk/types"
 	sdkerrors "github.com/cosmos/cosmos-sdk/types/errors"
-	"github.com/xavierlepretre/checkers/x/checkers/rules"
 )
 
 func (storedGame *StoredGame) GetCreatorAddress() (creator sdk.AccAddress, err error) {
@@ -25,11 +27,12 @@ func (storedGame *StoredGame) GetBlackAddress() (black sdk.AccAddress, err error
 
 func (storedGame *StoredGame) ParseGame() (game *rules.Game, err error) {
 	game, errGame := rules.Parse(storedGame.Game)
-	if err != nil {
-		return game, sdkerrors.Wrapf(errGame, ErrGameNotParseable.Error())
+	if errGame != nil {
+		return nil, sdkerrors.Wrapf(errGame, ErrGameNotParseable.Error())
 	}
-	game.Turn = rules.Player{
-		Color: storedGame.Turn,
+	game.Turn = rules.StringPieces[storedGame.Turn].Player
+	if game.Turn.Color == "" {
+		return nil, sdkerrors.Wrapf(errors.New(fmt.Sprintf("Turn: %s", storedGame.Turn)), ErrGameNotParseable.Error())
 	}
 	return game, nil
 }
@@ -40,7 +43,7 @@ func (storedGame *StoredGame) GetDeadlineAsTime() (deadline time.Time, err error
 }
 
 func GetNextDeadline(ctx sdk.Context) time.Time {
-	return ctx.BlockTime().Add(MaxTurnDurationInSeconds)
+	return ctx.BlockTime().Add(MaxTurnDuration)
 }
 
 func FormatDeadline(deadline time.Time) string {
@@ -57,8 +60,8 @@ func (storedGame *StoredGame) GetPlayerAddress(color string) (address sdk.AccAdd
 		return nil, false, err
 	}
 	address, found = map[string]sdk.AccAddress{
-		rules.RED_PLAYER.Color:   red,
-		rules.BLACK_PLAYER.Color: black,
+		rules.PieceStrings[rules.RED_PLAYER]:   red,
+		rules.PieceStrings[rules.BLACK_PLAYER]: black,
 	}[color]
 	return address, found, nil
 }
