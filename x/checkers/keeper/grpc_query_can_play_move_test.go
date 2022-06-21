@@ -8,7 +8,7 @@ import (
 	"google.golang.org/grpc/codes"
 	"google.golang.org/grpc/status"
 
-	"github.com/xavierlepretre/checkers/x/checkers/types"
+	"github.com/b9lab/checkers/x/checkers/types"
 )
 
 type canPlayBoard struct {
@@ -158,7 +158,7 @@ func TestCanPlayWrongNoGame(t *testing.T) {
 	goCtx := sdk.WrapSDKContext(ctx)
 	keeper.SetStoredGame(ctx, types.StoredGame{
 		Creator:   alice,
-		Index:     "9999999999",
+		Index:     "1",
 		Game:      firstTestCase.board,
 		Turn:      firstTestCase.turn,
 		Red:       bob,
@@ -170,8 +170,16 @@ func TestCanPlayWrongNoGame(t *testing.T) {
 		Winner:    "*",
 		Wager:     0,
 	})
-	_, err := keeper.CanPlayMove(goCtx, nil)
-	require.Error(t, err, "game by id not found: 9999999999")
+	_, err := keeper.CanPlayMove(goCtx, &types.QueryCanPlayMoveRequest{
+		IdValue: "2",
+		Player:  "b",
+		FromX:   2,
+		FromY:   7,
+		ToX:     4,
+		ToY:     5,
+	})
+	require.NotNil(t, err)
+	require.EqualError(t, err, "game by id not found: 2: game by id not found: %s")
 }
 
 func (suite *IntegrationTestSuite) TestCanPlayAfterCreate() {

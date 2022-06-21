@@ -16,8 +16,8 @@ import (
 	tmproto "github.com/tendermint/tendermint/proto/tendermint/types"
 	tmdb "github.com/tendermint/tm-db"
 
-	"github.com/xavierlepretre/checkers/x/checkers/keeper"
-	"github.com/xavierlepretre/checkers/x/checkers/types"
+	"github.com/b9lab/checkers/x/checkers/keeper"
+	"github.com/b9lab/checkers/x/checkers/types"
 )
 
 func setupKeeper(t testing.TB) (*keeper.Keeper, sdk.Context) {
