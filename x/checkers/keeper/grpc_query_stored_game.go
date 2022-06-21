@@ -3,10 +3,10 @@ package keeper
 import (
 	"context"
 
+	"github.com/b9lab/checkers/x/checkers/types"
 	"github.com/cosmos/cosmos-sdk/store/prefix"
 	sdk "github.com/cosmos/cosmos-sdk/types"
 	"github.com/cosmos/cosmos-sdk/types/query"
-	"github.com/xavierlepretre/checkers/x/checkers/types"
 	"google.golang.org/grpc/codes"
 	"google.golang.org/grpc/status"
 )
