@@ -1,9 +1,9 @@
 package keeper
 
 import (
+	"github.com/b9lab/checkers/x/checkers/types"
 	"github.com/cosmos/cosmos-sdk/store/prefix"
 	sdk "github.com/cosmos/cosmos-sdk/types"
-	"github.com/xavierlepretre/checkers/x/checkers/types"
 )
 
 // SetNextGame set nextGame in the store

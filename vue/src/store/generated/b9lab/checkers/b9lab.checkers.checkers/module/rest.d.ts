@@ -159,7 +159,7 @@ export declare class Api<SecurityDataType extends unknown> extends HttpClient<Se
      * @tags Query
      * @name QueryNextGame
      * @summary Queries a nextGame by index.
-     * @request GET:/xavierlepretre/checkers/checkers/nextGame
+     * @request GET:/b9lab/checkers/checkers/nextGame
      */
     queryNextGame: (params?: RequestParams) => Promise<HttpResponse<CheckersQueryGetNextGameResponse, RpcStatus>>;
     /**
@@ -168,7 +168,7 @@ export declare class Api<SecurityDataType extends unknown> extends HttpClient<Se
      * @tags Query
      * @name QueryStoredGameAll
      * @summary Queries a list of storedGame items.
-     * @request GET:/xavierlepretre/checkers/checkers/storedGame
+     * @request GET:/b9lab/checkers/checkers/storedGame
      */
     queryStoredGameAll: (query?: {
         "pagination.key"?: string;
@@ -182,7 +182,7 @@ export declare class Api<SecurityDataType extends unknown> extends HttpClient<Se
      * @tags Query
      * @name QueryStoredGame
      * @summary Queries a storedGame by index.
-     * @request GET:/xavierlepretre/checkers/checkers/storedGame/{index}
+     * @request GET:/b9lab/checkers/checkers/storedGame/{index}
      */
     queryStoredGame: (index: string, params?: RequestParams) => Promise<HttpResponse<CheckersQueryGetStoredGameResponse, RpcStatus>>;
 }

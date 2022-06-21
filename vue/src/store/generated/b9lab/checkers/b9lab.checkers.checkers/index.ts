@@ -103,7 +103,7 @@ export default {
 	},
 	actions: {
 		init({ dispatch, rootGetters }) {
-			console.log('Vuex module: xavierlepretre.checkers.checkers initialized!')
+			console.log('Vuex module: b9lab.checkers.checkers initialized!')
 			if (rootGetters['common/env/client']) {
 				rootGetters['common/env/client'].on('newblock', () => {
 					dispatch('StoreUpdate')

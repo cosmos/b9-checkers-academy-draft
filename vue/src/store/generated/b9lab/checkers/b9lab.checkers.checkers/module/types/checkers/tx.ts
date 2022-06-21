@@ -2,7 +2,7 @@
 import { Reader, util, configure, Writer } from 'protobufjs/minimal'
 import * as Long from 'long'
 
-export const protobufPackage = 'xavierlepretre.checkers.checkers'
+export const protobufPackage = 'b9lab.checkers.checkers'
 
 /** this line is used by starport scaffolding # proto/tx/message */
 export interface MsgPlayMove {
@@ -381,13 +381,13 @@ export class MsgClientImpl implements Msg {
   }
   PlayMove(request: MsgPlayMove): Promise<MsgPlayMoveResponse> {
     const data = MsgPlayMove.encode(request).finish()
-    const promise = this.rpc.request('xavierlepretre.checkers.checkers.Msg', 'PlayMove', data)
+    const promise = this.rpc.request('b9lab.checkers.checkers.Msg', 'PlayMove', data)
     return promise.then((data) => MsgPlayMoveResponse.decode(new Reader(data)))
   }
 
   CreateGame(request: MsgCreateGame): Promise<MsgCreateGameResponse> {
     const data = MsgCreateGame.encode(request).finish()
-    const promise = this.rpc.request('xavierlepretre.checkers.checkers.Msg', 'CreateGame', data)
+    const promise = this.rpc.request('b9lab.checkers.checkers.Msg', 'CreateGame', data)
     return promise.then((data) => MsgCreateGameResponse.decode(new Reader(data)))
   }
 }
