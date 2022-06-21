@@ -17281,7 +17281,7 @@ paths:
             latest_height overrrides the height field and queries the latest
             stored
 
-            ConsensusState.
+            ConsensusState
           in: query
           required: false
           type: boolean

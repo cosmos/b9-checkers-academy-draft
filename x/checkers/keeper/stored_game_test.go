@@ -7,7 +7,7 @@ import (
 	sdk "github.com/cosmos/cosmos-sdk/types"
 	"github.com/stretchr/testify/assert"
 
-	"github.com/xavierlepretre/checkers/x/checkers/types"
+	"github.com/b9lab/checkers/x/checkers/types"
 )
 
 func createNStoredGame(keeper *Keeper, ctx sdk.Context, n int) []types.StoredGame {
