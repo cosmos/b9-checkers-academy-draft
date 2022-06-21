@@ -8,7 +8,7 @@ import (
 	"google.golang.org/grpc/codes"
 	"google.golang.org/grpc/status"
 
-	"github.com/xavierlepretre/checkers/x/checkers/types"
+	"github.com/b9lab/checkers/x/checkers/types"
 )
 
 type canPlayBoard struct {
