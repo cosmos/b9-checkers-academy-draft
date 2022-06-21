@@ -1,4 +1,4 @@
-module github.com/xavierlepretre/checkers
+module github.com/b9lab/checkers
 
 go 1.16
 
