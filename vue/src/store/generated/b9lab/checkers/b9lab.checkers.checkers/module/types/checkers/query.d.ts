@@ -2,7 +2,7 @@ import { Reader, Writer } from 'protobufjs/minimal';
 import { StoredGame } from '../checkers/stored_game';
 import { PageRequest, PageResponse } from '../cosmos/base/query/v1beta1/pagination';
 import { NextGame } from '../checkers/next_game';
-export declare const protobufPackage = "xavierlepretre.checkers.checkers";
+export declare const protobufPackage = "b9lab.checkers.checkers";
 /** this line is used by starport scaffolding # 3 */
 export interface QueryGetStoredGameRequest {
     index: string;

@@ -8,7 +8,7 @@ import { MsgCreateGame } from "./types/checkers/tx";
 
 
 const types = [
-  ["/xavierlepretre.checkers.checkers.MsgCreateGame", MsgCreateGame],
+  ["/b9lab.checkers.checkers.MsgCreateGame", MsgCreateGame],
   
 ];
 export const MissingWalletError = new Error("wallet is required");
@@ -37,7 +37,7 @@ const txClient = async (wallet: OfflineSigner, { addr: addr }: TxClientOptions =
 
   return {
     signAndBroadcast: (msgs: EncodeObject[], { fee, memo }: SignAndBroadcastOptions = {fee: defaultFee, memo: ""}) => client.signAndBroadcast(address, msgs, fee,memo),
-    msgCreateGame: (data: MsgCreateGame): EncodeObject => ({ typeUrl: "/xavierlepretre.checkers.checkers.MsgCreateGame", value: data }),
+    msgCreateGame: (data: MsgCreateGame): EncodeObject => ({ typeUrl: "/b9lab.checkers.checkers.MsgCreateGame", value: data }),
     
   };
 };

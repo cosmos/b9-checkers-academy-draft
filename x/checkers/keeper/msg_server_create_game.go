@@ -3,8 +3,8 @@ package keeper
 import (
 	"context"
 
+	"github.com/b9lab/checkers/x/checkers/types"
 	sdk "github.com/cosmos/cosmos-sdk/types"
-	"github.com/xavierlepretre/checkers/x/checkers/types"
 )
 
 func (k msgServer) CreateGame(goCtx context.Context, msg *types.MsgCreateGame) (*types.MsgCreateGameResponse, error) {

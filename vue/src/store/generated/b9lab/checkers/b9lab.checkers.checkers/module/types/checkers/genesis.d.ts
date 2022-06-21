@@ -1,7 +1,7 @@
 import { StoredGame } from '../checkers/stored_game';
 import { NextGame } from '../checkers/next_game';
 import { Writer, Reader } from 'protobufjs/minimal';
-export declare const protobufPackage = "xavierlepretre.checkers.checkers";
+export declare const protobufPackage = "b9lab.checkers.checkers";
 /** GenesisState defines the checkers module's genesis state. */
 export interface GenesisState {
     /** this line is used by starport scaffolding # genesis/proto/state */

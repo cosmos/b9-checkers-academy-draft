@@ -1,7 +1,7 @@
 /* eslint-disable */
 import { Reader, Writer } from 'protobufjs/minimal'
 
-export const protobufPackage = 'xavierlepretre.checkers.checkers'
+export const protobufPackage = 'b9lab.checkers.checkers'
 
 /** this line is used by starport scaffolding # proto/tx/message */
 export interface MsgCreateGame {
@@ -171,7 +171,7 @@ export class MsgClientImpl implements Msg {
   }
   CreateGame(request: MsgCreateGame): Promise<MsgCreateGameResponse> {
     const data = MsgCreateGame.encode(request).finish()
-    const promise = this.rpc.request('xavierlepretre.checkers.checkers.Msg', 'CreateGame', data)
+    const promise = this.rpc.request('b9lab.checkers.checkers.Msg', 'CreateGame', data)
     return promise.then((data) => MsgCreateGameResponse.decode(new Reader(data)))
   }
 }

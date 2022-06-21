@@ -1,7 +1,7 @@
 /* eslint-disable */
 import { Writer, Reader } from 'protobufjs/minimal'
 
-export const protobufPackage = 'xavierlepretre.checkers.checkers'
+export const protobufPackage = 'b9lab.checkers.checkers'
 
 export interface StoredGame {
   creator: string

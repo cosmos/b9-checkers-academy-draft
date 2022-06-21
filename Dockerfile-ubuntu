@@ -1,0 +1,41 @@
+FROM ubuntu:18.04
+
+# Change your versions here
+ENV GO_VERSION=1.16.15
+ENV IGNITE_VERSION=0.17.3
+
+ENV LOCAL=/usr/local
+ENV GOROOT=$LOCAL/go
+ENV HOME=/root
+ENV GOPATH=$HOME/go
+ENV PATH=$GOROOT/bin:$GOPATH/bin:$PATH
+
+RUN mkdir -p $GOPATH/bin
+
+ENV PACKAGES curl gcc
+RUN apt-get update
+RUN apt-get install -y $PACKAGES
+
+# Install Go
+RUN curl -L https://go.dev/dl/go${GO_VERSION}.linux-amd64.tar.gz | tar -C $LOCAL -xzf -
+
+# Install ignite
+RUN curl -L https://get.ignite.com/cli@v${IGNITE_VERSION}! | bash
+
+EXPOSE 1317 4500 26657
+
+WORKDIR /home/checkers
+
+# ENTRYPOINT [ "bash", "-c" ]
+
+# Create the image
+# $ docker build -f Dockerfile-ubuntu . -t checkers_i
+# To test only
+# $ docker run --rm -it -v $(pwd):/home/checkers checkers_i bash -c 
+# To build container
+# $ docker create --name checkers -i -v $(pwd):/home/checkers -p 1317:1317 -p 4500:4500 -p 26657:26657 checkers_i
+# $ docker start checkers
+# To run server on it
+# $ docker exec -i checkers ignite chain serve --reset-once
+# In other shell, to query it
+# $ docker exec -i checkers checkersd query checkers list-stored-game
