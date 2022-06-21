@@ -3,9 +3,9 @@ package main
 import (
 	"os"
 
+	"github.com/b9lab/checkers/app"
 	svrcmd "github.com/cosmos/cosmos-sdk/server/cmd"
 	"github.com/tendermint/spm/cosmoscmd"
-	"github.com/xavierlepretre/checkers/app"
 )
 
 func main() {
