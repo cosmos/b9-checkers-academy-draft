@@ -1,4 +1,4 @@
-package keeper
+package keeper_test
 
 import (
 	"fmt"
@@ -7,10 +7,11 @@ import (
 	sdk "github.com/cosmos/cosmos-sdk/types"
 	"github.com/stretchr/testify/assert"
 
-	"github.com/xavierlepretre/checkers/x/checkers/types"
+	"github.com/b9lab/checkers/x/checkers/keeper"
+	"github.com/b9lab/checkers/x/checkers/types"
 )
 
-func createNPlayerInfo(keeper *Keeper, ctx sdk.Context, n int) []types.PlayerInfo {
+func createNPlayerInfo(keeper *keeper.Keeper, ctx sdk.Context, n int) []types.PlayerInfo {
 	items := make([]types.PlayerInfo, n)
 	for i := range items {
 		items[i].Index = fmt.Sprintf("%d", i)

@@ -3,9 +3,9 @@ package keeper
 import (
 	"fmt"
 
+	"github.com/b9lab/checkers/x/checkers/rules"
+	"github.com/b9lab/checkers/x/checkers/types"
 	sdk "github.com/cosmos/cosmos-sdk/types"
-	"github.com/xavierlepretre/checkers/x/checkers/rules"
-	"github.com/xavierlepretre/checkers/x/checkers/types"
 )
 
 func mustAddDeltaGameResultToPlayer(
@@ -45,7 +45,7 @@ func (k *Keeper) MustAddForfeitedGameResultToPlayer(ctx sdk.Context, player sdk.
 }
 
 func getWinnerAndLoserAddresses(storedGame *types.StoredGame) (winnerAddress sdk.AccAddress, loserAddress sdk.AccAddress) {
-	if storedGame.Winner == rules.NO_PLAYER.Color {
+	if storedGame.Winner == rules.PieceStrings[rules.NO_PLAYER] {
 		panic(types.ErrThereIsNoWinner.Error())
 	}
 	redAddress, err := storedGame.GetRedAddress()
@@ -56,10 +56,10 @@ func getWinnerAndLoserAddresses(storedGame *types.StoredGame) (winnerAddress sdk
 	if err != nil {
 		panic(err.Error())
 	}
-	if storedGame.Winner == rules.RED_PLAYER.Color {
+	if storedGame.Winner == rules.PieceStrings[rules.RED_PLAYER] {
 		winnerAddress = redAddress
 		loserAddress = blackAddress
-	} else if storedGame.Winner == rules.BLACK_PLAYER.Color {
+	} else if storedGame.Winner == rules.PieceStrings[rules.BLACK_PLAYER] {
 		winnerAddress = blackAddress
 		loserAddress = redAddress
 	} else {

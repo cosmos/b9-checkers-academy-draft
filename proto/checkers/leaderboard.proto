@@ -1,9 +1,8 @@
 syntax = "proto3";
-package xavierlepretre.checkers.checkers;
+package b9lab.checkers.checkers;
 
-option go_package = "github.com/xavierlepretre/checkers/x/checkers/types";
+option go_package = "github.com/b9lab/checkers/x/checkers/types";
 
-import "gogoproto/gogo.proto";
 import "checkers/winning_player.proto";
 
 message Leaderboard {

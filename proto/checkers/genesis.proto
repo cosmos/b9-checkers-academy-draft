@@ -1,5 +1,5 @@
 syntax = "proto3";
-package xavierlepretre.checkers.checkers;
+package b9lab.checkers.checkers;
 
 // this line is used by starport scaffolding # genesis/proto/import
 import "checkers/leaderboard.proto";
@@ -7,7 +7,7 @@ import "checkers/player_info.proto";
 import "checkers/stored_game.proto";
 import "checkers/next_game.proto";
 
-option go_package = "github.com/xavierlepretre/checkers/x/checkers/types";
+option go_package = "github.com/b9lab/checkers/x/checkers/types";
 
 // GenesisState defines the checkers module's genesis state.
 message GenesisState {
