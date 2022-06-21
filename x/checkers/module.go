@@ -11,14 +11,14 @@ import (
 
 	abci "github.com/tendermint/tendermint/abci/types"
 
+	"github.com/b9lab/checkers/x/checkers/client/cli"
+	"github.com/b9lab/checkers/x/checkers/keeper"
+	"github.com/b9lab/checkers/x/checkers/types"
 	"github.com/cosmos/cosmos-sdk/client"
 	"github.com/cosmos/cosmos-sdk/codec"
 	cdctypes "github.com/cosmos/cosmos-sdk/codec/types"
 	sdk "github.com/cosmos/cosmos-sdk/types"
 	"github.com/cosmos/cosmos-sdk/types/module"
-	"github.com/xavierlepretre/checkers/x/checkers/client/cli"
-	"github.com/xavierlepretre/checkers/x/checkers/keeper"
-	"github.com/xavierlepretre/checkers/x/checkers/types"
 	// this line is used by starport scaffolding # ibc/module/import
 )
 

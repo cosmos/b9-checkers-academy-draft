@@ -5,10 +5,10 @@ import (
 	"strconv"
 	"strings"
 
+	rules "github.com/b9lab/checkers/x/checkers/rules"
+	"github.com/b9lab/checkers/x/checkers/types"
 	sdk "github.com/cosmos/cosmos-sdk/types"
 	sdkerrors "github.com/cosmos/cosmos-sdk/types/errors"
-	rules "github.com/xavierlepretre/checkers/x/checkers/rules"
-	"github.com/xavierlepretre/checkers/x/checkers/types"
 )
 
 func (k msgServer) PlayMove(goCtx context.Context, msg *types.MsgPlayMove) (*types.MsgPlayMoveResponse, error) {
@@ -80,6 +80,6 @@ func (k msgServer) PlayMove(goCtx context.Context, msg *types.MsgPlayMove) (*typ
 		IdValue:   msg.IdValue,
 		CapturedX: int64(captured.X),
 		CapturedY: int64(captured.Y),
-		Winner:    game.Winner().Color,
+		Winner:    rules.PieceStrings[game.Winner()],
 	}, nil
 }

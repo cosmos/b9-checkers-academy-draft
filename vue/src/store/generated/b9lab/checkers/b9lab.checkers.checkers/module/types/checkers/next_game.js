@@ -1,7 +1,7 @@
 /* eslint-disable */
 import * as Long from 'long';
 import { util, configure, Writer, Reader } from 'protobufjs/minimal';
-export const protobufPackage = 'xavierlepretre.checkers.checkers';
+export const protobufPackage = 'b9lab.checkers.checkers';
 const baseNextGame = { creator: '', idValue: 0 };
 export const NextGame = {
     encode(message, writer = Writer.create()) {

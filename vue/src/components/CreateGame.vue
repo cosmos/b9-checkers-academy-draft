@@ -50,7 +50,7 @@ export default {
         red: this.red,
         black: this.black,
       };
-      const result = await this.$store.dispatch("xavierlepretre.checkers.checkers/sendMsgCreateGame", {
+      const result = await this.$store.dispatch("b9lab.checkers.checkers/sendMsgCreateGame", {
         value,
         fee: [],
       });
