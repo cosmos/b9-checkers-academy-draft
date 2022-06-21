@@ -3,15 +3,15 @@ package keeper_test
 import (
 	"testing"
 
+	checkersapp "github.com/b9lab/checkers/app"
+	"github.com/b9lab/checkers/x/checkers/keeper"
+	"github.com/b9lab/checkers/x/checkers/types"
 	"github.com/cosmos/cosmos-sdk/baseapp"
 	sdk "github.com/cosmos/cosmos-sdk/types"
 	authtypes "github.com/cosmos/cosmos-sdk/x/auth/types"
 	banktypes "github.com/cosmos/cosmos-sdk/x/bank/types"
 	"github.com/stretchr/testify/suite"
 	tmproto "github.com/tendermint/tendermint/proto/tendermint/types"
-	checkersapp "github.com/xavierlepretre/checkers/app"
-	"github.com/xavierlepretre/checkers/x/checkers/keeper"
-	"github.com/xavierlepretre/checkers/x/checkers/types"
 )
 
 const (

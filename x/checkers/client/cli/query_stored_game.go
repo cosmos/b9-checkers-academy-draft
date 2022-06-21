@@ -3,10 +3,10 @@ package cli
 import (
 	"context"
 
+	"github.com/b9lab/checkers/x/checkers/types"
 	"github.com/cosmos/cosmos-sdk/client"
 	"github.com/cosmos/cosmos-sdk/client/flags"
 	"github.com/spf13/cobra"
-	"github.com/xavierlepretre/checkers/x/checkers/types"
 )
 
 func CmdListStoredGame() *cobra.Command {
