@@ -10,9 +10,9 @@ import { MsgPlayMove } from "./types/checkers/tx";
 
 
 const types = [
-  ["/xavierlepretre.checkers.checkers.MsgCreateGame", MsgCreateGame],
-  ["/xavierlepretre.checkers.checkers.MsgRejectGame", MsgRejectGame],
-  ["/xavierlepretre.checkers.checkers.MsgPlayMove", MsgPlayMove],
+  ["/b9lab.checkers.checkers.MsgCreateGame", MsgCreateGame],
+  ["/b9lab.checkers.checkers.MsgRejectGame", MsgRejectGame],
+  ["/b9lab.checkers.checkers.MsgPlayMove", MsgPlayMove],
   
 ];
 export const MissingWalletError = new Error("wallet is required");
@@ -41,9 +41,9 @@ const txClient = async (wallet: OfflineSigner, { addr: addr }: TxClientOptions =
 
   return {
     signAndBroadcast: (msgs: EncodeObject[], { fee, memo }: SignAndBroadcastOptions = {fee: defaultFee, memo: ""}) => client.signAndBroadcast(address, msgs, fee,memo),
-    msgCreateGame: (data: MsgCreateGame): EncodeObject => ({ typeUrl: "/xavierlepretre.checkers.checkers.MsgCreateGame", value: data }),
-    msgRejectGame: (data: MsgRejectGame): EncodeObject => ({ typeUrl: "/xavierlepretre.checkers.checkers.MsgRejectGame", value: data }),
-    msgPlayMove: (data: MsgPlayMove): EncodeObject => ({ typeUrl: "/xavierlepretre.checkers.checkers.MsgPlayMove", value: data }),
+    msgCreateGame: (data: MsgCreateGame): EncodeObject => ({ typeUrl: "/b9lab.checkers.checkers.MsgCreateGame", value: data }),
+    msgRejectGame: (data: MsgRejectGame): EncodeObject => ({ typeUrl: "/b9lab.checkers.checkers.MsgRejectGame", value: data }),
+    msgPlayMove: (data: MsgPlayMove): EncodeObject => ({ typeUrl: "/b9lab.checkers.checkers.MsgPlayMove", value: data }),
     
   };
 };

@@ -1,5 +1,5 @@
 import { Reader, Writer } from 'protobufjs/minimal';
-export declare const protobufPackage = "xavierlepretre.checkers.checkers";
+export declare const protobufPackage = "b9lab.checkers.checkers";
 /** this line is used by starport scaffolding # proto/tx/message */
 export interface MsgRejectGame {
     creator: string;

@@ -2,7 +2,7 @@
 import { StoredGame } from '../checkers/stored_game';
 import { NextGame } from '../checkers/next_game';
 import { Writer, Reader } from 'protobufjs/minimal';
-export const protobufPackage = 'xavierlepretre.checkers.checkers';
+export const protobufPackage = 'b9lab.checkers.checkers';
 const baseGenesisState = {};
 export const GenesisState = {
     encode(message, writer = Writer.create()) {
