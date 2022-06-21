@@ -1,7 +1,7 @@
 syntax = "proto3";
-package xavierlepretre.checkers.checkers;
+package b9lab.checkers.checkers;
 
-option go_package = "github.com/xavierlepretre/checkers/x/checkers/types";
+option go_package = "github.com/b9lab/checkers/x/checkers/types";
 
 message NextGame {
   string creator = 1;
