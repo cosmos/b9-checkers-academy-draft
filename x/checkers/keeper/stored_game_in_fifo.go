@@ -1,8 +1,8 @@
 package keeper
 
 import (
+	"github.com/b9lab/checkers/x/checkers/types"
 	sdk "github.com/cosmos/cosmos-sdk/types"
-	"github.com/xavierlepretre/checkers/x/checkers/types"
 )
 
 // WARN It does not save game or info.
