@@ -1,5 +1,5 @@
 import { Writer, Reader } from 'protobufjs/minimal';
-export declare const protobufPackage = "xavierlepretre.checkers.checkers";
+export declare const protobufPackage = "b9lab.checkers.checkers";
 export interface StoredGame {
     creator: string;
     index: string;

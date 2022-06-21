@@ -4,9 +4,9 @@ import (
 	"strings"
 	"testing"
 
+	"github.com/b9lab/checkers/x/checkers/rules"
 	sdk "github.com/cosmos/cosmos-sdk/types"
 	"github.com/stretchr/testify/require"
-	"github.com/xavierlepretre/checkers/x/checkers/rules"
 )
 
 const (

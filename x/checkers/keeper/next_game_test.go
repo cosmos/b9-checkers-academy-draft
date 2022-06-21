@@ -6,8 +6,8 @@ import (
 	sdk "github.com/cosmos/cosmos-sdk/types"
 	"github.com/stretchr/testify/assert"
 
-	"github.com/xavierlepretre/checkers/x/checkers/keeper"
-	"github.com/xavierlepretre/checkers/x/checkers/types"
+	"github.com/b9lab/checkers/x/checkers/keeper"
+	"github.com/b9lab/checkers/x/checkers/types"
 )
 
 func createTestNextGame(keeper *keeper.Keeper, ctx sdk.Context) types.NextGame {

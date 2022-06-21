@@ -3,7 +3,7 @@ import { Reader, Writer } from 'protobufjs/minimal';
 import { StoredGame } from '../checkers/stored_game';
 import { PageRequest, PageResponse } from '../cosmos/base/query/v1beta1/pagination';
 import { NextGame } from '../checkers/next_game';
-export const protobufPackage = 'xavierlepretre.checkers.checkers';
+export const protobufPackage = 'b9lab.checkers.checkers';
 const baseQueryGetStoredGameRequest = { index: '' };
 export const QueryGetStoredGameRequest = {
     encode(message, writer = Writer.create()) {
@@ -322,17 +322,17 @@ export class QueryClientImpl {
     }
     StoredGame(request) {
         const data = QueryGetStoredGameRequest.encode(request).finish();
-        const promise = this.rpc.request('xavierlepretre.checkers.checkers.Query', 'StoredGame', data);
+        const promise = this.rpc.request('b9lab.checkers.checkers.Query', 'StoredGame', data);
         return promise.then((data) => QueryGetStoredGameResponse.decode(new Reader(data)));
     }
     StoredGameAll(request) {
         const data = QueryAllStoredGameRequest.encode(request).finish();
-        const promise = this.rpc.request('xavierlepretre.checkers.checkers.Query', 'StoredGameAll', data);
+        const promise = this.rpc.request('b9lab.checkers.checkers.Query', 'StoredGameAll', data);
         return promise.then((data) => QueryAllStoredGameResponse.decode(new Reader(data)));
     }
     NextGame(request) {
         const data = QueryGetNextGameRequest.encode(request).finish();
-        const promise = this.rpc.request('xavierlepretre.checkers.checkers.Query', 'NextGame', data);
+        const promise = this.rpc.request('b9lab.checkers.checkers.Query', 'NextGame', data);
         return promise.then((data) => QueryGetNextGameResponse.decode(new Reader(data)));
     }
 }

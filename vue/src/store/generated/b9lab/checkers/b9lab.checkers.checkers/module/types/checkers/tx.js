@@ -1,7 +1,7 @@
 /* eslint-disable */
 import { Reader, util, configure, Writer } from 'protobufjs/minimal';
 import * as Long from 'long';
-export const protobufPackage = 'xavierlepretre.checkers.checkers';
+export const protobufPackage = 'b9lab.checkers.checkers';
 const baseMsgRejectGame = { creator: '', idValue: '' };
 export const MsgRejectGame = {
     encode(message, writer = Writer.create()) {
@@ -523,17 +523,17 @@ export class MsgClientImpl {
     }
     RejectGame(request) {
         const data = MsgRejectGame.encode(request).finish();
-        const promise = this.rpc.request('xavierlepretre.checkers.checkers.Msg', 'RejectGame', data);
+        const promise = this.rpc.request('b9lab.checkers.checkers.Msg', 'RejectGame', data);
         return promise.then((data) => MsgRejectGameResponse.decode(new Reader(data)));
     }
     PlayMove(request) {
         const data = MsgPlayMove.encode(request).finish();
-        const promise = this.rpc.request('xavierlepretre.checkers.checkers.Msg', 'PlayMove', data);
+        const promise = this.rpc.request('b9lab.checkers.checkers.Msg', 'PlayMove', data);
         return promise.then((data) => MsgPlayMoveResponse.decode(new Reader(data)));
     }
     CreateGame(request) {
         const data = MsgCreateGame.encode(request).finish();
-        const promise = this.rpc.request('xavierlepretre.checkers.checkers.Msg', 'CreateGame', data);
+        const promise = this.rpc.request('b9lab.checkers.checkers.Msg', 'CreateGame', data);
         return promise.then((data) => MsgCreateGameResponse.decode(new Reader(data)));
     }
 }

@@ -346,11 +346,11 @@ export class Api<SecurityDataType extends unknown> extends HttpClient<SecurityDa
    * @tags Query
    * @name QueryNextGame
    * @summary Queries a nextGame by index.
-   * @request GET:/xavierlepretre/checkers/checkers/nextGame
+   * @request GET:/b9lab/checkers/checkers/nextGame
    */
   queryNextGame = (params: RequestParams = {}) =>
     this.request<CheckersQueryGetNextGameResponse, RpcStatus>({
-      path: `/xavierlepretre/checkers/checkers/nextGame`,
+      path: `/b9lab/checkers/checkers/nextGame`,
       method: "GET",
       format: "json",
       ...params,
@@ -362,7 +362,7 @@ export class Api<SecurityDataType extends unknown> extends HttpClient<SecurityDa
    * @tags Query
    * @name QueryStoredGameAll
    * @summary Queries a list of storedGame items.
-   * @request GET:/xavierlepretre/checkers/checkers/storedGame
+   * @request GET:/b9lab/checkers/checkers/storedGame
    */
   queryStoredGameAll = (
     query?: {
@@ -374,7 +374,7 @@ export class Api<SecurityDataType extends unknown> extends HttpClient<SecurityDa
     params: RequestParams = {},
   ) =>
     this.request<CheckersQueryAllStoredGameResponse, RpcStatus>({
-      path: `/xavierlepretre/checkers/checkers/storedGame`,
+      path: `/b9lab/checkers/checkers/storedGame`,
       method: "GET",
       query: query,
       format: "json",
@@ -387,11 +387,11 @@ export class Api<SecurityDataType extends unknown> extends HttpClient<SecurityDa
    * @tags Query
    * @name QueryStoredGame
    * @summary Queries a storedGame by index.
-   * @request GET:/xavierlepretre/checkers/checkers/storedGame/{index}
+   * @request GET:/b9lab/checkers/checkers/storedGame/{index}
    */
   queryStoredGame = (index: string, params: RequestParams = {}) =>
     this.request<CheckersQueryGetStoredGameResponse, RpcStatus>({
-      path: `/xavierlepretre/checkers/checkers/storedGame/${index}`,
+      path: `/b9lab/checkers/checkers/storedGame/${index}`,
       method: "GET",
       format: "json",
       ...params,
