@@ -15,6 +15,7 @@ import (
 	tmos "github.com/tendermint/tendermint/libs/os"
 	dbm "github.com/tendermint/tm-db"
 
+	"github.com/b9lab/checkers/docs"
 	"github.com/cosmos/cosmos-sdk/baseapp"
 	"github.com/cosmos/cosmos-sdk/client/grpc/tmservice"
 	"github.com/cosmos/cosmos-sdk/client/rpc"
@@ -82,11 +83,11 @@ import (
 	upgradetypes "github.com/cosmos/cosmos-sdk/x/upgrade/types"
 	tmjson "github.com/tendermint/tendermint/libs/json"
 	tmproto "github.com/tendermint/tendermint/proto/tendermint/types"
-	"github.com/xavierlepretre/checkers/docs"
+
 	// this line is used by starport scaffolding # stargate/app/moduleImport
-	checkersmodule "github.com/xavierlepretre/checkers/x/checkers"
-	checkersmodulekeeper "github.com/xavierlepretre/checkers/x/checkers/keeper"
-	checkersmoduletypes "github.com/xavierlepretre/checkers/x/checkers/types"
+	checkersmodule "github.com/b9lab/checkers/x/checkers"
+	checkersmodulekeeper "github.com/b9lab/checkers/x/checkers/keeper"
+	checkersmoduletypes "github.com/b9lab/checkers/x/checkers/types"
 
 	"github.com/tendermint/spm/cosmoscmd"
 )
@@ -227,6 +228,31 @@ func New(
 	appOpts servertypes.AppOptions,
 	baseAppOptions ...func(*baseapp.BaseApp),
 ) cosmoscmd.App {
+	return NewApp(
+		logger,
+		db,
+		traceStore,
+		loadLatest,
+		skipUpgradeHeights,
+		homePath,
+		invCheckPeriod,
+		encodingConfig,
+		appOpts,
+		baseAppOptions...)
+}
+
+func NewApp(
+	logger log.Logger,
+	db dbm.DB,
+	traceStore io.Writer,
+	loadLatest bool,
+	skipUpgradeHeights map[int64]bool,
+	homePath string,
+	invCheckPeriod uint,
+	encodingConfig cosmoscmd.EncodingConfig,
+	appOpts servertypes.AppOptions,
+	baseAppOptions ...func(*baseapp.BaseApp),
+) *App {
 
 	appCodec := encodingConfig.Marshaler
 	cdc := encodingConfig.Amino

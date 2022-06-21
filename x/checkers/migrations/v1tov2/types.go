@@ -1,7 +1,7 @@
 package v1tov2
 
 import (
-	"github.com/xavierlepretre/checkers/x/checkers/types"
+	"github.com/b9lab/checkers/x/checkers/types"
 )
 
 type GenesisStateV1 struct {

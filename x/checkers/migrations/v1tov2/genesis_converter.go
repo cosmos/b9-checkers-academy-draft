@@ -3,7 +3,7 @@ package v1tov2
 import (
 	"time"
 
-	"github.com/xavierlepretre/checkers/x/checkers/types"
+	"github.com/b9lab/checkers/x/checkers/types"
 )
 
 func (genesisV1 GenesisStateV1) Convert(now time.Time) (genesis *types.GenesisState, err error) {

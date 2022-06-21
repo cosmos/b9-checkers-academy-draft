@@ -5,10 +5,10 @@ import (
 	"strconv"
 	"strings"
 
+	rules "github.com/b9lab/checkers/x/checkers/rules"
+	"github.com/b9lab/checkers/x/checkers/types"
 	sdk "github.com/cosmos/cosmos-sdk/types"
 	sdkerrors "github.com/cosmos/cosmos-sdk/types/errors"
-	rules "github.com/xavierlepretre/checkers/x/checkers/rules"
-	"github.com/xavierlepretre/checkers/x/checkers/types"
 )
 
 func (k msgServer) PlayMove(goCtx context.Context, msg *types.MsgPlayMove) (*types.MsgPlayMoveResponse, error) {
@@ -20,18 +20,22 @@ func (k msgServer) PlayMove(goCtx context.Context, msg *types.MsgPlayMove) (*typ
 	}
 
 	// Is the game already won? Can happen when it is forfeited.
-	if storedGame.Winner != rules.NO_PLAYER.Color {
+	if storedGame.Winner != rules.PieceStrings[rules.NO_PLAYER] {
 		return nil, types.ErrGameFinished
 	}
 
 	// Is it an expected player?
+	isRed := strings.Compare(storedGame.Red, msg.Creator) == 0
+	isBlack := strings.Compare(storedGame.Black, msg.Creator) == 0
 	var player rules.Player
-	if strings.Compare(storedGame.Red, msg.Creator) == 0 {
-		player = rules.RED_PLAYER
-	} else if strings.Compare(storedGame.Black, msg.Creator) == 0 {
-		player = rules.BLACK_PLAYER
-	} else {
+	if !isRed && !isBlack {
 		return nil, types.ErrCreatorNotPlayer
+	} else if isRed && isBlack {
+		player = rules.StringPieces[storedGame.Turn].Player
+	} else if isRed {
+		player = rules.RED_PLAYER
+	} else {
+		player = rules.BLACK_PLAYER
 	}
 
 	// Is it the player's turn?
@@ -65,14 +69,14 @@ func (k msgServer) PlayMove(goCtx context.Context, msg *types.MsgPlayMove) (*typ
 	}
 	storedGame.MoveCount++
 	storedGame.Deadline = types.FormatDeadline(types.GetNextDeadline(ctx))
-	storedGame.Winner = game.Winner().Color
+	storedGame.Winner = rules.PieceStrings[game.Winner()]
 
 	// Remove from or send to the back of the FIFO
 	nextGame, found := k.Keeper.GetNextGame(ctx)
 	if !found {
 		panic("NextGame not found")
 	}
-	if storedGame.Winner == rules.NO_PLAYER.Color {
+	if storedGame.Winner == rules.PieceStrings[rules.NO_PLAYER] {
 		k.Keeper.SendToFifoTail(ctx, &storedGame, &nextGame)
 	} else {
 		k.Keeper.RemoveFromFifo(ctx, &storedGame, &nextGame)
@@ -85,7 +89,7 @@ func (k msgServer) PlayMove(goCtx context.Context, msg *types.MsgPlayMove) (*typ
 
 	// Save for the next play move
 	storedGame.Game = game.String()
-	storedGame.Turn = game.Turn.Color
+	storedGame.Turn = rules.PieceStrings[game.Turn]
 	k.Keeper.SetStoredGame(ctx, storedGame)
 	k.Keeper.SetNextGame(ctx, nextGame)
 
@@ -100,7 +104,7 @@ func (k msgServer) PlayMove(goCtx context.Context, msg *types.MsgPlayMove) (*typ
 			sdk.NewAttribute(types.PlayMoveEventIdValue, msg.IdValue),
 			sdk.NewAttribute(types.PlayMoveEventCapturedX, strconv.FormatInt(int64(captured.X), 10)),
 			sdk.NewAttribute(types.PlayMoveEventCapturedY, strconv.FormatInt(int64(captured.Y), 10)),
-			sdk.NewAttribute(types.PlayMoveEventWinner, storedGame.Winner),
+			sdk.NewAttribute(types.PlayMoveEventWinner, rules.PieceStrings[game.Winner()]),
 		),
 	)
 
@@ -109,6 +113,6 @@ func (k msgServer) PlayMove(goCtx context.Context, msg *types.MsgPlayMove) (*typ
 		IdValue:   msg.IdValue,
 		CapturedX: int64(captured.X),
 		CapturedY: int64(captured.Y),
-		Winner:    storedGame.Winner,
+		Winner:    rules.PieceStrings[game.Winner()],
 	}, nil
 }
