@@ -5,9 +5,9 @@ import (
 	"fmt"
 	"time"
 
+	"github.com/b9lab/checkers/x/checkers/rules"
 	sdk "github.com/cosmos/cosmos-sdk/types"
 	sdkerrors "github.com/cosmos/cosmos-sdk/types/errors"
-	"github.com/xavierlepretre/checkers/x/checkers/rules"
 )
 
 func (storedGame *StoredGame) GetCreatorAddress() (creator sdk.AccAddress, err error) {
@@ -60,8 +60,8 @@ func (storedGame *StoredGame) GetPlayerAddress(color string) (address sdk.AccAdd
 		return nil, false, err
 	}
 	address, found = map[string]sdk.AccAddress{
-		rules.RED_PLAYER.Color:   red,
-		rules.BLACK_PLAYER.Color: black,
+		rules.PieceStrings[rules.RED_PLAYER]:   red,
+		rules.PieceStrings[rules.BLACK_PLAYER]: black,
 	}[color]
 	return address, found, nil
 }
