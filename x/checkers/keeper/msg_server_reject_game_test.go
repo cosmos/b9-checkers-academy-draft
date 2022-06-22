@@ -90,6 +90,18 @@ func (suite *IntegrationTestSuite) TestRejectGameByBlackNoMoveEmitted() {
 	}, event.Attributes[createEventCount:])
 }
 
+func (suite *IntegrationTestSuite) TestRejectGameByBlackConsumedGas() {
+	suite.setupSuiteWithOneGameForRejectGame()
+	goCtx := sdk.WrapSDKContext(suite.ctx)
+	gasBefore := suite.ctx.GasMeter().GasConsumed()
+	suite.msgServer.RejectGame(goCtx, &types.MsgRejectGame{
+		Creator: carol,
+		IdValue: "1",
+	})
+	gasAfter := suite.ctx.GasMeter().GasConsumed()
+	suite.Require().Equal(uint64(6_116+0), gasAfter-gasBefore)
+}
+
 func (suite *IntegrationTestSuite) TestRejectGameByRedNoMove() {
 	suite.setupSuiteWithOneGameForRejectGame()
 	goCtx := sdk.WrapSDKContext(suite.ctx)
