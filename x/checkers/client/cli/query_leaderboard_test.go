@@ -9,9 +9,9 @@ import (
 	tmcli "github.com/tendermint/tendermint/libs/cli"
 	"google.golang.org/grpc/status"
 
-	"github.com/xavierlepretre/checkers/testutil/network"
-	"github.com/xavierlepretre/checkers/x/checkers/client/cli"
-	"github.com/xavierlepretre/checkers/x/checkers/types"
+	"github.com/b9lab/checkers/testutil/network"
+	"github.com/b9lab/checkers/x/checkers/client/cli"
+	"github.com/b9lab/checkers/x/checkers/types"
 )
 
 func networkWithLeaderboardObjects(t *testing.T) (*network.Network, *types.Leaderboard) {
@@ -20,7 +20,9 @@ func networkWithLeaderboardObjects(t *testing.T) (*network.Network, *types.Leade
 	state := types.GenesisState{}
 	require.NoError(t, cfg.Codec.UnmarshalJSON(cfg.GenesisState[types.ModuleName], &state))
 
-	state.Leaderboard = &types.Leaderboard{}
+	state.Leaderboard = &types.Leaderboard{
+		Winners: []*types.WinningPlayer{},
+	}
 	buf, err := cfg.Codec.MarshalJSON(&state)
 	require.NoError(t, err)
 	cfg.GenesisState[types.ModuleName] = buf

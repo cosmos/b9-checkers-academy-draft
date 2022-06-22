@@ -1,0 +1,9 @@
+{
+  "devDependencies": {
+    "protoc": "1.0.4",
+    "ts-proto": "1.110.4"
+  },
+  "scripts": {
+    "proto-ts-gen": "./proto-ts-gen.sh"
+  }
+}

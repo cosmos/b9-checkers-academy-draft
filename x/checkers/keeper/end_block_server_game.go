@@ -5,17 +5,17 @@ import (
 	"fmt"
 	"strings"
 
+	rules "github.com/b9lab/checkers/x/checkers/rules"
+	"github.com/b9lab/checkers/x/checkers/types"
 	sdk "github.com/cosmos/cosmos-sdk/types"
-	rules "github.com/xavierlepretre/checkers/x/checkers/rules"
-	"github.com/xavierlepretre/checkers/x/checkers/types"
 )
 
 func (k Keeper) ForfeitExpiredGames(goCtx context.Context) {
 	ctx := sdk.UnwrapSDKContext(goCtx)
 
 	opponents := map[string]string{
-		rules.BLACK_PLAYER.Color: rules.RED_PLAYER.Color,
-		rules.RED_PLAYER.Color:   rules.BLACK_PLAYER.Color,
+		rules.PieceStrings[rules.BLACK_PLAYER]: rules.PieceStrings[rules.RED_PLAYER],
+		rules.PieceStrings[rules.RED_PLAYER]:   rules.PieceStrings[rules.BLACK_PLAYER],
 	}
 
 	// Get FIFO information
@@ -42,22 +42,20 @@ func (k Keeper) ForfeitExpiredGames(goCtx context.Context) {
 		if deadline.Before(ctx.BlockTime()) {
 			// Game is past deadline
 			k.RemoveFromFifo(ctx, &storedGame, &nextGame)
-			if storedGame.MoveCount == 0 {
-				storedGame.Winner = rules.NO_PLAYER.Color
-				// No point in keeping a game that was never played
+			if storedGame.MoveCount <= 1 {
+				// No point in keeping a game that was never really played
 				k.RemoveStoredGame(ctx, storedGameId)
+				if storedGame.MoveCount == 1 {
+					k.MustRefundWager(ctx, &storedGame)
+				}
 			} else {
 				storedGame.Winner, found = opponents[storedGame.Turn]
 				if !found {
 					panic(fmt.Sprintf(types.ErrCannotFindWinnerByColor.Error(), storedGame.Turn))
 				}
-				if storedGame.MoveCount <= 1 {
-					k.MustRefundWager(ctx, &storedGame)
-				} else {
-					k.MustPayWinnings(ctx, &storedGame)
-					winnerInfo, _ := k.MustRegisterPlayerForfeit(ctx, &storedGame)
-					k.MustAddToLeaderboard(ctx, winnerInfo)
-				}
+				k.MustPayWinnings(ctx, &storedGame)
+				winnerInfo, _ := k.MustRegisterPlayerForfeit(ctx, &storedGame)
+				k.MustAddToLeaderboard(ctx, winnerInfo)
 				k.SetStoredGame(ctx, storedGame)
 			}
 			ctx.EventManager().EmitEvent(

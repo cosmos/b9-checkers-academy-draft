@@ -1,5 +1,13 @@
 # checkers
+
 **checkers** is a blockchain built using Cosmos SDK and Tendermint and created with [Starport](https://github.com/tendermint/starport).
+
+Version used are:
+
+* Go: 1.16.15
+* Ignite (formerly Starport): 0.17.3
+* Cosmos SDK: v0.42.6
+* NodeJs: 16.x
 
 ## Get started
 
@@ -30,6 +38,7 @@ npm run serve
 The frontend app is built using the `@starport/vue` and `@starport/vuex` packages. For details, see the [monorepo for Starport front-end development](https://github.com/tendermint/vue).
 
 ## Release
+
 To release a new version of your blockchain, create and push a new tag with `v` prefix. A new draft release with the configured targets will be created.
 
 ```
@@ -40,12 +49,13 @@ git push origin v0.1
 After a draft release is created, make your final changes from the release page and publish it.
 
 ### Install
+
 To install the latest version of your blockchain node's binary, execute the following command on your machine:
 
 ```
-curl https://get.starport.network/xavierlepretre/checkers@latest! | sudo bash
+curl https://get.starport.network/b9lab/checkers@latest! | sudo bash
 ```
-`xavierlepretre/checkers` should match the `username` and `repo_name` of the Github repository to which the source code was pushed. Learn more about [the install process](https://github.com/allinbits/starport-installer).
+`b9lab/checkers` should match the `username` and `repo_name` of the Github repository to which the source code was pushed. Learn more about [the install process](https://github.com/allinbits/starport-installer).
 
 ## Submodules
 
@@ -106,13 +116,58 @@ From there, proceed as you usually proceed to `commit` and `push`.
 * `can-play-move-handler`, [diff](../../compare/can-play-move-query..can-play-move-handler)
 * `wager-denomination`, [diff](../../compare/can-play-move-handler..wager-denomination)
 * `cosmjs-elements`, [diff](../../compare/wager-denomination..cosmjs-elements)
-* `cosmjs-messages`, [diff](../../compare/cosmjs-elements..cosmjs-messages)
-* `player-info-object`, [diff](../../compare/cosmjs-messages..player-info-object)
+* `player-info-object`, [diff](../../compare/cosmjs-elements..player-info-object)
 * `player-info-handling`, [diff](../../compare/player-info-object..player-info-handling)
 * `leaderboard-object`, [diff](../../compare/player-info-handling..leaderboard-object)
 * `leaderboard-handling`, [diff](../../compare/leaderboard-object..leaderboard-handling)
 * `genesis-migration`, [diff](../../compare/leaderboard-handling..genesis-migration)
-* `server-indexing`, [diff](../../compare/genesis-migration..server-indexing)
+
+## Use Docker
+
+The Docker file has been prepared so that it allows you to run this project on any machine that supports Docker.
+
+* Create the image:
+  
+    ```sh
+    $ docker build -f Dockerfile-ubuntu . -t checkers_i
+    ```
+
+* Run a scaffold command in a throwaway container:
+
+    ```sh
+    $ docker run --rm -it -v $(pwd):/home/checkers checkers_i ignite scaffold ...
+    ```
+
+* Build a reusable container:
+
+    ```sh
+    $ docker create --name checkers -i -v $(pwd):/home/checkers -p 1317:1317 -p 4500:4500 -p 26657:26657 checkers_i
+    $ docker start checkers
+    ```
+
+* Serve a chain and do actions on the reusable container:
+
+    ```sh
+    $ docker exec -it checkers ignite chain serve --reset-once
+    ```
+
+    And in another shell:
+
+    ```sh
+    $ docker exec -it checkers checkersd query checkers list-stored-game
+    ```
+
+    Or if you prefer to connect to the container and stay in it:
+
+    ```sh
+    $ docker exec -it checkers bash
+    ```
+
+    From where you can do:
+
+    ```sh
+    $ checkersd query checkers list-stored-game
+    ```
 
 ## Learn more
 

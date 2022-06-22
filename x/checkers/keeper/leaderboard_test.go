@@ -1,4 +1,4 @@
-package keeper
+package keeper_test
 
 import (
 	"testing"
@@ -6,10 +6,11 @@ import (
 	sdk "github.com/cosmos/cosmos-sdk/types"
 	"github.com/stretchr/testify/assert"
 
-	"github.com/xavierlepretre/checkers/x/checkers/types"
+	"github.com/b9lab/checkers/x/checkers/keeper"
+	"github.com/b9lab/checkers/x/checkers/types"
 )
 
-func createTestLeaderboard(keeper *Keeper, ctx sdk.Context) types.Leaderboard {
+func createTestLeaderboard(keeper *keeper.Keeper, ctx sdk.Context) types.Leaderboard {
 	item := types.Leaderboard{}
 	keeper.SetLeaderboard(ctx, item)
 	return item
