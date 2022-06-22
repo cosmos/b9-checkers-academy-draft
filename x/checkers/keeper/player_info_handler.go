@@ -15,7 +15,7 @@ func mustAddDeltaGameResultToPlayer(
 	wonDelta uint64,
 	lostDelta uint64,
 	forfeitedDelta uint64,
-) {
+) (playerInfo types.PlayerInfo) {
 	playerInfo, found := k.GetPlayerInfo(ctx, player.String())
 	if !found {
 		playerInfo = types.PlayerInfo{
@@ -29,18 +29,19 @@ func mustAddDeltaGameResultToPlayer(
 	playerInfo.LostCount += lostDelta
 	playerInfo.ForfeitedCount += forfeitedDelta
 	k.SetPlayerInfo(ctx, playerInfo)
+	return playerInfo
 }
 
-func (k *Keeper) MustAddWonGameResultToPlayer(ctx sdk.Context, player sdk.AccAddress) {
-	mustAddDeltaGameResultToPlayer(k, ctx, player, 1, 0, 0)
+func (k *Keeper) MustAddWonGameResultToPlayer(ctx sdk.Context, player sdk.AccAddress) types.PlayerInfo {
+	return mustAddDeltaGameResultToPlayer(k, ctx, player, 1, 0, 0)
 }
 
-func (k *Keeper) MustAddLostGameResultToPlayer(ctx sdk.Context, player sdk.AccAddress) {
-	mustAddDeltaGameResultToPlayer(k, ctx, player, 0, 1, 0)
+func (k *Keeper) MustAddLostGameResultToPlayer(ctx sdk.Context, player sdk.AccAddress) types.PlayerInfo {
+	return mustAddDeltaGameResultToPlayer(k, ctx, player, 0, 1, 0)
 }
 
-func (k *Keeper) MustAddForfeitedGameResultToPlayer(ctx sdk.Context, player sdk.AccAddress) {
-	mustAddDeltaGameResultToPlayer(k, ctx, player, 0, 0, 1)
+func (k *Keeper) MustAddForfeitedGameResultToPlayer(ctx sdk.Context, player sdk.AccAddress) types.PlayerInfo {
+	return mustAddDeltaGameResultToPlayer(k, ctx, player, 0, 0, 1)
 }
 
 func getWinnerAndLoserAddresses(storedGame *types.StoredGame) (winnerAddress sdk.AccAddress, loserAddress sdk.AccAddress) {
@@ -67,14 +68,14 @@ func getWinnerAndLoserAddresses(storedGame *types.StoredGame) (winnerAddress sdk
 	return winnerAddress, loserAddress
 }
 
-func (k *Keeper) MustRegisterPlayerWin(ctx sdk.Context, storedGame *types.StoredGame) {
+func (k *Keeper) MustRegisterPlayerWin(ctx sdk.Context, storedGame *types.StoredGame) (winnerInfo types.PlayerInfo, loserInfo types.PlayerInfo) {
 	winnerAddress, loserAddress := getWinnerAndLoserAddresses(storedGame)
-	k.MustAddWonGameResultToPlayer(ctx, winnerAddress)
-	k.MustAddLostGameResultToPlayer(ctx, loserAddress)
+	return k.MustAddWonGameResultToPlayer(ctx, winnerAddress),
+		k.MustAddLostGameResultToPlayer(ctx, loserAddress)
 }
 
-func (k *Keeper) MustRegisterPlayerForfeit(ctx sdk.Context, storedGame *types.StoredGame) {
+func (k *Keeper) MustRegisterPlayerForfeit(ctx sdk.Context, storedGame *types.StoredGame) (winnerInfo types.PlayerInfo, forfeiterInfo types.PlayerInfo) {
 	winnerAddress, loserAddress := getWinnerAndLoserAddresses(storedGame)
-	k.MustAddWonGameResultToPlayer(ctx, winnerAddress)
-	k.MustAddForfeitedGameResultToPlayer(ctx, loserAddress)
+	return k.MustAddWonGameResultToPlayer(ctx, winnerAddress),
+		k.MustAddForfeitedGameResultToPlayer(ctx, loserAddress)
 }

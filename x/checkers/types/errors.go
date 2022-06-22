@@ -30,5 +30,6 @@ var (
 	ErrWinnerNotParseable      = sdkerrors.Register(ModuleName, 1119, "winner is not parseable: %s")
 	ErrThereIsNoWinner         = sdkerrors.Register(ModuleName, 1120, "there is no winner")
 	ErrInvalidDateAdded        = sdkerrors.Register(ModuleName, 1121, "dateAdded cannot be parsed: %s")
+	ErrCannotAddToLeaderboard  = sdkerrors.Register(ModuleName, 1122, "cannot add to leaderboard: %s")
 	// this line is used by starport scaffolding # ibc/errors
 )
