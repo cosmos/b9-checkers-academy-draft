@@ -2,7 +2,7 @@
 
 **checkers** is a blockchain built using Cosmos SDK and Tendermint and created with [Starport](https://github.com/tendermint/starport).
 
-Version used are:
+Versions used are:
 
 * Go: 1.16.15
 * Ignite (formerly Starport): 0.17.3
@@ -121,6 +121,45 @@ From there, proceed as you usually proceed to `commit` and `push`.
 * `leaderboard-object`, [diff](../../compare/player-info-handling..leaderboard-object)
 * `leaderboard-handling`, [diff](../../compare/leaderboard-object..leaderboard-handling)
 * `genesis-migration`, [diff](../../compare/leaderboard-handling..genesis-migration)
+
+## Version 1 progressive tags
+
+Versions used in version 1 are:
+
+* Go: 1.16.15
+* Ignite (formerly Starport): 0.17.3
+* Cosmos SDK: v0.42.6
+* NodeJs: 16.x
+
+Tags:
+
+* `v1-starport-start`
+* `v1-rules-added`, [diff](../../compare/v1-starport-start..v1-rules-added)
+* `v1-stored-game`, [diff](../../compare/v1-rules-added..v1-stored-game)
+* `v1-full-game-object`, [diff](../../compare/v1-stored-game..v1-full-game-object)
+* `v1-create-game-msg`, [diff](../../compare/v1-full-game-object..v1-create-game-msg)
+* `v1-create-game-handler`, [diff](../../compare/v1-create-game-msg..v1-create-game-handler)
+* `v1-play-move-msg`, [diff](../../compare/v1-create-game-handler..v1-play-move-msg)
+* `v1-play-move-handler`, [diff](../../compare/v1-play-move-msg..v1-play-move-handler)
+* `v1-two-events`, [diff](../../compare/v1-play-move-handler..v1-two-events)
+* `v1-reject-game-msg`, [diff](../../compare/v1-two-events..v1-reject-game-msg)
+* `v1-reject-game-handler`, [diff](../../compare/v1-reject-game-msg..v1-reject-game-handler)
+* `v1-game-fifo`, [diff](../../compare/v1-reject-game-handler..v1-game-fifo)
+* `v1-game-deadline`, [diff](../../compare/v1-game-fifo..v1-game-deadline)
+* `v1-game-winner`, [diff](../../compare/v1-game-deadline..v1-game-winner)
+* `v1-forfeit-game`, [diff](../../compare/v1-game-winner..v1-forfeit-game)
+* `v1-game-wager`, [diff](../../compare/v1-forfeit-game..v1-game-wager)
+* `v1-payment-winning`, [diff](../../compare/v1-game-wager..v1-payment-winning)
+* `v1-gas-meter`, [diff](../../compare/v1-payment-winning..v1-gas-meter)
+* `v1-can-play-move-query`, [diff](../../compare/v1-gas-meter..v1-can-play-move-query)
+* `v1-can-play-move-handler`, [diff](../../compare/v1-can-play-move-query..v1-can-play-move-handler)
+* `v1-wager-denomination`, [diff](../../compare/v1-can-play-move-handler..v1-wager-denomination)
+* `v1-cosmjs-elements`, [diff](../../compare/v1-wager-denomination..v1-cosmjs-elements)
+* `v1-player-info-object`, [diff](../../compare/v1-cosmjs-elements..v1-player-info-object)
+* `v1-player-info-handling`, [diff](../../compare/v1-player-info-object..v1-player-info-handling)
+* `v1-leaderboard-object`, [diff](../../compare/v1-player-info-handling..v1-leaderboard-object)
+* `v1-leaderboard-handling`, [diff](../../compare/v1-leaderboard-object..v1-leaderboard-handling)
+* `v1-genesis-migration`, [diff](../../compare/v1-leaderboard-handling..v1-genesis-migration)
 
 ## Use Docker
 
