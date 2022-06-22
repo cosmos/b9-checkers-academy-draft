@@ -32,6 +32,7 @@ export interface CheckersQueryAllStoredGameResponse {
 }
 export interface CheckersQueryCanPlayMoveResponse {
     possible?: boolean;
+    reason?: string;
 }
 export interface CheckersQueryGetNextGameResponse {
     NextGame?: CheckersNextGame;

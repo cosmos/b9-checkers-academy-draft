@@ -16,6 +16,8 @@ paths:
             properties:
               possible:
                 type: boolean
+              reason:
+                type: string
         default:
           description: An unexpected error response.
           schema:
@@ -19501,6 +19503,8 @@ definitions:
     properties:
       possible:
         type: boolean
+      reason:
+        type: string
   b9lab.checkers.checkers.QueryGetNextGameResponse:
     type: object
     properties:
