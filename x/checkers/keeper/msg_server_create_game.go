@@ -11,7 +11,6 @@ import (
 
 func (k msgServer) CreateGame(goCtx context.Context, msg *types.MsgCreateGame) (*types.MsgCreateGameResponse, error) {
 	ctx := sdk.UnwrapSDKContext(goCtx)
-
 	nextGame, found := k.Keeper.GetNextGame(ctx)
 	if !found {
 		panic("NextGame not found")
@@ -28,6 +27,7 @@ func (k msgServer) CreateGame(goCtx context.Context, msg *types.MsgCreateGame) (
 		MoveCount: 0,
 		BeforeId:  types.NoFifoIdKey,
 		AfterId:   types.NoFifoIdKey,
+		Deadline:  types.FormatDeadline(types.GetNextDeadline(ctx)),
 	}
 	err := storedGame.Validate()
 	if err != nil {

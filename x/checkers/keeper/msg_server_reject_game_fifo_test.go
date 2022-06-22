@@ -10,6 +10,7 @@ import (
 
 func TestRejectSecondGameHasSavedFifo(t *testing.T) {
 	msgServer, keeper, context := setupMsgServerWithOneGameForRejectGame(t)
+	ctx := sdk.UnwrapSDKContext(context)
 	msgServer.CreateGame(context, &types.MsgCreateGame{
 		Creator: bob,
 		Red:     carol,
@@ -19,7 +20,7 @@ func TestRejectSecondGameHasSavedFifo(t *testing.T) {
 		Creator: carol,
 		IdValue: "1",
 	})
-	nextGame, found := keeper.GetNextGame(sdk.UnwrapSDKContext(context))
+	nextGame, found := keeper.GetNextGame(ctx)
 	require.True(t, found)
 	require.EqualValues(t, types.NextGame{
 		Creator:  "",
@@ -27,7 +28,7 @@ func TestRejectSecondGameHasSavedFifo(t *testing.T) {
 		FifoHead: "2",
 		FifoTail: "2",
 	}, nextGame)
-	game2, found2 := keeper.GetStoredGame(sdk.UnwrapSDKContext(context), "2")
+	game2, found2 := keeper.GetStoredGame(ctx, "2")
 	require.True(t, found2)
 	require.EqualValues(t, types.StoredGame{
 		Creator:   bob,
@@ -39,11 +40,13 @@ func TestRejectSecondGameHasSavedFifo(t *testing.T) {
 		MoveCount: uint64(0),
 		BeforeId:  "-1",
 		AfterId:   "-1",
+		Deadline:  types.FormatDeadline(ctx.BlockTime().Add(types.MaxTurnDuration)),
 	}, game2)
 }
 
 func TestRejectMiddleGameHasSavedFifo(t *testing.T) {
 	msgServer, keeper, context := setupMsgServerWithOneGameForRejectGame(t)
+	ctx := sdk.UnwrapSDKContext(context)
 	msgServer.CreateGame(context, &types.MsgCreateGame{
 		Creator: bob,
 		Red:     carol,
@@ -58,7 +61,7 @@ func TestRejectMiddleGameHasSavedFifo(t *testing.T) {
 		Creator: carol,
 		IdValue: "2",
 	})
-	nextGame, found := keeper.GetNextGame(sdk.UnwrapSDKContext(context))
+	nextGame, found := keeper.GetNextGame(ctx)
 	require.True(t, found)
 	require.EqualValues(t, types.NextGame{
 		Creator:  "",
@@ -66,7 +69,7 @@ func TestRejectMiddleGameHasSavedFifo(t *testing.T) {
 		FifoHead: "1",
 		FifoTail: "3",
 	}, nextGame)
-	game1, found1 := keeper.GetStoredGame(sdk.UnwrapSDKContext(context), "1")
+	game1, found1 := keeper.GetStoredGame(ctx, "1")
 	require.True(t, found1)
 	require.EqualValues(t, types.StoredGame{
 		Creator:   alice,
@@ -78,8 +81,9 @@ func TestRejectMiddleGameHasSavedFifo(t *testing.T) {
 		MoveCount: uint64(0),
 		BeforeId:  "-1",
 		AfterId:   "3",
+		Deadline:  types.FormatDeadline(ctx.BlockTime().Add(types.MaxTurnDuration)),
 	}, game1)
-	game3, found3 := keeper.GetStoredGame(sdk.UnwrapSDKContext(context), "3")
+	game3, found3 := keeper.GetStoredGame(ctx, "3")
 	require.True(t, found3)
 	require.EqualValues(t, types.StoredGame{
 		Creator:   carol,
@@ -91,5 +95,6 @@ func TestRejectMiddleGameHasSavedFifo(t *testing.T) {
 		MoveCount: uint64(0),
 		BeforeId:  "1",
 		AfterId:   "-1",
+		Deadline:  types.FormatDeadline(ctx.BlockTime().Add(types.MaxTurnDuration)),
 	}, game3)
 }
