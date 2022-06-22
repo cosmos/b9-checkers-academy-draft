@@ -1,11 +1,8 @@
 package keeper_test
 
 import (
-	"testing"
-
 	"github.com/b9lab/checkers/x/checkers/types"
 	sdk "github.com/cosmos/cosmos-sdk/types"
-	"github.com/stretchr/testify/require"
 )
 
 type GameMoveTest struct {
@@ -69,12 +66,17 @@ func getPlayer(color string) string {
 	return bob
 }
 
-func TestPlayMoveUpToWinner(t *testing.T) {
-	msgServer, keeper, context := setupMsgServerWithOneGameForPlayMove(t)
-	ctx := sdk.UnwrapSDKContext(context)
+func (suite *IntegrationTestSuite) TestPlayMoveUpToWinner() {
+	suite.setupSuiteWithOneGameForPlayMove()
+	goCtx := sdk.WrapSDKContext(suite.ctx)
+
+	suite.RequireBankBalance(balAlice, alice)
+	suite.RequireBankBalance(balBob, bob)
+	suite.RequireBankBalance(balCarol, carol)
+	suite.RequireBankBalance(0, checkersModuleAddress)
 
 	for _, move := range game1moves {
-		_, err := msgServer.PlayMove(context, &types.MsgPlayMove{
+		_, err := suite.msgServer.PlayMove(goCtx, &types.MsgPlayMove{
 			Creator: getPlayer(move.player),
 			IdValue: "1",
 			FromX:   move.fromX,
@@ -82,21 +84,22 @@ func TestPlayMoveUpToWinner(t *testing.T) {
 			ToX:     move.toX,
 			ToY:     move.toY,
 		})
-		require.Nil(t, err)
+		suite.Require().Nil(err)
 	}
 
-	nextGame, found := keeper.GetNextGame(ctx)
-	require.True(t, found)
-	require.EqualValues(t, types.NextGame{
+	keeper := suite.app.CheckersKeeper
+	nextGame, found := keeper.GetNextGame(suite.ctx)
+	suite.Require().True(found)
+	suite.Require().EqualValues(types.NextGame{
 		Creator:  "",
 		IdValue:  2,
 		FifoHead: "-1",
 		FifoTail: "-1",
 	}, nextGame)
 
-	game1, found1 := keeper.GetStoredGame(ctx, "1")
-	require.True(t, found1)
-	require.EqualValues(t, types.StoredGame{
+	game1, found1 := keeper.GetStoredGame(suite.ctx, "1")
+	suite.Require().True(found1)
+	suite.Require().EqualValues(types.StoredGame{
 		Creator:   alice,
 		Index:     "1",
 		Game:      "*b*b****|**b*b***|*****b**|********|***B****|********|*****b**|********",
@@ -106,15 +109,18 @@ func TestPlayMoveUpToWinner(t *testing.T) {
 		MoveCount: uint64(len(game1moves)),
 		BeforeId:  "-1",
 		AfterId:   "-1",
-		Deadline:  types.FormatDeadline(ctx.BlockTime().Add(types.MaxTurnDuration)),
+		Deadline:  types.FormatDeadline(suite.ctx.BlockTime().Add(types.MaxTurnDuration)),
 		Winner:    "b",
 		Wager:     11,
 	}, game1)
-	events := sdk.StringifyEvents(ctx.EventManager().ABCIEvents())
-	require.Len(t, events, 1)
-	event := events[0]
-	require.Equal(t, event.Type, "message")
-	require.EqualValues(t, []sdk.Attribute{
+	events := sdk.StringifyEvents(suite.ctx.EventManager().ABCIEvents())
+	suite.Require().Len(events, 2)
+
+	winEvent := events[0]
+	suite.Require().Equal(winEvent.Type, "message")
+	winWttributesDiscardCount := createEventCount + 2*playEventCountFirst + 37*playEventCountNext
+	suite.Require().EqualValues([]sdk.Attribute{
+		{Key: "sender", Value: checkersModuleAddress},
 		{Key: "module", Value: "checkers"},
 		{Key: "action", Value: "MovePlayed"},
 		{Key: "Creator", Value: carol},
@@ -122,5 +128,19 @@ func TestPlayMoveUpToWinner(t *testing.T) {
 		{Key: "CapturedX", Value: "2"},
 		{Key: "CapturedY", Value: "5"},
 		{Key: "Winner", Value: "b"},
-	}, event.Attributes[7+39*7:])
+	}, winEvent.Attributes[winWttributesDiscardCount:])
+
+	transferEvent := events[1]
+	suite.Require().Equal(transferEvent.Type, "transfer")
+	transferAttributesDiscardCount := 2 * transferEventCount
+	suite.Require().EqualValues([]sdk.Attribute{
+		{Key: "recipient", Value: carol},
+		{Key: "sender", Value: checkersModuleAddress},
+		{Key: "amount", Value: "22stake"},
+	}, transferEvent.Attributes[transferAttributesDiscardCount:])
+
+	suite.RequireBankBalance(balAlice, alice)
+	suite.RequireBankBalance(balBob-11, bob)
+	suite.RequireBankBalance(balCarol+11, carol)
+	suite.RequireBankBalance(0, checkersModuleAddress)
 }
