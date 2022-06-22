@@ -26,6 +26,8 @@ export interface MsgCreateGame {
     red: string;
     black: string;
     wager: number;
+    /** Denomination of the wager. */
+    token: string;
 }
 export interface MsgCreateGameResponse {
     idValue: string;

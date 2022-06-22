@@ -72,7 +72,7 @@ func (storedGame *StoredGame) GetWinnerAddress() (address sdk.AccAddress, found 
 }
 
 func (storedGame *StoredGame) GetWagerCoin() (wager sdk.Coin) {
-	return sdk.NewCoin(sdk.DefaultBondDenom, sdk.NewInt(int64(storedGame.Wager)))
+	return sdk.NewCoin(storedGame.Token, sdk.NewInt(int64(storedGame.Wager)))
 }
 
 func (storedGame StoredGame) Validate() (err error) {

@@ -13,6 +13,7 @@ func (suite *IntegrationTestSuite) setupSuiteWithOneGameForRejectGame() {
 		Red:     bob,
 		Black:   carol,
 		Wager:   11,
+		Token:   sdk.DefaultBondDenom,
 	})
 }
 
@@ -99,7 +100,7 @@ func (suite *IntegrationTestSuite) TestRejectGameByBlackConsumedGas() {
 		IdValue: "1",
 	})
 	gasAfter := suite.ctx.GasMeter().GasConsumed()
-	suite.Require().Equal(uint64(6_116+0), gasAfter-gasBefore)
+	suite.Require().Equal(uint64(6_137+0), gasAfter-gasBefore)
 }
 
 func (suite *IntegrationTestSuite) TestRejectGameByRedNoMove() {
@@ -209,6 +210,46 @@ func (suite *IntegrationTestSuite) TestRejectGameByRedOneMoveRefunded() {
 	suite.RequireBankBalance(0, checkersModuleAddress)
 }
 
+func (suite *IntegrationTestSuite) TestRejectGameByRedOneMoveRefundedForeignToken() {
+	suite.setupSuiteWithOneGameForRejectGame()
+	goCtx := sdk.WrapSDKContext(suite.ctx)
+	suite.msgServer.CreateGame(goCtx, &types.MsgCreateGame{
+		Creator: alice,
+		Red:     bob,
+		Black:   carol,
+		Wager:   1,
+		Token:   foreignToken,
+	})
+	suite.msgServer.PlayMove(goCtx, &types.MsgPlayMove{
+		Creator: carol,
+		IdValue: "2",
+		FromX:   1,
+		FromY:   2,
+		ToX:     2,
+		ToY:     3,
+	})
+	suite.RequireBankBalance(balAlice, alice)
+	suite.RequireBankBalance(balBob, bob)
+	suite.RequireBankBalance(balCarol, carol)
+	suite.RequireBankBalance(0, checkersModuleAddress)
+	suite.RequireBankBalanceIn(balTokenAlice, alice, foreignToken)
+	suite.RequireBankBalanceIn(balTokenBob, bob, foreignToken)
+	suite.RequireBankBalanceIn(balTokenCarol-1, carol, foreignToken)
+	suite.RequireBankBalanceIn(1, checkersModuleAddress, foreignToken)
+	suite.msgServer.RejectGame(goCtx, &types.MsgRejectGame{
+		Creator: bob,
+		IdValue: "2",
+	})
+	suite.RequireBankBalance(balAlice, alice)
+	suite.RequireBankBalance(balBob, bob)
+	suite.RequireBankBalance(balCarol, carol)
+	suite.RequireBankBalance(0, checkersModuleAddress)
+	suite.RequireBankBalanceIn(balTokenAlice, alice, foreignToken)
+	suite.RequireBankBalanceIn(balTokenBob, bob, foreignToken)
+	suite.RequireBankBalanceIn(balTokenCarol, carol, foreignToken)
+	suite.RequireBankBalanceIn(0, checkersModuleAddress, foreignToken)
+}
+
 func (suite *IntegrationTestSuite) TestRejectGameByRedOneMoveRemovedGame() {
 	suite.setupSuiteWithOneGameForRejectGame()
 	goCtx := sdk.WrapSDKContext(suite.ctx)
@@ -283,6 +324,7 @@ func (suite *IntegrationTestSuite) TestRejectGameByRedOneMoveEvenZero() {
 		Red:     bob,
 		Black:   carol,
 		Wager:   0,
+		Token:   sdk.DefaultBondDenom,
 	})
 	suite.msgServer.PlayMove(goCtx, &types.MsgPlayMove{
 		Creator: carol,

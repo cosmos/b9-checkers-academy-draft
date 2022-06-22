@@ -33,6 +33,8 @@ export interface MsgCreateGame {
   red: string
   black: string
   wager: number
+  /** Denomination of the wager. */
+  token: string
 }
 
 export interface MsgCreateGameResponse {
@@ -395,7 +397,7 @@ export const MsgPlayMoveResponse = {
   }
 }
 
-const baseMsgCreateGame: object = { creator: '', red: '', black: '', wager: 0 }
+const baseMsgCreateGame: object = { creator: '', red: '', black: '', wager: 0, token: '' }
 
 export const MsgCreateGame = {
   encode(message: MsgCreateGame, writer: Writer = Writer.create()): Writer {
@@ -410,6 +412,9 @@ export const MsgCreateGame = {
     }
     if (message.wager !== 0) {
       writer.uint32(32).uint64(message.wager)
+    }
+    if (message.token !== '') {
+      writer.uint32(42).string(message.token)
     }
     return writer
   },
@@ -432,6 +437,9 @@ export const MsgCreateGame = {
           break
         case 4:
           message.wager = longToNumber(reader.uint64() as Long)
+          break
+        case 5:
+          message.token = reader.string()
           break
         default:
           reader.skipType(tag & 7)
@@ -463,6 +471,11 @@ export const MsgCreateGame = {
     } else {
       message.wager = 0
     }
+    if (object.token !== undefined && object.token !== null) {
+      message.token = String(object.token)
+    } else {
+      message.token = ''
+    }
     return message
   },
 
@@ -472,6 +485,7 @@ export const MsgCreateGame = {
     message.red !== undefined && (obj.red = message.red)
     message.black !== undefined && (obj.black = message.black)
     message.wager !== undefined && (obj.wager = message.wager)
+    message.token !== undefined && (obj.token = message.token)
     return obj
   },
 
@@ -496,6 +510,11 @@ export const MsgCreateGame = {
       message.wager = object.wager
     } else {
       message.wager = 0
+    }
+    if (object.token !== undefined && object.token !== null) {
+      message.token = object.token
+    } else {
+      message.token = ''
     }
     return message
   }
