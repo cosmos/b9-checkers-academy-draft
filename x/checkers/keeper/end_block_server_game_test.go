@@ -38,7 +38,7 @@ func TestForfeitUnplayed(t *testing.T) {
 		{Key: "action", Value: "GameForfeited"},
 		{Key: "IdValue", Value: "1"},
 		{Key: "Winner", Value: "*"},
-	}, event.Attributes[6:])
+	}, event.Attributes[7:])
 }
 
 func TestForfeitOlderUnplayed(t *testing.T) {
@@ -47,6 +47,7 @@ func TestForfeitOlderUnplayed(t *testing.T) {
 		Creator: bob,
 		Red:     carol,
 		Black:   alice,
+		Wager:   12,
 	})
 	ctx := sdk.UnwrapSDKContext(context)
 	game1, found := keeper.GetStoredGame(ctx, "1")
@@ -75,7 +76,7 @@ func TestForfeitOlderUnplayed(t *testing.T) {
 		{Key: "action", Value: "GameForfeited"},
 		{Key: "IdValue", Value: "1"},
 		{Key: "Winner", Value: "*"},
-	}, event.Attributes[12:])
+	}, event.Attributes[14:])
 }
 
 func TestForfeit2OldestUnplayedIn1Call(t *testing.T) {
@@ -84,11 +85,13 @@ func TestForfeit2OldestUnplayedIn1Call(t *testing.T) {
 		Creator: bob,
 		Red:     carol,
 		Black:   alice,
+		Wager:   12,
 	})
 	msgServer.CreateGame(context, &types.MsgCreateGame{
 		Creator: carol,
 		Red:     alice,
 		Black:   bob,
+		Wager:   13,
 	})
 	ctx := sdk.UnwrapSDKContext(context)
 	game1, found := keeper.GetStoredGame(ctx, "1")
@@ -123,13 +126,13 @@ func TestForfeit2OldestUnplayedIn1Call(t *testing.T) {
 		{Key: "action", Value: "GameForfeited"},
 		{Key: "IdValue", Value: "1"},
 		{Key: "Winner", Value: "*"},
-	}, event.Attributes[18:22])
+	}, event.Attributes[21:25])
 	require.EqualValues(t, []sdk.Attribute{
 		{Key: "module", Value: "checkers"},
 		{Key: "action", Value: "GameForfeited"},
 		{Key: "IdValue", Value: "2"},
 		{Key: "Winner", Value: "*"},
-	}, event.Attributes[22:])
+	}, event.Attributes[25:])
 }
 
 func TestForfeitPlayedOnce(t *testing.T) {
@@ -169,7 +172,7 @@ func TestForfeitPlayedOnce(t *testing.T) {
 		{Key: "action", Value: "GameForfeited"},
 		{Key: "IdValue", Value: "1"},
 		{Key: "Winner", Value: "*"},
-	}, event.Attributes[13:])
+	}, event.Attributes[14:])
 }
 
 func TestForfeitOlderPlayedOnce(t *testing.T) {
@@ -186,6 +189,7 @@ func TestForfeitOlderPlayedOnce(t *testing.T) {
 		Creator: bob,
 		Red:     carol,
 		Black:   alice,
+		Wager:   12,
 	})
 	ctx := sdk.UnwrapSDKContext(context)
 	game1, found := keeper.GetStoredGame(ctx, "1")
@@ -214,7 +218,7 @@ func TestForfeitOlderPlayedOnce(t *testing.T) {
 		{Key: "action", Value: "GameForfeited"},
 		{Key: "IdValue", Value: "1"},
 		{Key: "Winner", Value: "*"},
-	}, event.Attributes[19:])
+	}, event.Attributes[21:])
 }
 
 func TestForfeit2OldestPlayedOnceIn1Call(t *testing.T) {
@@ -231,6 +235,7 @@ func TestForfeit2OldestPlayedOnceIn1Call(t *testing.T) {
 		Creator: bob,
 		Red:     carol,
 		Black:   alice,
+		Wager:   12,
 	})
 	msgServer.PlayMove(context, &types.MsgPlayMove{
 		Creator: alice,
@@ -244,6 +249,7 @@ func TestForfeit2OldestPlayedOnceIn1Call(t *testing.T) {
 		Creator: carol,
 		Red:     alice,
 		Black:   bob,
+		Wager:   13,
 	})
 	ctx := sdk.UnwrapSDKContext(context)
 	game1, found := keeper.GetStoredGame(ctx, "1")
@@ -278,13 +284,13 @@ func TestForfeit2OldestPlayedOnceIn1Call(t *testing.T) {
 		{Key: "action", Value: "GameForfeited"},
 		{Key: "IdValue", Value: "1"},
 		{Key: "Winner", Value: "*"},
-	}, event.Attributes[32:36])
+	}, event.Attributes[35:39])
 	require.EqualValues(t, []sdk.Attribute{
 		{Key: "module", Value: "checkers"},
 		{Key: "action", Value: "GameForfeited"},
 		{Key: "IdValue", Value: "2"},
 		{Key: "Winner", Value: "*"},
-	}, event.Attributes[36:])
+	}, event.Attributes[39:])
 }
 
 func TestForfeitPlayedTwice(t *testing.T) {
@@ -327,6 +333,7 @@ func TestForfeitPlayedTwice(t *testing.T) {
 		AfterId:   "-1",
 		Deadline:  oldDeadline,
 		Winner:    "r",
+		Wager:     11,
 	}, game1)
 
 	nextGame, found := keeper.GetNextGame(ctx)
@@ -346,7 +353,7 @@ func TestForfeitPlayedTwice(t *testing.T) {
 		{Key: "action", Value: "GameForfeited"},
 		{Key: "IdValue", Value: "1"},
 		{Key: "Winner", Value: "r"},
-	}, event.Attributes[20:])
+	}, event.Attributes[21:])
 }
 
 func TestForfeitOlderPlayedTwice(t *testing.T) {
@@ -371,6 +378,7 @@ func TestForfeitOlderPlayedTwice(t *testing.T) {
 		Creator: bob,
 		Red:     carol,
 		Black:   alice,
+		Wager:   12,
 	})
 	ctx := sdk.UnwrapSDKContext(context)
 	game1, found := keeper.GetStoredGame(ctx, "1")
@@ -394,6 +402,7 @@ func TestForfeitOlderPlayedTwice(t *testing.T) {
 		AfterId:   "-1",
 		Deadline:  oldDeadline,
 		Winner:    "r",
+		Wager:     11,
 	}, game1)
 
 	nextGame, found := keeper.GetNextGame(ctx)
@@ -413,7 +422,7 @@ func TestForfeitOlderPlayedTwice(t *testing.T) {
 		{Key: "action", Value: "GameForfeited"},
 		{Key: "IdValue", Value: "1"},
 		{Key: "Winner", Value: "r"},
-	}, event.Attributes[26:])
+	}, event.Attributes[28:])
 }
 
 func TestForfeit2OldestPlayedTwiceIn1Call(t *testing.T) {
@@ -438,6 +447,7 @@ func TestForfeit2OldestPlayedTwiceIn1Call(t *testing.T) {
 		Creator: bob,
 		Red:     carol,
 		Black:   alice,
+		Wager:   12,
 	})
 	msgServer.PlayMove(context, &types.MsgPlayMove{
 		Creator: alice,
@@ -459,6 +469,7 @@ func TestForfeit2OldestPlayedTwiceIn1Call(t *testing.T) {
 		Creator: carol,
 		Red:     alice,
 		Black:   bob,
+		Wager:   13,
 	})
 	ctx := sdk.UnwrapSDKContext(context)
 	game1, found := keeper.GetStoredGame(ctx, "1")
@@ -486,6 +497,7 @@ func TestForfeit2OldestPlayedTwiceIn1Call(t *testing.T) {
 		AfterId:   "-1",
 		Deadline:  oldDeadline,
 		Winner:    "r",
+		Wager:     11,
 	}, game1)
 
 	game2, found = keeper.GetStoredGame(ctx, "2")
@@ -502,6 +514,7 @@ func TestForfeit2OldestPlayedTwiceIn1Call(t *testing.T) {
 		AfterId:   "-1",
 		Deadline:  oldDeadline,
 		Winner:    "r",
+		Wager:     12,
 	}, game2)
 
 	nextGame, found := keeper.GetNextGame(ctx)
@@ -522,11 +535,11 @@ func TestForfeit2OldestPlayedTwiceIn1Call(t *testing.T) {
 		{Key: "action", Value: "GameForfeited"},
 		{Key: "IdValue", Value: "1"},
 		{Key: "Winner", Value: "r"},
-	}, event.Attributes[46:50])
+	}, event.Attributes[49:53])
 	require.EqualValues(t, []sdk.Attribute{
 		{Key: "module", Value: "checkers"},
 		{Key: "action", Value: "GameForfeited"},
 		{Key: "IdValue", Value: "2"},
 		{Key: "Winner", Value: "r"},
-	}, event.Attributes[50:])
+	}, event.Attributes[53:])
 }

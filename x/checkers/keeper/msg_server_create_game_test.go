@@ -29,6 +29,7 @@ func TestCreateGame(t *testing.T) {
 		Creator: alice,
 		Red:     bob,
 		Black:   carol,
+		Wager:   12,
 	})
 	require.Nil(t, err)
 	require.EqualValues(t, types.MsgCreateGameResponse{
@@ -43,6 +44,7 @@ func TestCreate1GameHasSaved(t *testing.T) {
 		Creator: alice,
 		Red:     bob,
 		Black:   carol,
+		Wager:   13,
 	})
 	nextGame, found := keeper.GetNextGame(ctx)
 	require.True(t, found)
@@ -66,6 +68,7 @@ func TestCreate1GameHasSaved(t *testing.T) {
 		AfterId:   "-1",
 		Deadline:  types.FormatDeadline(ctx.BlockTime().Add(types.MaxTurnDuration)),
 		Winner:    "*",
+		Wager:     13,
 	}, game1)
 }
 
@@ -76,6 +79,7 @@ func TestCreate1GameGetAll(t *testing.T) {
 		Creator: alice,
 		Red:     bob,
 		Black:   carol,
+		Wager:   14,
 	})
 	games := keeper.GetAllStoredGame(ctx)
 	require.Len(t, games, 1)
@@ -91,6 +95,7 @@ func TestCreate1GameGetAll(t *testing.T) {
 		AfterId:   "-1",
 		Deadline:  types.FormatDeadline(ctx.BlockTime().Add(types.MaxTurnDuration)),
 		Winner:    "*",
+		Wager:     14,
 	}, games[0])
 }
 
@@ -100,6 +105,7 @@ func TestCreate1GameEmitted(t *testing.T) {
 		Creator: alice,
 		Red:     bob,
 		Black:   carol,
+		Wager:   15,
 	})
 	ctx := sdk.UnwrapSDKContext(context)
 	require.NotNil(t, ctx)
@@ -115,6 +121,7 @@ func TestCreate1GameEmitted(t *testing.T) {
 			{Key: "Index", Value: "1"},
 			{Key: "Red", Value: bob},
 			{Key: "Black", Value: carol},
+			{Key: "Wager", Value: "15"},
 		},
 	}, event)
 }
@@ -138,6 +145,7 @@ func TestCreateGameEmptyRedAddress(t *testing.T) {
 		Creator: alice,
 		Red:     "",
 		Black:   carol,
+		Wager:   16,
 	})
 	require.Nil(t, createResponse)
 	require.Equal(t,
@@ -151,11 +159,13 @@ func TestCreate3Games(t *testing.T) {
 		Creator: alice,
 		Red:     bob,
 		Black:   carol,
+		Wager:   17,
 	})
 	createResponse2, err2 := msgSrvr.CreateGame(context, &types.MsgCreateGame{
 		Creator: bob,
 		Red:     carol,
 		Black:   alice,
+		Wager:   18,
 	})
 	require.Nil(t, err2)
 	require.EqualValues(t, types.MsgCreateGameResponse{
@@ -165,6 +175,7 @@ func TestCreate3Games(t *testing.T) {
 		Creator: carol,
 		Red:     alice,
 		Black:   bob,
+		Wager:   19,
 	})
 	require.Nil(t, err3)
 	require.EqualValues(t, types.MsgCreateGameResponse{
@@ -179,16 +190,19 @@ func TestCreate3GamesHasSaved(t *testing.T) {
 		Creator: alice,
 		Red:     bob,
 		Black:   carol,
+		Wager:   20,
 	})
 	msgSrvr.CreateGame(context, &types.MsgCreateGame{
 		Creator: bob,
 		Red:     carol,
 		Black:   alice,
+		Wager:   21,
 	})
 	msgSrvr.CreateGame(context, &types.MsgCreateGame{
 		Creator: carol,
 		Red:     alice,
 		Black:   bob,
+		Wager:   22,
 	})
 	nextGame, found := keeper.GetNextGame(ctx)
 	require.True(t, found)
@@ -212,6 +226,7 @@ func TestCreate3GamesHasSaved(t *testing.T) {
 		AfterId:   "2",
 		Deadline:  types.FormatDeadline(ctx.BlockTime().Add(types.MaxTurnDuration)),
 		Winner:    "*",
+		Wager:     20,
 	}, game1)
 	game2, found2 := keeper.GetStoredGame(ctx, "2")
 	require.True(t, found2)
@@ -227,6 +242,7 @@ func TestCreate3GamesHasSaved(t *testing.T) {
 		AfterId:   "3",
 		Deadline:  types.FormatDeadline(ctx.BlockTime().Add(types.MaxTurnDuration)),
 		Winner:    "*",
+		Wager:     21,
 	}, game2)
 	game3, found3 := keeper.GetStoredGame(ctx, "3")
 	require.True(t, found3)
@@ -242,6 +258,7 @@ func TestCreate3GamesHasSaved(t *testing.T) {
 		AfterId:   "-1",
 		Deadline:  types.FormatDeadline(ctx.BlockTime().Add(types.MaxTurnDuration)),
 		Winner:    "*",
+		Wager:     22,
 	}, game3)
 }
 
@@ -252,16 +269,19 @@ func TestCreate3GamesGetAll(t *testing.T) {
 		Creator: alice,
 		Red:     bob,
 		Black:   carol,
+		Wager:   23,
 	})
 	msgSrvr.CreateGame(context, &types.MsgCreateGame{
 		Creator: bob,
 		Red:     carol,
 		Black:   alice,
+		Wager:   24,
 	})
 	msgSrvr.CreateGame(context, &types.MsgCreateGame{
 		Creator: carol,
 		Red:     alice,
 		Black:   bob,
+		Wager:   25,
 	})
 	games := keeper.GetAllStoredGame(ctx)
 	require.Len(t, games, 3)
@@ -277,6 +297,7 @@ func TestCreate3GamesGetAll(t *testing.T) {
 		AfterId:   "2",
 		Deadline:  types.FormatDeadline(ctx.BlockTime().Add(types.MaxTurnDuration)),
 		Winner:    "*",
+		Wager:     23,
 	}, games[0])
 	require.EqualValues(t, types.StoredGame{
 		Creator:   bob,
@@ -290,6 +311,7 @@ func TestCreate3GamesGetAll(t *testing.T) {
 		AfterId:   "3",
 		Deadline:  types.FormatDeadline(ctx.BlockTime().Add(types.MaxTurnDuration)),
 		Winner:    "*",
+		Wager:     24,
 	}, games[1])
 	require.EqualValues(t, types.StoredGame{
 		Creator:   carol,
@@ -303,5 +325,6 @@ func TestCreate3GamesGetAll(t *testing.T) {
 		AfterId:   "-1",
 		Deadline:  types.FormatDeadline(ctx.BlockTime().Add(types.MaxTurnDuration)),
 		Winner:    "*",
+		Wager:     25,
 	}, games[2])
 }

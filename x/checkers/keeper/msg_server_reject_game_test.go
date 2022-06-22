@@ -20,6 +20,7 @@ func setupMsgServerWithOneGameForRejectGame(t testing.TB) (types.MsgServer, keep
 		Creator: alice,
 		Red:     bob,
 		Black:   carol,
+		Wager:   11,
 	})
 	return server, *k, context
 }
@@ -79,7 +80,7 @@ func TestRejectGameByBlackNoMoveEmitted(t *testing.T) {
 		{Key: "action", Value: "GameRejected"},
 		{Key: "Creator", Value: carol},
 		{Key: "IdValue", Value: "1"},
-	}, event.Attributes[6:])
+	}, event.Attributes[7:])
 }
 
 func TestRejectGameByRedNoMove(t *testing.T) {
@@ -127,7 +128,7 @@ func TestRejectGameByRedNoMoveEmitted(t *testing.T) {
 		{Key: "action", Value: "GameRejected"},
 		{Key: "Creator", Value: bob},
 		{Key: "IdValue", Value: "1"},
-	}, event.Attributes[6:])
+	}, event.Attributes[7:])
 }
 
 func TestRejectGameByRedOneMove(t *testing.T) {
@@ -199,7 +200,7 @@ func TestRejectGameByRedOneMoveEmitted(t *testing.T) {
 		{Key: "action", Value: "GameRejected"},
 		{Key: "Creator", Value: bob},
 		{Key: "IdValue", Value: "1"},
-	}, event.Attributes[13:])
+	}, event.Attributes[14:])
 }
 
 func TestRejectGameByBlackWrongOneMove(t *testing.T) {

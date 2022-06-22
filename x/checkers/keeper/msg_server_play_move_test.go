@@ -20,6 +20,7 @@ func setupMsgServerWithOneGameForPlayMove(t testing.TB) (types.MsgServer, keeper
 		Creator: alice,
 		Red:     bob,
 		Black:   carol,
+		Wager:   11,
 	})
 	return server, *k, context
 }
@@ -49,6 +50,7 @@ func TestPlayMoveSameBlackRed(t *testing.T) {
 		Creator: alice,
 		Red:     bob,
 		Black:   bob,
+		Wager:   11,
 	})
 	playMoveResponse, err := msgServer.PlayMove(context, &types.MsgPlayMove{
 		Creator: bob,
@@ -100,6 +102,7 @@ func TestPlayMoveSavedGame(t *testing.T) {
 		AfterId:   "-1",
 		Deadline:  types.FormatDeadline(ctx.BlockTime().Add(types.MaxTurnDuration)),
 		Winner:    "*",
+		Wager:     11,
 	}, game1)
 }
 
@@ -155,7 +158,7 @@ func TestPlayMoveEmitted(t *testing.T) {
 		{Key: "CapturedX", Value: "-1"},
 		{Key: "CapturedY", Value: "-1"},
 		{Key: "Winner", Value: "*"},
-	}, event.Attributes[6:])
+	}, event.Attributes[7:])
 }
 
 func TestPlayMove2(t *testing.T) {
@@ -226,6 +229,7 @@ func TestPlayMove2SavedGame(t *testing.T) {
 		AfterId:   "-1",
 		Deadline:  types.FormatDeadline(ctx.BlockTime().Add(types.MaxTurnDuration)),
 		Winner:    "*",
+		Wager:     11,
 	}, game1)
 }
 
@@ -313,5 +317,6 @@ func TestPlayMove3SavedGame(t *testing.T) {
 		AfterId:   "-1",
 		Deadline:  types.FormatDeadline(ctx.BlockTime().Add(types.MaxTurnDuration)),
 		Winner:    "*",
+		Wager:     11,
 	}, game1)
 }

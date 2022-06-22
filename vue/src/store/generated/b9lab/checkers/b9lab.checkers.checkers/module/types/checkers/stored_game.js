@@ -13,7 +13,8 @@ const baseStoredGame = {
     beforeId: '',
     afterId: '',
     deadline: '',
-    winner: ''
+    winner: '',
+    wager: 0
 };
 export const StoredGame = {
     encode(message, writer = Writer.create()) {
@@ -49,6 +50,9 @@ export const StoredGame = {
         }
         if (message.winner !== '') {
             writer.uint32(90).string(message.winner);
+        }
+        if (message.wager !== 0) {
+            writer.uint32(96).uint64(message.wager);
         }
         return writer;
     },
@@ -91,6 +95,9 @@ export const StoredGame = {
                     break;
                 case 11:
                     message.winner = reader.string();
+                    break;
+                case 12:
+                    message.wager = longToNumber(reader.uint64());
                     break;
                 default:
                     reader.skipType(tag & 7);
@@ -167,6 +174,12 @@ export const StoredGame = {
         else {
             message.winner = '';
         }
+        if (object.wager !== undefined && object.wager !== null) {
+            message.wager = Number(object.wager);
+        }
+        else {
+            message.wager = 0;
+        }
         return message;
     },
     toJSON(message) {
@@ -182,6 +195,7 @@ export const StoredGame = {
         message.afterId !== undefined && (obj.afterId = message.afterId);
         message.deadline !== undefined && (obj.deadline = message.deadline);
         message.winner !== undefined && (obj.winner = message.winner);
+        message.wager !== undefined && (obj.wager = message.wager);
         return obj;
     },
     fromPartial(object) {
@@ -251,6 +265,12 @@ export const StoredGame = {
         }
         else {
             message.winner = '';
+        }
+        if (object.wager !== undefined && object.wager !== null) {
+            message.wager = object.wager;
+        }
+        else {
+            message.wager = 0;
         }
         return message;
     }

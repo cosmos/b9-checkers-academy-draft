@@ -108,6 +108,7 @@ func TestPlayMoveUpToWinner(t *testing.T) {
 		AfterId:   "-1",
 		Deadline:  types.FormatDeadline(ctx.BlockTime().Add(types.MaxTurnDuration)),
 		Winner:    "b",
+		Wager:     11,
 	}, game1)
 	events := sdk.StringifyEvents(ctx.EventManager().ABCIEvents())
 	require.Len(t, events, 1)
@@ -121,5 +122,5 @@ func TestPlayMoveUpToWinner(t *testing.T) {
 		{Key: "CapturedX", Value: "2"},
 		{Key: "CapturedY", Value: "5"},
 		{Key: "Winner", Value: "b"},
-	}, event.Attributes[6+39*7:])
+	}, event.Attributes[7+39*7:])
 }
