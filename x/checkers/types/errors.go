@@ -19,5 +19,6 @@ var (
 	ErrRedAlreadyPlayed   = sdkerrors.Register(ModuleName, 1108, "red player has already played")
 	ErrBlackAlreadyPlayed = sdkerrors.Register(ModuleName, 1109, "black player has already played")
 	ErrInvalidDeadline    = sdkerrors.Register(ModuleName, 1110, "deadline cannot be parsed: %s")
+	ErrGameFinished       = sdkerrors.Register(ModuleName, 1111, "game is already finished")
 	// this line is used by starport scaffolding # ibc/errors
 )

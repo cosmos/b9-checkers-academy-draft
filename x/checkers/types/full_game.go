@@ -50,6 +50,27 @@ func FormatDeadline(deadline time.Time) string {
 	return deadline.UTC().Format(DeadlineLayout)
 }
 
+func (storedGame *StoredGame) GetPlayerAddress(color string) (address sdk.AccAddress, found bool, err error) {
+	red, err := storedGame.GetRedAddress()
+	if err != nil {
+		return nil, false, err
+	}
+	black, err := storedGame.GetBlackAddress()
+	if err != nil {
+		return nil, false, err
+	}
+	address, found = map[string]sdk.AccAddress{
+		rules.PieceStrings[rules.RED_PLAYER]:   red,
+		rules.PieceStrings[rules.BLACK_PLAYER]: black,
+	}[color]
+	return address, found, nil
+}
+
+func (storedGame *StoredGame) GetWinnerAddress() (address sdk.AccAddress, found bool, err error) {
+	address, found, err = storedGame.GetPlayerAddress(storedGame.Winner)
+	return address, found, err
+}
+
 func (storedGame StoredGame) Validate() (err error) {
 	_, err = storedGame.GetCreatorAddress()
 	if err != nil {
