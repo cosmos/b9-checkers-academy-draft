@@ -9,6 +9,9 @@ import (
 func TestDefaultGenesisIsCorrect(t *testing.T) {
 	require.EqualValues(t,
 		&GenesisState{
+			Leaderboard: &Leaderboard{
+				Winners: []*WinningPlayer{},
+			},
 			PlayerInfoList: []*PlayerInfo{},
 			StoredGameList: []*StoredGame{},
 			NextGame: &NextGame{
