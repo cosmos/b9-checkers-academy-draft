@@ -62,3 +62,9 @@ const (
 	PlayMoveEventCapturedY = "CapturedY"
 	PlayMoveEventWinner    = "Winner"
 )
+
+const (
+	ForfeitGameEventKey     = "GameForfeited"
+	ForfeitGameEventIdValue = "IdValue"
+	ForfeitGameEventWinner  = "Winner"
+)
