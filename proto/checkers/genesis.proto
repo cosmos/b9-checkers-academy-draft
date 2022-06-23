@@ -1,0 +1,14 @@
+syntax = "proto3";
+package b9lab.checkers.checkers;
+
+import "gogoproto/gogo.proto";
+import "checkers/params.proto";
+// this line is used by starport scaffolding # genesis/proto/import
+
+option go_package = "github.com/b9lab/checkers/x/checkers/types";
+
+// GenesisState defines the checkers module's genesis state.
+message GenesisState {
+  Params params = 1 [(gogoproto.nullable) = false];
+  // this line is used by starport scaffolding # genesis/proto/state
+}
