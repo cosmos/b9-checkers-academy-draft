@@ -1,52 +1,64 @@
-# checkers
-**checkers** is a blockchain built using Cosmos SDK and Tendermint and created with [Ignite CLI](https://ignite.com/cli).
+# Checkers tutorial project
 
-## Get started
+This is a companion project of the Cosmos SDK tutorials. Its object is to show various features of the Cosmos SDK and of Ignite, along with the progression of the code as elements and features are added.
 
-```
-ignite chain serve
-```
+The progression of the code is demonstrated via the help of branches and diffs.
 
-`serve` command installs dependencies, builds, initializes, and starts your blockchain in development.
+## Build steps taken
 
-### Configure
+All the build steps were run inside the Docker container.
 
-Your blockchain in development can be configured with `config.yml`. To learn more, see the [Ignite CLI docs](https://docs.ignite.com).
-
-### Web Frontend
-
-Ignite CLI has scaffolded a Vue.js-based web app in the `vue` directory. Run the following commands to install dependencies and start the app:
-
-```
-cd vue
-npm install
-npm run serve
+```sh
+$ ignite scaffold chain github.com/b9lab/checkers
 ```
 
-The frontend app is built using the `@starport/vue` and `@starport/vuex` packages. For details, see the [monorepo for Ignite front-end development](https://github.com/ignite-hq/web).
+## Progressive feature branches
 
-## Release
-To release a new version of your blockchain, create and push a new tag with `v` prefix. A new draft release with the configured targets will be created.
+Versions used here are:
 
-```
-git tag v0.1
-git push origin v0.1
-```
+* Go: 1.18.3
+* Ignite (formerly Starport): 0.22.1
+* Cosmos SDK: v0.45.4
 
-After a draft release is created, make your final changes from the release page and publish it.
+Branches:
 
-### Install
-To install the latest version of your blockchain node's binary, execute the following command on your machine:
+* [`ignite-start`](../../tree/ignite-start)
 
-```
-curl https://get.ignite.com/b9lab/checkers@latest! | sudo bash
-```
-`b9lab/checkers` should match the `username` and `repo_name` of the Github repository to which the source code was pushed. Learn more about [the install process](https://github.com/allinbits/starport-installer).
+## Version 1 progressive tags
 
-## Learn more
+Versions used in version 1 are:
 
-- [Ignite CLI](https://ignite.com/cli)
-- [Tutorials](https://docs.ignite.com/guide)
-- [Ignite CLI docs](https://docs.ignite.com)
-- [Cosmos SDK docs](https://docs.cosmos.network)
-- [Developer Chat](https://discord.gg/ignite)
+* Go: 1.16.15
+* Ignite (formerly Starport): 0.17.3
+* Cosmos SDK: v0.42.6
+* NodeJs: 16.x
+
+Tags:
+
+* [`v1-starport-start`](../../tree/v1-starport-start)
+* [`v1-rules-added`](../../tree/v1-rules-added), [diff](../../compare/v1-starport-start..v1-rules-added)
+* [`v1-stored-game`](../../tree/v1-stored-game), [diff](../../compare/v1-rules-added..v1-stored-game)
+* [`v1-full-game-object`](../../tree/v1-full-game-object), [diff](../../compare/v1-stored-game..v1-full-game-object)
+* [`v1-create-game-msg`](../../tree/v1-create-game-msg), [diff](../../compare/v1-full-game-object..v1-create-game-msg)
+* [`v1-create-game-handler`](../../tree/v1-create-game-handler), [diff](../../compare/v1-create-game-msg..v1-create-game-handler)
+* [`v1-play-move-msg`](../../tree/v1-play-move-msg), [diff](../../compare/v1-create-game-handler..v1-play-move-msg)
+* [`v1-play-move-handler`](../../tree/v1-play-move-handler), [diff](../../compare/v1-play-move-msg..v1-play-move-handler)
+* [`v1-two-events`](../../tree/v1-two-events), [diff](../../compare/v1-play-move-handler..v1-two-events)
+* [`v1-reject-game-msg`](../../tree/v1-reject-game-msg), [diff](../../compare/v1-two-events..v1-reject-game-msg)
+* [`v1-reject-game-handler`](../../tree/v1-reject-game-handler), [diff](../../compare/v1-reject-game-msg..v1-reject-game-handler)
+* [`v1-game-fifo`](../../tree/v1-game-fifo), [diff](../../compare/v1-reject-game-handler..v1-game-fifo)
+* [`v1-game-deadline`](../../tree/v1-game-deadline), [diff](../../compare/v1-game-fifo..v1-game-deadline)
+* [`v1-game-winner`](../../tree/v1-game-winner), [diff](../../compare/v1-game-deadline..v1-game-winner)
+* [`v1-forfeit-game`](../../tree/v1-forfeit-game), [diff](../../compare/v1-game-winner..v1-forfeit-game)
+* [`v1-game-wager`](../../tree/v1-game-wager), [diff](../../compare/v1-forfeit-game..v1-game-wager)
+* [`v1-payment-winning`](../../tree/v1-payment-winning), [diff](../../compare/v1-game-wager..v1-payment-winning)
+* [`v1-gas-meter`](../../tree/v1-gas-meter), [diff](../../compare/v1-payment-winning..v1-gas-meter)
+* [`v1-can-play-move-query`](../../tree/v1-can-play-move-query), [diff](../../compare/v1-gas-meter..v1-can-play-move-query)
+* [`v1-can-play-move-handler`](../../tree/v1-can-play-move-handler), [diff](../../compare/v1-can-play-move-query..v1-can-play-move-handler)
+* [`v1-wager-denomination`](../../tree/v1-wager-denomination), [diff](../../compare/v1-can-play-move-handler..v1-wager-denomination)
+* [`v1-cosmjs-elements`](../../tree/v1-cosmjs-elements), [diff](../../compare/v1-wager-denomination..v1-cosmjs-elements)
+* [`v1-player-info-object`](../../tree/v1-player-info-object), [diff](../../compare/v1-cosmjs-elements..v1-player-info-object)
+* [`v1-player-info-handling`](../../tree/v1-player-info-handling), [diff](../../compare/v1-player-info-object..v1-player-info-handling)
+* [`v1-leaderboard-object`](../../tree/v1-leaderboard-object), [diff](../../compare/v1-player-info-handling..v1-leaderboard-object)
+* [`v1-leaderboard-handling`](../../tree/v1-leaderboard-handling), [diff](../../compare/v1-leaderboard-object..v1-leaderboard-handling)
+* [`v1-genesis-migration`](../../tree/v1-genesis-migration), [diff](../../compare/v1-leaderboard-handling..v1-genesis-migration)
