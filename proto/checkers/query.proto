@@ -6,6 +6,7 @@ import "google/api/annotations.proto";
 import "cosmos/base/query/v1beta1/pagination.proto";
 import "checkers/params.proto";
 import "checkers/system_info.proto";
+import "checkers/stored_game.proto";
 // this line is used by starport scaffolding # 1
 
 option go_package = "github.com/b9lab/checkers/x/checkers/types";
@@ -20,6 +21,16 @@ service Query {
 	rpc SystemInfo(QueryGetSystemInfoRequest) returns (QueryGetSystemInfoResponse) {
 		option (google.api.http).get = "/b9lab/checkers/checkers/system_info";
 	}
+// Queries a StoredGame by index.
+	rpc StoredGame(QueryGetStoredGameRequest) returns (QueryGetStoredGameResponse) {
+		option (google.api.http).get = "/b9lab/checkers/checkers/stored_game/{index}";
+	}
+
+	// Queries a list of StoredGame items.
+	rpc StoredGameAll(QueryAllStoredGameRequest) returns (QueryAllStoredGameResponse) {
+		option (google.api.http).get = "/b9lab/checkers/checkers/stored_game";
+	}
+
 // this line is used by starport scaffolding # 2
 }
 
@@ -37,4 +48,22 @@ message QueryGetSystemInfoRequest {}
 message QueryGetSystemInfoResponse {
 	SystemInfo SystemInfo = 1 [(gogoproto.nullable) = false];
 }
+message QueryGetStoredGameRequest {
+	  string index = 1;
+
+}
+
+message QueryGetStoredGameResponse {
+	StoredGame storedGame = 1 [(gogoproto.nullable) = false];
+}
+
+message QueryAllStoredGameRequest {
+	cosmos.base.query.v1beta1.PageRequest pagination = 1;
+}
+
+message QueryAllStoredGameResponse {
+	repeated StoredGame storedGame = 1 [(gogoproto.nullable) = false];
+	cosmos.base.query.v1beta1.PageResponse pagination = 2;
+}
+
 // this line is used by starport scaffolding # 3
