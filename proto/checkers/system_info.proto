@@ -1,0 +1,9 @@
+syntax = "proto3";
+package b9lab.checkers.checkers;
+
+option go_package = "github.com/b9lab/checkers/x/checkers/types";
+
+message SystemInfo {
+  uint64 nextId = 1; 
+  
+}
