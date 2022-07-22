@@ -14,12 +14,21 @@
  */
 export type CheckersParams = object;
 
+export interface CheckersQueryGetSystemInfoResponse {
+  SystemInfo?: CheckersSystemInfo;
+}
+
 /**
  * QueryParamsResponse is response type for the Query/Params RPC method.
  */
 export interface CheckersQueryParamsResponse {
   /** params holds all the parameters of this module. */
   params?: CheckersParams;
+}
+
+export interface CheckersSystemInfo {
+  /** @format uint64 */
+  nextId?: string;
 }
 
 export interface ProtobufAny {
@@ -240,6 +249,22 @@ export class Api<SecurityDataType extends unknown> extends HttpClient<SecurityDa
   queryParams = (params: RequestParams = {}) =>
     this.request<CheckersQueryParamsResponse, RpcStatus>({
       path: `/b9lab/checkers/checkers/params`,
+      method: "GET",
+      format: "json",
+      ...params,
+    });
+
+  /**
+   * No description
+   *
+   * @tags Query
+   * @name QuerySystemInfo
+   * @summary Queries a SystemInfo by index.
+   * @request GET:/b9lab/checkers/checkers/system_info
+   */
+  querySystemInfo = (params: RequestParams = {}) =>
+    this.request<CheckersQueryGetSystemInfoResponse, RpcStatus>({
+      path: `/b9lab/checkers/checkers/system_info`,
       method: "GET",
       format: "json",
       ...params,
