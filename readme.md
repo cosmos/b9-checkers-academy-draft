@@ -26,6 +26,7 @@ Versions used here are:
 Branches:
 
 * [`v2-ignite-start`](../../tree/v2-ignite-start)
+* [`v2-rules-added`](../../tree/v2-rules-added), [diff](../../compare/v2-ignite-start..v2-rules-added)
 
 ## Version 1 progressive tags
 
