@@ -30,6 +30,7 @@ Branches:
 * [`v2-stored-game`](../../tree/v2-stored-game), [diff](../../compare/v2-rules-added..v2-stored-game)
 * [`v2-full-game-object`](../../tree/v2-full-game-object), [diff](../../compare/v2-stored-game..v2-full-game-object)
 * [`v2-create-game-msg`](../../tree/v2-create-game-msg), [diff](../../compare/v2-full-game-object..v2-create-game-msg)
+* [`v2-create-game-handler`](../../tree/v2-create-game-handler), [diff](../../compare/v2-create-game-msg..v2-create-game-handler)
 
 ## Version 1 progressive tags
 
