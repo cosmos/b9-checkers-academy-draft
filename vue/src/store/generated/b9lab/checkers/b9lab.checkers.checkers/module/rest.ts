@@ -9,6 +9,10 @@
  * ---------------------------------------------------------------
  */
 
+export interface CheckersMsgCreateGameResponse {
+  gameIndex?: string;
+}
+
 /**
  * Params defines the parameters for the module.
  */
