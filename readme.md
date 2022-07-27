@@ -27,6 +27,7 @@ Branches:
 
 * [`v2-ignite-start`](../../tree/v2-ignite-start)
 * [`v2-rules-added`](../../tree/v2-rules-added), [diff](../../compare/v2-ignite-start..v2-rules-added)
+* [`v2-stored-game`](../../tree/v2-stored-game), [diff](../../compare/v2-rules-added..v2-stored-game)
 
 ## Version 1 progressive tags
 
