@@ -32,6 +32,7 @@ Branches:
 
 * [`ignite-start`](../../tree/ignite-start)
 * [`rules-added`](../../tree/rules-added), [diff](../../compare/ignite-start..rules-added)
+* [`stored-game`](../../tree/stored-game), [diff](../../compare/rules-added..stored-game)
 
 ## Version 1 progressive tags
 
