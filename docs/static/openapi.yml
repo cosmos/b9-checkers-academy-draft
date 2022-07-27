@@ -30683,6 +30683,11 @@ paths:
       tags:
         - Query
 definitions:
+  b9lab.checkers.checkers.MsgCreateGameResponse:
+    type: object
+    properties:
+      gameIndex:
+        type: string
   b9lab.checkers.checkers.Params:
     type: object
     description: Params defines the parameters for the module.
