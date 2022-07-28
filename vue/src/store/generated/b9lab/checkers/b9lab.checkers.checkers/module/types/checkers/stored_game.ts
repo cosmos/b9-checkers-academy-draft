@@ -1,5 +1,6 @@
 /* eslint-disable */
-import { Writer, Reader } from "protobufjs/minimal";
+import * as Long from "long";
+import { util, configure, Writer, Reader } from "protobufjs/minimal";
 
 export const protobufPackage = "b9lab.checkers.checkers";
 
@@ -11,6 +12,7 @@ export interface StoredGame {
   red: string;
   winner: string;
   deadline: string;
+  moveCount: number;
 }
 
 const baseStoredGame: object = {
@@ -21,6 +23,7 @@ const baseStoredGame: object = {
   red: "",
   winner: "",
   deadline: "",
+  moveCount: 0,
 };
 
 export const StoredGame = {
@@ -45,6 +48,9 @@ export const StoredGame = {
     }
     if (message.deadline !== "") {
       writer.uint32(58).string(message.deadline);
+    }
+    if (message.moveCount !== 0) {
+      writer.uint32(64).uint64(message.moveCount);
     }
     return writer;
   },
@@ -76,6 +82,9 @@ export const StoredGame = {
           break;
         case 7:
           message.deadline = reader.string();
+          break;
+        case 8:
+          message.moveCount = longToNumber(reader.uint64() as Long);
           break;
         default:
           reader.skipType(tag & 7);
@@ -122,6 +131,11 @@ export const StoredGame = {
     } else {
       message.deadline = "";
     }
+    if (object.moveCount !== undefined && object.moveCount !== null) {
+      message.moveCount = Number(object.moveCount);
+    } else {
+      message.moveCount = 0;
+    }
     return message;
   },
 
@@ -134,6 +148,7 @@ export const StoredGame = {
     message.red !== undefined && (obj.red = message.red);
     message.winner !== undefined && (obj.winner = message.winner);
     message.deadline !== undefined && (obj.deadline = message.deadline);
+    message.moveCount !== undefined && (obj.moveCount = message.moveCount);
     return obj;
   },
 
@@ -174,9 +189,24 @@ export const StoredGame = {
     } else {
       message.deadline = "";
     }
+    if (object.moveCount !== undefined && object.moveCount !== null) {
+      message.moveCount = object.moveCount;
+    } else {
+      message.moveCount = 0;
+    }
     return message;
   },
 };
+
+declare var self: any | undefined;
+declare var window: any | undefined;
+var globalThis: any = (() => {
+  if (typeof globalThis !== "undefined") return globalThis;
+  if (typeof self !== "undefined") return self;
+  if (typeof window !== "undefined") return window;
+  if (typeof global !== "undefined") return global;
+  throw "Unable to locate global object";
+})();
 
 type Builtin = Date | Function | Uint8Array | string | number | undefined;
 export type DeepPartial<T> = T extends Builtin
@@ -188,3 +218,15 @@ export type DeepPartial<T> = T extends Builtin
   : T extends {}
   ? { [K in keyof T]?: DeepPartial<T[K]> }
   : Partial<T>;
+
+function longToNumber(long: Long): number {
+  if (long.gt(Number.MAX_SAFE_INTEGER)) {
+    throw new globalThis.Error("Value is larger than Number.MAX_SAFE_INTEGER");
+  }
+  return long.toNumber();
+}
+
+if (util.Long !== Long) {
+  util.Long = Long as any;
+  configure();
+}

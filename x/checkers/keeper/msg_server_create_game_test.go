@@ -47,13 +47,14 @@ func TestCreate1GameHasSaved(t *testing.T) {
 	game1, found1 := keeper.GetStoredGame(ctx, "1")
 	require.True(t, found1)
 	require.EqualValues(t, types.StoredGame{
-		Index:    "1",
-		Board:    "*b*b*b*b|b*b*b*b*|*b*b*b*b|********|********|r*r*r*r*|*r*r*r*r|r*r*r*r*",
-		Turn:     "b",
-		Black:    bob,
-		Red:      carol,
-		Winner:   "*",
-		Deadline: types.FormatDeadline(ctx.BlockTime().Add(types.MaxTurnDuration)),
+		Index:     "1",
+		Board:     "*b*b*b*b|b*b*b*b*|*b*b*b*b|********|********|r*r*r*r*|*r*r*r*r|r*r*r*r*",
+		Turn:      "b",
+		Black:     bob,
+		Red:       carol,
+		Winner:    "*",
+		Deadline:  types.FormatDeadline(ctx.BlockTime().Add(types.MaxTurnDuration)),
+		MoveCount: 0,
 	}, game1)
 }
 
@@ -68,13 +69,14 @@ func TestCreate1GameGetAll(t *testing.T) {
 	games := keeper.GetAllStoredGame(ctx)
 	require.Len(t, games, 1)
 	require.EqualValues(t, types.StoredGame{
-		Index:    "1",
-		Board:    "*b*b*b*b|b*b*b*b*|*b*b*b*b|********|********|r*r*r*r*|*r*r*r*r|r*r*r*r*",
-		Turn:     "b",
-		Black:    bob,
-		Red:      carol,
-		Winner:   "*",
-		Deadline: types.FormatDeadline(ctx.BlockTime().Add(types.MaxTurnDuration)),
+		Index:     "1",
+		Board:     "*b*b*b*b|b*b*b*b*|*b*b*b*b|********|********|r*r*r*r*|*r*r*r*r|r*r*r*r*",
+		Turn:      "b",
+		Black:     bob,
+		Red:       carol,
+		Winner:    "*",
+		Deadline:  types.FormatDeadline(ctx.BlockTime().Add(types.MaxTurnDuration)),
+		MoveCount: 0,
 	}, games[0])
 }
 
@@ -180,35 +182,38 @@ func TestCreate3GamesHasSaved(t *testing.T) {
 	game1, found1 := keeper.GetStoredGame(ctx, "1")
 	require.True(t, found1)
 	require.EqualValues(t, types.StoredGame{
-		Index:    "1",
-		Board:    "*b*b*b*b|b*b*b*b*|*b*b*b*b|********|********|r*r*r*r*|*r*r*r*r|r*r*r*r*",
-		Turn:     "b",
-		Black:    bob,
-		Red:      carol,
-		Winner:   "*",
-		Deadline: types.FormatDeadline(ctx.BlockTime().Add(types.MaxTurnDuration)),
+		Index:     "1",
+		Board:     "*b*b*b*b|b*b*b*b*|*b*b*b*b|********|********|r*r*r*r*|*r*r*r*r|r*r*r*r*",
+		Turn:      "b",
+		Black:     bob,
+		Red:       carol,
+		Winner:    "*",
+		Deadline:  types.FormatDeadline(ctx.BlockTime().Add(types.MaxTurnDuration)),
+		MoveCount: 0,
 	}, game1)
 	game2, found2 := keeper.GetStoredGame(ctx, "2")
 	require.True(t, found2)
 	require.EqualValues(t, types.StoredGame{
-		Index:    "2",
-		Board:    "*b*b*b*b|b*b*b*b*|*b*b*b*b|********|********|r*r*r*r*|*r*r*r*r|r*r*r*r*",
-		Turn:     "b",
-		Black:    carol,
-		Red:      alice,
-		Winner:   "*",
-		Deadline: types.FormatDeadline(ctx.BlockTime().Add(types.MaxTurnDuration)),
+		Index:     "2",
+		Board:     "*b*b*b*b|b*b*b*b*|*b*b*b*b|********|********|r*r*r*r*|*r*r*r*r|r*r*r*r*",
+		Turn:      "b",
+		Black:     carol,
+		Red:       alice,
+		Winner:    "*",
+		Deadline:  types.FormatDeadline(ctx.BlockTime().Add(types.MaxTurnDuration)),
+		MoveCount: 0,
 	}, game2)
 	game3, found3 := keeper.GetStoredGame(ctx, "3")
 	require.True(t, found3)
 	require.EqualValues(t, types.StoredGame{
-		Index:    "3",
-		Board:    "*b*b*b*b|b*b*b*b*|*b*b*b*b|********|********|r*r*r*r*|*r*r*r*r|r*r*r*r*",
-		Turn:     "b",
-		Black:    alice,
-		Red:      bob,
-		Winner:   "*",
-		Deadline: types.FormatDeadline(ctx.BlockTime().Add(types.MaxTurnDuration)),
+		Index:     "3",
+		Board:     "*b*b*b*b|b*b*b*b*|*b*b*b*b|********|********|r*r*r*r*|*r*r*r*r|r*r*r*r*",
+		Turn:      "b",
+		Black:     alice,
+		Red:       bob,
+		Winner:    "*",
+		Deadline:  types.FormatDeadline(ctx.BlockTime().Add(types.MaxTurnDuration)),
+		MoveCount: 0,
 	}, game3)
 }
 
@@ -233,31 +238,34 @@ func TestCreate3GamesGetAll(t *testing.T) {
 	games := keeper.GetAllStoredGame(ctx)
 	require.Len(t, games, 3)
 	require.EqualValues(t, types.StoredGame{
-		Index:    "1",
-		Board:    "*b*b*b*b|b*b*b*b*|*b*b*b*b|********|********|r*r*r*r*|*r*r*r*r|r*r*r*r*",
-		Turn:     "b",
-		Black:    bob,
-		Red:      carol,
-		Winner:   "*",
-		Deadline: types.FormatDeadline(ctx.BlockTime().Add(types.MaxTurnDuration)),
+		Index:     "1",
+		Board:     "*b*b*b*b|b*b*b*b*|*b*b*b*b|********|********|r*r*r*r*|*r*r*r*r|r*r*r*r*",
+		Turn:      "b",
+		Black:     bob,
+		Red:       carol,
+		Winner:    "*",
+		Deadline:  types.FormatDeadline(ctx.BlockTime().Add(types.MaxTurnDuration)),
+		MoveCount: 0,
 	}, games[0])
 	require.EqualValues(t, types.StoredGame{
-		Index:    "2",
-		Board:    "*b*b*b*b|b*b*b*b*|*b*b*b*b|********|********|r*r*r*r*|*r*r*r*r|r*r*r*r*",
-		Turn:     "b",
-		Black:    carol,
-		Red:      alice,
-		Winner:   "*",
-		Deadline: types.FormatDeadline(ctx.BlockTime().Add(types.MaxTurnDuration)),
+		Index:     "2",
+		Board:     "*b*b*b*b|b*b*b*b*|*b*b*b*b|********|********|r*r*r*r*|*r*r*r*r|r*r*r*r*",
+		Turn:      "b",
+		Black:     carol,
+		Red:       alice,
+		Winner:    "*",
+		Deadline:  types.FormatDeadline(ctx.BlockTime().Add(types.MaxTurnDuration)),
+		MoveCount: 0,
 	}, games[1])
 	require.EqualValues(t, types.StoredGame{
-		Index:    "3",
-		Board:    "*b*b*b*b|b*b*b*b*|*b*b*b*b|********|********|r*r*r*r*|*r*r*r*r|r*r*r*r*",
-		Turn:     "b",
-		Black:    alice,
-		Red:      bob,
-		Winner:   "*",
-		Deadline: types.FormatDeadline(ctx.BlockTime().Add(types.MaxTurnDuration)),
+		Index:     "3",
+		Board:     "*b*b*b*b|b*b*b*b*|*b*b*b*b|********|********|r*r*r*r*|*r*r*r*r|r*r*r*r*",
+		Turn:      "b",
+		Black:     alice,
+		Red:       bob,
+		Winner:    "*",
+		Deadline:  types.FormatDeadline(ctx.BlockTime().Add(types.MaxTurnDuration)),
+		MoveCount: 0,
 	}, games[2])
 }
 
@@ -285,13 +293,14 @@ func TestCreateGameFarFuture(t *testing.T) {
 	game1, found1 := keeper.GetStoredGame(ctx, "1024")
 	require.True(t, found1)
 	require.EqualValues(t, types.StoredGame{
-		Index:    "1024",
-		Board:    "*b*b*b*b|b*b*b*b*|*b*b*b*b|********|********|r*r*r*r*|*r*r*r*r|r*r*r*r*",
-		Turn:     "b",
-		Black:    bob,
-		Red:      carol,
-		Winner:   "*",
-		Deadline: types.FormatDeadline(ctx.BlockTime().Add(types.MaxTurnDuration)),
+		Index:     "1024",
+		Board:     "*b*b*b*b|b*b*b*b*|*b*b*b*b|********|********|r*r*r*r*|*r*r*r*r|r*r*r*r*",
+		Turn:      "b",
+		Black:     bob,
+		Red:       carol,
+		Winner:    "*",
+		Deadline:  types.FormatDeadline(ctx.BlockTime().Add(types.MaxTurnDuration)),
+		MoveCount: 0,
 	}, game1)
 }
 
