@@ -73,6 +73,29 @@ func TestCreate1GameGetAll(t *testing.T) {
 	}, games[0])
 }
 
+func TestCreate1GameEmitted(t *testing.T) {
+	msgSrvr, _, context := setupMsgServerCreateGame(t)
+	ctx := sdk.UnwrapSDKContext(context)
+	msgSrvr.CreateGame(context, &types.MsgCreateGame{
+		Creator: alice,
+		Black:   bob,
+		Red:     carol,
+	})
+	require.NotNil(t, ctx)
+	events := sdk.StringifyEvents(ctx.EventManager().ABCIEvents())
+	require.Len(t, events, 1)
+	event := events[0]
+	require.EqualValues(t, sdk.StringEvent{
+		Type: "new-game-created",
+		Attributes: []sdk.Attribute{
+			{Key: "creator", Value: alice},
+			{Key: "game-index", Value: "1"},
+			{Key: "black", Value: bob},
+			{Key: "red", Value: carol},
+		},
+	}, event)
+}
+
 func TestCreateGameRedAddressBad(t *testing.T) {
 	msgServer, _, context := setupMsgServerCreateGame(t)
 	createResponse, err := msgServer.CreateGame(context, &types.MsgCreateGame{
