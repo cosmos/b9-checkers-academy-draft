@@ -8,6 +8,7 @@ option go_package = "github.com/b9lab/checkers/x/checkers/types";
 // Msg defines the Msg service.
 service Msg {
       rpc CreateGame(MsgCreateGame) returns (MsgCreateGameResponse);
+  rpc PlayMove(MsgPlayMove) returns (MsgPlayMoveResponse);
 // this line is used by starport scaffolding # proto/tx/rpc
 }
 
@@ -19,6 +20,21 @@ message MsgCreateGame {
 
 message MsgCreateGameResponse {
   string gameIndex = 1;
+}
+
+message MsgPlayMove {
+  string creator = 1;
+  string gameIndex = 2;
+  uint64 fromX = 3;
+  uint64 fromY = 4;
+  uint64 toX = 5;
+  uint64 toY = 6;
+}
+
+message MsgPlayMoveResponse {
+  int32 capturedX = 1;
+  int32 capturedY = 2;
+  string winner = 3;
 }
 
 // this line is used by starport scaffolding # proto/tx/message
