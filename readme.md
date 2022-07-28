@@ -28,6 +28,7 @@ Branches:
 * [`full-game-object`](../../tree/full-game-object), [diff](../../compare/stored-game..full-game-object)
 * [`create-game-msg`](../../tree/create-game-msg), [diff](../../compare/full-game-object..create-game-msg)
 * [`create-game-handler`](../../tree/create-game-handler), [diff](../../compare/create-game-msg..create-game-handler)
+* [`play-move-msg`](../../tree/play-move-msg), [diff](../../compare/create-game-handler..play-move-msg)
 
 ## Version 1 progressive tags
 
