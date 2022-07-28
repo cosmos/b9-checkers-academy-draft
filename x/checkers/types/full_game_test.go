@@ -19,13 +19,14 @@ const (
 
 func GetStoredGame1() types.StoredGame {
 	return types.StoredGame{
-		Black:    alice,
-		Red:      bob,
-		Index:    "1",
-		Board:    rules.New().String(),
-		Turn:     "b",
-		Winner:   rules.PieceStrings[rules.NO_PLAYER],
-		Deadline: types.DeadlineLayout,
+		Black:     alice,
+		Red:       bob,
+		Index:     "1",
+		Board:     rules.New().String(),
+		Turn:      "b",
+		Winner:    rules.PieceStrings[rules.NO_PLAYER],
+		Deadline:  types.DeadlineLayout,
+		MoveCount: 0,
 	}
 }
 
