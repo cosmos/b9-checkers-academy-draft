@@ -36,6 +36,7 @@ Branches:
 * [`v2-two-events`](../../tree/v2-two-events), [diff](../../compare/v2-play-move-handler..v2-two-events)
 * [`v2-game-winner`](../../tree/v2-game-winner), [diff](../../compare/v2-two-events..v2-game-winner)
 * [`v2-game-deadline`](../../tree/v2-game-deadline), [diff](../../compare/v2-game-winner..v2-game-deadline)
+* [`v2-move-count`](../../tree/v2-move-count), [diff](../../compare/v2-game-deadline..v2-move-count)
 
 ## Version 1 progressive tags
 
