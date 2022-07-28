@@ -29,6 +29,13 @@ export interface MsgPlayMoveResponse {
   winner: string;
 }
 
+export interface MsgRejectGame {
+  creator: string;
+  gameIndex: string;
+}
+
+export interface MsgRejectGameResponse {}
+
 const baseMsgCreateGame: object = { creator: "", black: "", red: "" };
 
 export const MsgCreateGame = {
@@ -421,11 +428,122 @@ export const MsgPlayMoveResponse = {
   },
 };
 
+const baseMsgRejectGame: object = { creator: "", gameIndex: "" };
+
+export const MsgRejectGame = {
+  encode(message: MsgRejectGame, writer: Writer = Writer.create()): Writer {
+    if (message.creator !== "") {
+      writer.uint32(10).string(message.creator);
+    }
+    if (message.gameIndex !== "") {
+      writer.uint32(18).string(message.gameIndex);
+    }
+    return writer;
+  },
+
+  decode(input: Reader | Uint8Array, length?: number): MsgRejectGame {
+    const reader = input instanceof Uint8Array ? new Reader(input) : input;
+    let end = length === undefined ? reader.len : reader.pos + length;
+    const message = { ...baseMsgRejectGame } as MsgRejectGame;
+    while (reader.pos < end) {
+      const tag = reader.uint32();
+      switch (tag >>> 3) {
+        case 1:
+          message.creator = reader.string();
+          break;
+        case 2:
+          message.gameIndex = reader.string();
+          break;
+        default:
+          reader.skipType(tag & 7);
+          break;
+      }
+    }
+    return message;
+  },
+
+  fromJSON(object: any): MsgRejectGame {
+    const message = { ...baseMsgRejectGame } as MsgRejectGame;
+    if (object.creator !== undefined && object.creator !== null) {
+      message.creator = String(object.creator);
+    } else {
+      message.creator = "";
+    }
+    if (object.gameIndex !== undefined && object.gameIndex !== null) {
+      message.gameIndex = String(object.gameIndex);
+    } else {
+      message.gameIndex = "";
+    }
+    return message;
+  },
+
+  toJSON(message: MsgRejectGame): unknown {
+    const obj: any = {};
+    message.creator !== undefined && (obj.creator = message.creator);
+    message.gameIndex !== undefined && (obj.gameIndex = message.gameIndex);
+    return obj;
+  },
+
+  fromPartial(object: DeepPartial<MsgRejectGame>): MsgRejectGame {
+    const message = { ...baseMsgRejectGame } as MsgRejectGame;
+    if (object.creator !== undefined && object.creator !== null) {
+      message.creator = object.creator;
+    } else {
+      message.creator = "";
+    }
+    if (object.gameIndex !== undefined && object.gameIndex !== null) {
+      message.gameIndex = object.gameIndex;
+    } else {
+      message.gameIndex = "";
+    }
+    return message;
+  },
+};
+
+const baseMsgRejectGameResponse: object = {};
+
+export const MsgRejectGameResponse = {
+  encode(_: MsgRejectGameResponse, writer: Writer = Writer.create()): Writer {
+    return writer;
+  },
+
+  decode(input: Reader | Uint8Array, length?: number): MsgRejectGameResponse {
+    const reader = input instanceof Uint8Array ? new Reader(input) : input;
+    let end = length === undefined ? reader.len : reader.pos + length;
+    const message = { ...baseMsgRejectGameResponse } as MsgRejectGameResponse;
+    while (reader.pos < end) {
+      const tag = reader.uint32();
+      switch (tag >>> 3) {
+        default:
+          reader.skipType(tag & 7);
+          break;
+      }
+    }
+    return message;
+  },
+
+  fromJSON(_: any): MsgRejectGameResponse {
+    const message = { ...baseMsgRejectGameResponse } as MsgRejectGameResponse;
+    return message;
+  },
+
+  toJSON(_: MsgRejectGameResponse): unknown {
+    const obj: any = {};
+    return obj;
+  },
+
+  fromPartial(_: DeepPartial<MsgRejectGameResponse>): MsgRejectGameResponse {
+    const message = { ...baseMsgRejectGameResponse } as MsgRejectGameResponse;
+    return message;
+  },
+};
+
 /** Msg defines the Msg service. */
 export interface Msg {
   CreateGame(request: MsgCreateGame): Promise<MsgCreateGameResponse>;
-  /** this line is used by starport scaffolding # proto/tx/rpc */
   PlayMove(request: MsgPlayMove): Promise<MsgPlayMoveResponse>;
+  /** this line is used by starport scaffolding # proto/tx/rpc */
+  RejectGame(request: MsgRejectGame): Promise<MsgRejectGameResponse>;
 }
 
 export class MsgClientImpl implements Msg {
@@ -453,6 +571,18 @@ export class MsgClientImpl implements Msg {
       data
     );
     return promise.then((data) => MsgPlayMoveResponse.decode(new Reader(data)));
+  }
+
+  RejectGame(request: MsgRejectGame): Promise<MsgRejectGameResponse> {
+    const data = MsgRejectGame.encode(request).finish();
+    const promise = this.rpc.request(
+      "b9lab.checkers.checkers.Msg",
+      "RejectGame",
+      data
+    );
+    return promise.then((data) =>
+      MsgRejectGameResponse.decode(new Reader(data))
+    );
   }
 }
 

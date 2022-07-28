@@ -30699,6 +30699,8 @@ definitions:
         format: int32
       winner:
         type: string
+  b9lab.checkers.checkers.MsgRejectGameResponse:
+    type: object
   b9lab.checkers.checkers.Params:
     type: object
     description: Params defines the parameters for the module.
