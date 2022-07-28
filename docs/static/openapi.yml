@@ -65,6 +65,9 @@ paths:
                       type: string
                     red:
                       type: string
+                    moveCount:
+                      type: string
+                      format: uint64
               pagination:
                 type: object
                 properties:
@@ -192,6 +195,9 @@ paths:
                     type: string
                   red:
                     type: string
+                  moveCount:
+                    type: string
+                    format: uint64
         default:
           description: An unexpected error response.
           schema:
@@ -30722,6 +30728,9 @@ definitions:
               type: string
             red:
               type: string
+            moveCount:
+              type: string
+              format: uint64
       pagination:
         type: object
         properties:
@@ -30763,6 +30772,9 @@ definitions:
             type: string
           red:
             type: string
+          moveCount:
+            type: string
+            format: uint64
   b9lab.checkers.checkers.QueryGetSystemInfoResponse:
     type: object
     properties:
@@ -30792,6 +30804,9 @@ definitions:
         type: string
       red:
         type: string
+      moveCount:
+        type: string
+        format: uint64
   b9lab.checkers.checkers.SystemInfo:
     type: object
     properties:
