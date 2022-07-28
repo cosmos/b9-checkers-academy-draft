@@ -33,6 +33,7 @@ Branches:
 * [`v2-create-game-handler`](../../tree/v2-create-game-handler), [diff](../../compare/v2-create-game-msg..v2-create-game-handler)
 * [`v2-play-move-msg`](../../tree/v2-play-move-msg), [diff](../../compare/v2-create-game-handler..v2-play-move-msg)
 * [`v2-play-move-handler`](../../tree/v2-play-move-handler), [diff](../../compare/v2-play-move-msg..v2-play-move-handler)
+* [`v2-two-events`](../../tree/v2-two-events), [diff](../../compare/v2-play-move-handler..v2-two-events)
 
 ## Version 1 progressive tags
 
