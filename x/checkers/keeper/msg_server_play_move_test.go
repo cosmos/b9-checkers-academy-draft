@@ -95,8 +95,8 @@ func TestPlayMoveSavedGame(t *testing.T) {
 	require.True(t, found)
 	require.EqualValues(t, types.SystemInfo{
 		NextId:        2,
-		FifoHeadIndex: "-1",
-		FifoTailIndex: "-1",
+		FifoHeadIndex: "1",
+		FifoTailIndex: "1",
 	}, systemInfo)
 	game1, found := keeper.GetStoredGame(ctx, "1")
 	require.True(t, found)
@@ -109,8 +109,8 @@ func TestPlayMoveSavedGame(t *testing.T) {
 		Winner:      "*",
 		Deadline:    types.FormatDeadline(ctx.BlockTime().Add(types.MaxTurnDuration)),
 		MoveCount:   1,
-		BeforeIndex: types.NoFifoIndex,
-		AfterIndex:  types.NoFifoIndex,
+		BeforeIndex: "-1",
+		AfterIndex:  "-1",
 	}, game1)
 }
 
@@ -254,8 +254,8 @@ func TestPlayMove2SavedGame(t *testing.T) {
 	require.True(t, found)
 	require.EqualValues(t, types.SystemInfo{
 		NextId:        2,
-		FifoHeadIndex: "-1",
-		FifoTailIndex: "-1",
+		FifoHeadIndex: "1",
+		FifoTailIndex: "1",
 	}, systemInfo)
 	game1, found := keeper.GetStoredGame(ctx, "1")
 	require.True(t, found)
@@ -268,8 +268,8 @@ func TestPlayMove2SavedGame(t *testing.T) {
 		Winner:      "*",
 		Deadline:    types.FormatDeadline(ctx.BlockTime().Add(types.MaxTurnDuration)),
 		MoveCount:   2,
-		BeforeIndex: types.NoFifoIndex,
-		AfterIndex:  types.NoFifoIndex,
+		BeforeIndex: "-1",
+		AfterIndex:  "-1",
 	}, game1)
 }
 
@@ -372,8 +372,8 @@ func TestPlayMove3SavedGame(t *testing.T) {
 	require.True(t, found)
 	require.EqualValues(t, types.SystemInfo{
 		NextId:        2,
-		FifoHeadIndex: "-1",
-		FifoTailIndex: "-1",
+		FifoHeadIndex: "1",
+		FifoTailIndex: "1",
 	}, systemInfo)
 	game1, found := keeper.GetStoredGame(ctx, "1")
 	require.True(t, found)
@@ -386,8 +386,8 @@ func TestPlayMove3SavedGame(t *testing.T) {
 		Winner:      "*",
 		Deadline:    types.FormatDeadline(ctx.BlockTime().Add(types.MaxTurnDuration)),
 		MoveCount:   3,
-		BeforeIndex: types.NoFifoIndex,
-		AfterIndex:  types.NoFifoIndex,
+		BeforeIndex: "-1",
+		AfterIndex:  "-1",
 	}, game1)
 }
 
