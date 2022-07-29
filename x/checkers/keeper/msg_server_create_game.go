@@ -28,6 +28,7 @@ func (k msgServer) CreateGame(goCtx context.Context, msg *types.MsgCreateGame) (
 		MoveCount:   0,
 		BeforeIndex: types.NoFifoIndex,
 		AfterIndex:  types.NoFifoIndex,
+		Deadline:    types.FormatDeadline(types.GetNextDeadline(ctx)),
 	}
 
 	err := storedGame.Validate()
