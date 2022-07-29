@@ -55,7 +55,9 @@ func TestRejectGameByBlackNoMoveRemovedGame(t *testing.T) {
 	systemInfo, found := keeper.GetSystemInfo(ctx)
 	require.True(t, found)
 	require.EqualValues(t, types.SystemInfo{
-		NextId: 2,
+		NextId:        2,
+		FifoHeadIndex: "-1",
+		FifoTailIndex: "-1",
 	}, systemInfo)
 	_, found = keeper.GetStoredGame(ctx, "1")
 	require.False(t, found)
@@ -101,7 +103,9 @@ func TestRejectGameByRedNoMoveRemovedGame(t *testing.T) {
 	systemInfo, found := keeper.GetSystemInfo(ctx)
 	require.True(t, found)
 	require.EqualValues(t, types.SystemInfo{
-		NextId: 2,
+		NextId:        2,
+		FifoHeadIndex: "-1",
+		FifoTailIndex: "-1",
 	}, systemInfo)
 	_, found = keeper.GetStoredGame(ctx, "1")
 	require.False(t, found)
@@ -163,7 +167,9 @@ func TestRejectGameByRedOneMoveRemovedGame(t *testing.T) {
 	systemInfo, found := keeper.GetSystemInfo(ctx)
 	require.True(t, found)
 	require.EqualValues(t, types.SystemInfo{
-		NextId: 2,
+		NextId:        2,
+		FifoHeadIndex: "-1",
+		FifoTailIndex: "-1",
 	}, systemInfo)
 	_, found = keeper.GetStoredGame(ctx, "1")
 	require.False(t, found)
