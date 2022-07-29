@@ -6,14 +6,26 @@ export const protobufPackage = "b9lab.checkers.checkers";
 
 export interface SystemInfo {
   nextId: number;
+  fifoHeadIndex: string;
+  fifoTailIndex: string;
 }
 
-const baseSystemInfo: object = { nextId: 0 };
+const baseSystemInfo: object = {
+  nextId: 0,
+  fifoHeadIndex: "",
+  fifoTailIndex: "",
+};
 
 export const SystemInfo = {
   encode(message: SystemInfo, writer: Writer = Writer.create()): Writer {
     if (message.nextId !== 0) {
       writer.uint32(8).uint64(message.nextId);
+    }
+    if (message.fifoHeadIndex !== "") {
+      writer.uint32(18).string(message.fifoHeadIndex);
+    }
+    if (message.fifoTailIndex !== "") {
+      writer.uint32(26).string(message.fifoTailIndex);
     }
     return writer;
   },
@@ -27,6 +39,12 @@ export const SystemInfo = {
       switch (tag >>> 3) {
         case 1:
           message.nextId = longToNumber(reader.uint64() as Long);
+          break;
+        case 2:
+          message.fifoHeadIndex = reader.string();
+          break;
+        case 3:
+          message.fifoTailIndex = reader.string();
           break;
         default:
           reader.skipType(tag & 7);
@@ -43,12 +61,26 @@ export const SystemInfo = {
     } else {
       message.nextId = 0;
     }
+    if (object.fifoHeadIndex !== undefined && object.fifoHeadIndex !== null) {
+      message.fifoHeadIndex = String(object.fifoHeadIndex);
+    } else {
+      message.fifoHeadIndex = "";
+    }
+    if (object.fifoTailIndex !== undefined && object.fifoTailIndex !== null) {
+      message.fifoTailIndex = String(object.fifoTailIndex);
+    } else {
+      message.fifoTailIndex = "";
+    }
     return message;
   },
 
   toJSON(message: SystemInfo): unknown {
     const obj: any = {};
     message.nextId !== undefined && (obj.nextId = message.nextId);
+    message.fifoHeadIndex !== undefined &&
+      (obj.fifoHeadIndex = message.fifoHeadIndex);
+    message.fifoTailIndex !== undefined &&
+      (obj.fifoTailIndex = message.fifoTailIndex);
     return obj;
   },
 
@@ -58,6 +90,16 @@ export const SystemInfo = {
       message.nextId = object.nextId;
     } else {
       message.nextId = 0;
+    }
+    if (object.fifoHeadIndex !== undefined && object.fifoHeadIndex !== null) {
+      message.fifoHeadIndex = object.fifoHeadIndex;
+    } else {
+      message.fifoHeadIndex = "";
+    }
+    if (object.fifoTailIndex !== undefined && object.fifoTailIndex !== null) {
+      message.fifoTailIndex = object.fifoTailIndex;
+    } else {
+      message.fifoTailIndex = "";
     }
     return message;
   },
