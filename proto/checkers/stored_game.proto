@@ -10,5 +10,6 @@ message StoredGame {
   string black = 4; 
   string red = 5; 
   string winner = 6;
+  string deadline = 7;
 }
 
