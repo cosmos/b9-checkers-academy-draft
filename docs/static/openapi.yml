@@ -72,6 +72,10 @@ paths:
                     moveCount:
                       type: string
                       format: uint64
+                    beforeIndex:
+                      type: string
+                    afterIndex:
+                      type: string
               pagination:
                 type: object
                 properties:
@@ -206,6 +210,10 @@ paths:
                   moveCount:
                     type: string
                     format: uint64
+                  beforeIndex:
+                    type: string
+                  afterIndex:
+                    type: string
         default:
           description: An unexpected error response.
           schema:
@@ -247,6 +255,10 @@ paths:
                   nextId:
                     type: string
                     format: uint64
+                  fifoHeadIndex:
+                    type: string
+                  fifoTailIndex:
+                    type: string
         default:
           description: An unexpected error response.
           schema:
@@ -29764,6 +29776,10 @@ definitions:
             moveCount:
               type: string
               format: uint64
+            beforeIndex:
+              type: string
+            afterIndex:
+              type: string
       pagination:
         type: object
         properties:
@@ -29812,6 +29828,10 @@ definitions:
           moveCount:
             type: string
             format: uint64
+          beforeIndex:
+            type: string
+          afterIndex:
+            type: string
   b9lab.checkers.checkers.QueryGetSystemInfoResponse:
     type: object
     properties:
@@ -29821,6 +29841,10 @@ definitions:
           nextId:
             type: string
             format: uint64
+          fifoHeadIndex:
+            type: string
+          fifoTailIndex:
+            type: string
   b9lab.checkers.checkers.QueryParamsResponse:
     type: object
     properties:
@@ -29848,12 +29872,20 @@ definitions:
       moveCount:
         type: string
         format: uint64
+      beforeIndex:
+        type: string
+      afterIndex:
+        type: string
   b9lab.checkers.checkers.SystemInfo:
     type: object
     properties:
       nextId:
         type: string
         format: uint64
+      fifoHeadIndex:
+        type: string
+      fifoTailIndex:
+        type: string
   cosmos.base.query.v1beta1.PageRequest:
     type: object
     properties:
