@@ -49,8 +49,8 @@ func TestCreate1GameHasSaved(t *testing.T) {
 	require.True(t, found)
 	require.EqualValues(t, types.SystemInfo{
 		NextId:        2,
-		FifoHeadIndex: "-1",
-		FifoTailIndex: "-1",
+		FifoHeadIndex: "1",
+		FifoTailIndex: "1",
 	}, systemInfo)
 	game1, found1 := keeper.GetStoredGame(ctx, "1")
 	require.True(t, found1)
@@ -61,8 +61,8 @@ func TestCreate1GameHasSaved(t *testing.T) {
 		Black:       bob,
 		Red:         carol,
 		MoveCount:   0,
-		BeforeIndex: types.NoFifoIndex,
-		AfterIndex:  types.NoFifoIndex,
+		BeforeIndex: "-1",
+		AfterIndex:  "-1",
 	}, game1)
 }
 
@@ -82,8 +82,8 @@ func TestCreate1GameGetAll(t *testing.T) {
 		Black:       bob,
 		Red:         carol,
 		MoveCount:   0,
-		BeforeIndex: types.NoFifoIndex,
-		AfterIndex:  types.NoFifoIndex,
+		BeforeIndex: "-1",
+		AfterIndex:  "-1",
 	}, games[0])
 }
 
@@ -185,8 +185,8 @@ func TestCreate3GamesHasSaved(t *testing.T) {
 	require.True(t, found)
 	require.EqualValues(t, types.SystemInfo{
 		NextId:        4,
-		FifoHeadIndex: "-1",
-		FifoTailIndex: "-1",
+		FifoHeadIndex: "1",
+		FifoTailIndex: "3",
 	}, systemInfo)
 	game1, found1 := keeper.GetStoredGame(ctx, "1")
 	require.True(t, found1)
@@ -197,8 +197,8 @@ func TestCreate3GamesHasSaved(t *testing.T) {
 		Black:       bob,
 		Red:         carol,
 		MoveCount:   0,
-		BeforeIndex: types.NoFifoIndex,
-		AfterIndex:  types.NoFifoIndex,
+		BeforeIndex: "-1",
+		AfterIndex:  "2",
 	}, game1)
 	game2, found2 := keeper.GetStoredGame(ctx, "2")
 	require.True(t, found2)
@@ -209,8 +209,8 @@ func TestCreate3GamesHasSaved(t *testing.T) {
 		Black:       carol,
 		Red:         alice,
 		MoveCount:   0,
-		BeforeIndex: types.NoFifoIndex,
-		AfterIndex:  types.NoFifoIndex,
+		BeforeIndex: "1",
+		AfterIndex:  "3",
 	}, game2)
 	game3, found3 := keeper.GetStoredGame(ctx, "3")
 	require.True(t, found3)
@@ -221,8 +221,8 @@ func TestCreate3GamesHasSaved(t *testing.T) {
 		Black:       alice,
 		Red:         bob,
 		MoveCount:   0,
-		BeforeIndex: types.NoFifoIndex,
-		AfterIndex:  types.NoFifoIndex,
+		BeforeIndex: "2",
+		AfterIndex:  "-1",
 	}, game3)
 }
 
@@ -252,8 +252,8 @@ func TestCreate3GamesGetAll(t *testing.T) {
 		Black:       bob,
 		Red:         carol,
 		MoveCount:   0,
-		BeforeIndex: types.NoFifoIndex,
-		AfterIndex:  types.NoFifoIndex,
+		BeforeIndex: "-1",
+		AfterIndex:  "2",
 	}, games[0])
 	require.EqualValues(t, types.StoredGame{
 		Index:       "2",
@@ -262,8 +262,8 @@ func TestCreate3GamesGetAll(t *testing.T) {
 		Black:       carol,
 		Red:         alice,
 		MoveCount:   0,
-		BeforeIndex: types.NoFifoIndex,
-		AfterIndex:  types.NoFifoIndex,
+		BeforeIndex: "1",
+		AfterIndex:  "3",
 	}, games[1])
 	require.EqualValues(t, types.StoredGame{
 		Index:       "3",
@@ -272,8 +272,8 @@ func TestCreate3GamesGetAll(t *testing.T) {
 		Black:       alice,
 		Red:         bob,
 		MoveCount:   0,
-		BeforeIndex: types.NoFifoIndex,
-		AfterIndex:  types.NoFifoIndex,
+		BeforeIndex: "2",
+		AfterIndex:  "-1",
 	}, games[2])
 }
 
@@ -296,8 +296,8 @@ func TestCreateGameFarFuture(t *testing.T) {
 	require.True(t, found)
 	require.EqualValues(t, types.SystemInfo{
 		NextId:        1025,
-		FifoHeadIndex: types.NoFifoIndex,
-		FifoTailIndex: types.NoFifoIndex,
+		FifoHeadIndex: "1024",
+		FifoTailIndex: "1024",
 	}, systemInfo)
 	game1, found1 := keeper.GetStoredGame(ctx, "1024")
 	require.True(t, found1)
@@ -308,7 +308,7 @@ func TestCreateGameFarFuture(t *testing.T) {
 		Black:       bob,
 		Red:         carol,
 		MoveCount:   0,
-		BeforeIndex: types.NoFifoIndex,
-		AfterIndex:  types.NoFifoIndex,
+		BeforeIndex: "-1",
+		AfterIndex:  "-1",
 	}, game1)
 }
