@@ -38,6 +38,7 @@ Branches:
 * [`v2-game-deadline`](../../tree/v2-game-deadline), [diff](../../compare/v2-game-winner..v2-game-deadline)
 * [`v2-move-count`](../../tree/v2-move-count), [diff](../../compare/v2-game-deadline..v2-move-count)
 * [`v2-fifo-fields`](../../tree/v2-fifo-fields), [diff](../../compare/v2-move-count..v2-fifo-fields)
+* [`v2-game-fifo`](../../tree/v2-game-fifo), [diff](../../compare/v2-fifo-fields..v2-game-fifo)
 
 ## Version 1 progressive tags
 
