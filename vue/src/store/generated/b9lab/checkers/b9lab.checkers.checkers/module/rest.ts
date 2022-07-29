@@ -72,6 +72,7 @@ export interface CheckersStoredGame {
   beforeIndex?: string;
   afterIndex?: string;
   deadline?: string;
+  winner?: string;
 }
 
 export interface CheckersSystemInfo {

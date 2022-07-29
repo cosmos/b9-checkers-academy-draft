@@ -28,6 +28,7 @@ func GetStoredGame1() types.StoredGame {
 		BeforeIndex: types.NoFifoIndex,
 		AfterIndex:  types.NoFifoIndex,
 		Deadline:    types.DeadlineLayout,
+		Winner:      rules.PieceStrings[rules.NO_PLAYER],
 	}
 }
 
@@ -115,6 +116,82 @@ func TestParseDeadlineMissingMonth(t *testing.T) {
 		err,
 		"deadline cannot be parsed: 2006-02 15:04:05.999999999 +0000 UTC: parsing time \"2006-02 15:04:05.999999999 +0000 UTC\" as \"2006-01-02 15:04:05.999999999 +0000 UTC\": cannot parse \" 15:04:05.999999999 +0000 UTC\" as \"-\"")
 	require.EqualError(t, storedGame.Validate(), err.Error())
+}
+
+func TestGetPlayerAddressBlackCorrect(t *testing.T) {
+	storedGame := GetStoredGame1()
+	black, found, err := storedGame.GetPlayerAddress("b")
+	require.Equal(t, alice, black.String())
+	require.True(t, found)
+	require.Nil(t, err)
+}
+
+func TestGetPlayerAddressBlackIncorrect(t *testing.T) {
+	storedGame := GetStoredGame1()
+	storedGame.Black = "notanaddress"
+	black, found, err := storedGame.GetPlayerAddress("b")
+	require.Nil(t, black)
+	require.False(t, found)
+	require.EqualError(t, err, "black address is invalid: notanaddress: decoding bech32 failed: invalid separator index -1")
+}
+
+func TestGetPlayerAddressRedCorrect(t *testing.T) {
+	storedGame := GetStoredGame1()
+	red, found, err := storedGame.GetPlayerAddress("r")
+	require.Equal(t, bob, red.String())
+	require.True(t, found)
+	require.Nil(t, err)
+}
+
+func TestGetPlayerAddressRedIncorrect(t *testing.T) {
+	storedGame := GetStoredGame1()
+	storedGame.Red = "notanaddress"
+	red, found, err := storedGame.GetPlayerAddress("r")
+	require.Nil(t, red)
+	require.False(t, found)
+	require.EqualError(t, err, "red address is invalid: notanaddress: decoding bech32 failed: invalid separator index -1")
+}
+
+func TestGetPlayerAddressWhiteNotFound(t *testing.T) {
+	storedGame := GetStoredGame1()
+	white, found, err := storedGame.GetPlayerAddress("w")
+	require.Nil(t, white)
+	require.False(t, found)
+	require.Nil(t, err)
+}
+
+func TestGetPlayerAddressAnyNotFound(t *testing.T) {
+	storedGame := GetStoredGame1()
+	white, found, err := storedGame.GetPlayerAddress("*")
+	require.Nil(t, white)
+	require.False(t, found)
+	require.Nil(t, err)
+}
+
+func TestGetWinnerBlackCorrect(t *testing.T) {
+	storedGame := GetStoredGame1()
+	storedGame.Winner = "b"
+	winner, found, err := storedGame.GetWinnerAddress()
+	require.Equal(t, alice, winner.String())
+	require.True(t, found)
+	require.Nil(t, err)
+}
+
+func TestGetWinnerRedCorrect(t *testing.T) {
+	storedGame := GetStoredGame1()
+	storedGame.Winner = "r"
+	winner, found, err := storedGame.GetWinnerAddress()
+	require.Equal(t, bob, winner.String())
+	require.True(t, found)
+	require.Nil(t, err)
+}
+
+func TestGetWinnerNotYetCorrect(t *testing.T) {
+	storedGame := GetStoredGame1()
+	winner, found, err := storedGame.GetWinnerAddress()
+	require.Nil(t, winner)
+	require.False(t, found)
+	require.Nil(t, err)
 }
 
 func TestGameValidateOk(t *testing.T) {
