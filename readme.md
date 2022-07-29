@@ -34,6 +34,7 @@ Branches:
 * [`reject-game-msg`](../../tree/reject-game-msg), [diff](../../compare/two-events..reject-game-msg)
 * [`reject-game-handler`](../../tree/reject-game-handler), [diff](../../compare/reject-game-msg..reject-game-handler)
 * [`game-fifo`](../../tree/game-fifo), [diff](../../compare/reject-game-handler..game-fifo)
+* [`game-deadline`](../../tree/game-deadline), [diff](../../compare/game-fifo..game-deadline)
 
 ## Version 1 progressive tags
 
