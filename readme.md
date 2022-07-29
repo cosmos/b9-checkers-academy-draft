@@ -31,6 +31,7 @@ Branches:
 * [`play-move-msg`](../../tree/play-move-msg), [diff](../../compare/create-game-handler..play-move-msg)
 * [`play-move-handler`](../../tree/play-move-handler), [diff](../../compare/play-move-msg..play-move-handler)
 * [`two-events`](../../tree/two-events), [diff](../../compare/play-move-handler..two-events)
+* [`game-winner`](../../tree/game-winner), [diff](../../compare/two-events..game-winner)
 
 ## Version 1 progressive tags
 
