@@ -24,12 +24,13 @@ func TestPlayMoveUpToWinner(t *testing.T) {
 	game, found := keeper.GetStoredGame(ctx, "1")
 	require.True(t, found)
 	require.EqualValues(t, types.StoredGame{
-		Index:  "1",
-		Board:  "",
-		Turn:   "b",
-		Black:  bob,
-		Red:    carol,
-		Winner: "b",
+		Index:    "1",
+		Board:    "",
+		Turn:     "b",
+		Black:    bob,
+		Red:      carol,
+		Winner:   "b",
+		Deadline: types.FormatDeadline(ctx.BlockTime().Add(types.MaxTurnDuration)),
 	}, game)
 	events := sdk.StringifyEvents(ctx.EventManager().ABCIEvents())
 	require.Len(t, events, 2)

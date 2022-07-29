@@ -2,6 +2,7 @@ package types
 
 import (
 	"fmt"
+	"time"
 
 	"github.com/b9lab/checkers/x/checkers/rules"
 	sdk "github.com/cosmos/cosmos-sdk/types"
@@ -50,6 +51,19 @@ func (storedGame StoredGame) GetWinnerAddress() (address sdk.AccAddress, found b
 	return storedGame.GetPlayerAddress(storedGame.Winner)
 }
 
+func (storedGame StoredGame) GetDeadlineAsTime() (deadline time.Time, err error) {
+	deadline, errDeadline := time.Parse(DeadlineLayout, storedGame.Deadline)
+	return deadline, sdkerrors.Wrapf(errDeadline, ErrInvalidDeadline.Error(), storedGame.Deadline)
+}
+
+func FormatDeadline(deadline time.Time) string {
+	return deadline.UTC().Format(DeadlineLayout)
+}
+
+func GetNextDeadline(ctx sdk.Context) time.Time {
+	return ctx.BlockTime().Add(MaxTurnDuration)
+}
+
 func (storedGame StoredGame) Validate() (err error) {
 	_, err = storedGame.GetBlackAddress()
 	if err != nil {
@@ -60,5 +74,9 @@ func (storedGame StoredGame) Validate() (err error) {
 		return err
 	}
 	_, err = storedGame.ParseGame()
+	if err != nil {
+		return err
+	}
+	_, err = storedGame.GetDeadlineAsTime()
 	return err
 }
