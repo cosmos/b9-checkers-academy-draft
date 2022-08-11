@@ -15,6 +15,7 @@ func TestCreate3GamesHasSavedFifo(t *testing.T) {
 		Creator: alice,
 		Black:   bob,
 		Red:     carol,
+		Wager:   45,
 	})
 
 	// Second game
@@ -22,6 +23,7 @@ func TestCreate3GamesHasSavedFifo(t *testing.T) {
 		Creator: bob,
 		Black:   carol,
 		Red:     alice,
+		Wager:   46,
 	})
 	systemInfo2, found := keeper.GetSystemInfo(ctx)
 	require.True(t, found)
@@ -43,6 +45,7 @@ func TestCreate3GamesHasSavedFifo(t *testing.T) {
 		AfterIndex:  "2",
 		Deadline:    types.FormatDeadline(ctx.BlockTime().Add(types.MaxTurnDuration)),
 		Winner:      "*",
+		Wager:       45,
 	}, game1)
 	game2, found := keeper.GetStoredGame(ctx, "2")
 	require.True(t, found)
@@ -57,6 +60,7 @@ func TestCreate3GamesHasSavedFifo(t *testing.T) {
 		AfterIndex:  "-1",
 		Deadline:    types.FormatDeadline(ctx.BlockTime().Add(types.MaxTurnDuration)),
 		Winner:      "*",
+		Wager:       46,
 	}, game2)
 
 	// Third game
@@ -64,6 +68,7 @@ func TestCreate3GamesHasSavedFifo(t *testing.T) {
 		Creator: carol,
 		Black:   alice,
 		Red:     bob,
+		Wager:   47,
 	})
 	systemInfo3, found := keeper.GetSystemInfo(ctx)
 	require.True(t, found)
@@ -85,6 +90,7 @@ func TestCreate3GamesHasSavedFifo(t *testing.T) {
 		AfterIndex:  "2",
 		Deadline:    types.FormatDeadline(ctx.BlockTime().Add(types.MaxTurnDuration)),
 		Winner:      "*",
+		Wager:       45,
 	}, game1)
 	game2, found = keeper.GetStoredGame(ctx, "2")
 	require.True(t, found)
@@ -99,6 +105,7 @@ func TestCreate3GamesHasSavedFifo(t *testing.T) {
 		AfterIndex:  "3",
 		Deadline:    types.FormatDeadline(ctx.BlockTime().Add(types.MaxTurnDuration)),
 		Winner:      "*",
+		Wager:       46,
 	}, game2)
 	game3, found := keeper.GetStoredGame(ctx, "3")
 	require.True(t, found)
@@ -113,5 +120,6 @@ func TestCreate3GamesHasSavedFifo(t *testing.T) {
 		AfterIndex:  "-1",
 		Deadline:    types.FormatDeadline(ctx.BlockTime().Add(types.MaxTurnDuration)),
 		Winner:      "*",
+		Wager:       47,
 	}, game3)
 }
