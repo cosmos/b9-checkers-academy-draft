@@ -27,6 +27,7 @@ func GetStoredGame1() types.StoredGame {
 		Winner:    rules.PieceStrings[rules.NO_PLAYER],
 		Deadline:  types.DeadlineLayout,
 		MoveCount: 0,
+		Wager:     45,
 	}
 }
 
