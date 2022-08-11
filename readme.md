@@ -37,6 +37,7 @@ Branches:
 * [`fifo-fields`](../../tree/fifo-fields), [diff](../../compare/move-count..fifo-fields)
 * [`game-fifo`](../../tree/game-fifo), [diff](../../compare/fifo-fields..game-fifo)
 * [`forfeit-game`](../../tree/forfeit-game), [diff](../../compare/game-fifo..forfeit-game)
+* [`game-wager`](../../tree/game-wager), [diff](../../compare/forfeit-game..game-wager)
 
 ## Version 1 progressive tags
 
