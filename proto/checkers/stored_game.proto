@@ -14,5 +14,6 @@ message StoredGame {
   uint64 moveCount = 8;
   string beforeIndex = 9;
   string afterIndex = 10;
+  uint64 wager = 11;
 }
 
