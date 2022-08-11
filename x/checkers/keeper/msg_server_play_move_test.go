@@ -21,6 +21,7 @@ func setupMsgServerWithOneGameForPlayMove(t testing.TB) (types.MsgServer, keeper
 		Creator: alice,
 		Black:   bob,
 		Red:     carol,
+		Wager:   45,
 	})
 	return server, *k, context
 }
@@ -63,6 +64,7 @@ func TestPlayMoveSameBlackRed(t *testing.T) {
 		Creator: alice,
 		Black:   bob,
 		Red:     bob,
+		Wager:   46,
 	})
 	playMoveResponse, err := msgServer.PlayMove(context, &types.MsgPlayMove{
 		Creator:   bob,
@@ -111,6 +113,7 @@ func TestPlayMoveSavedGame(t *testing.T) {
 		MoveCount:   1,
 		BeforeIndex: "-1",
 		AfterIndex:  "-1",
+		Wager:       45,
 	}, game1)
 }
 
@@ -270,6 +273,7 @@ func TestPlayMove2SavedGame(t *testing.T) {
 		MoveCount:   2,
 		BeforeIndex: "-1",
 		AfterIndex:  "-1",
+		Wager:       45,
 	}, game1)
 }
 
@@ -388,6 +392,7 @@ func TestPlayMove3SavedGame(t *testing.T) {
 		MoveCount:   3,
 		BeforeIndex: "-1",
 		AfterIndex:  "-1",
+		Wager:       45,
 	}, game1)
 }
 

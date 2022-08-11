@@ -71,6 +71,9 @@ export interface CheckersStoredGame {
   moveCount?: string;
   beforeIndex?: string;
   afterIndex?: string;
+
+  /** @format uint64 */
+  wager?: string;
 }
 
 export interface CheckersSystemInfo {
