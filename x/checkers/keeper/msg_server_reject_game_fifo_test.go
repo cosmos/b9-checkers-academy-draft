@@ -9,8 +9,9 @@ import (
 )
 
 func TestRejectSecondGameHasSavedFifo(t *testing.T) {
-	msgServer, keeper, context := setupMsgServerWithOneGameForRejectGame(t)
+	msgServer, keeper, context, ctrl, _ := setupMsgServerWithOneGameForRejectGame(t)
 	ctx := sdk.UnwrapSDKContext(context)
+	defer ctrl.Finish()
 	msgServer.CreateGame(context, &types.MsgCreateGame{
 		Creator: bob,
 		Black:   carol,
@@ -46,8 +47,9 @@ func TestRejectSecondGameHasSavedFifo(t *testing.T) {
 }
 
 func TestRejectMiddleGameHasSavedFifo(t *testing.T) {
-	msgServer, keeper, context := setupMsgServerWithOneGameForRejectGame(t)
+	msgServer, keeper, context, ctrl, _ := setupMsgServerWithOneGameForRejectGame(t)
 	ctx := sdk.UnwrapSDKContext(context)
+	defer ctrl.Finish()
 	msgServer.CreateGame(context, &types.MsgCreateGame{
 		Creator: bob,
 		Black:   carol,
