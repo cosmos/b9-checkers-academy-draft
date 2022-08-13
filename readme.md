@@ -41,6 +41,7 @@ Branches:
 * [`v2-game-fifo`](../../tree/v2-game-fifo), [diff](../../compare/v2-fifo-fields..v2-game-fifo)
 * [`v2-forfeit-game`](../../tree/v2-forfeit-game), [diff](../../compare/v2-game-fifo..v2-forfeit-game)
 * [`v2-game-wager`](../../tree/v2-game-wager), [diff](../../compare/v2-forfeit-game..v2-game-wager)
+* [`v2-payment-winning`](../../tree/v2-payment-winning), [diff](../../compare/v2-game-wager..v2-payment-winning)
 
 ## Version 1 progressive tags
 
