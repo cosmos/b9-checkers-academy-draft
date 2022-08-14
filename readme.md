@@ -43,6 +43,7 @@ Branches:
 * [`v2-game-wager`](../../tree/v2-game-wager), [diff](../../compare/v2-forfeit-game..v2-game-wager)
 * [`v2-payment-winning`](../../tree/v2-payment-winning), [diff](../../compare/v2-game-wager..v2-payment-winning)
 * [`v2-integration-tests`](../../tree/v2-integration-tests), [diff](../../compare/v2-payment-winning..v2-integration-tests)
+* [`v2-gas-meter`](../../tree/v2-gas-meter), [diff](../../compare/v2-integration-tests..v2-gas-meter)
 
 ## Version 1 progressive tags
 
