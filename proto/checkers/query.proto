@@ -31,6 +31,11 @@ service Query {
 		option (google.api.http).get = "/b9lab/checkers/checkers/stored_game";
 	}
 
+// Queries a list of CanPlayMove items.
+	rpc CanPlayMove(QueryCanPlayMoveRequest) returns (QueryCanPlayMoveResponse) {
+		option (google.api.http).get = "/b9lab/checkers/checkers/can_play_move/{gameIndex}/{player}/{fromX}/{fromY}/{toX}/{toY}";
+	}
+
 // this line is used by starport scaffolding # 2
 }
 
@@ -64,6 +69,20 @@ message QueryAllStoredGameRequest {
 message QueryAllStoredGameResponse {
 	repeated StoredGame storedGame = 1 [(gogoproto.nullable) = false];
 	cosmos.base.query.v1beta1.PageResponse pagination = 2;
+}
+
+message QueryCanPlayMoveRequest {
+  string gameIndex = 1;
+  string player = 2;
+  uint64 fromX = 3;
+  uint64 fromY = 4;
+  uint64 toX = 5;
+  uint64 toY = 6;
+}
+
+message QueryCanPlayMoveResponse {
+  bool possible = 1;
+  string reason = 2;
 }
 
 // this line is used by starport scaffolding # 3
