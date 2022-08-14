@@ -173,6 +173,24 @@ func TestPlayMoveCalledBank(t *testing.T) {
 	})
 }
 
+func TestPlayMoveConsumedGas(t *testing.T) {
+	msgServer, _, context, ctrl, escrow := setupMsgServerWithOneGameForPlayMove(t)
+	ctx := sdk.UnwrapSDKContext(context)
+	defer ctrl.Finish()
+	escrow.ExpectAny(context)
+	before := ctx.GasMeter().GasConsumed()
+	msgServer.PlayMove(context, &types.MsgPlayMove{
+		Creator:   bob,
+		GameIndex: "1",
+		FromX:     1,
+		FromY:     2,
+		ToX:       2,
+		ToY:       3,
+	})
+	after := ctx.GasMeter().GasConsumed()
+	require.GreaterOrEqual(t, after, before+5_000)
+}
+
 func TestPlayMoveNotPlayer(t *testing.T) {
 	msgServer, _, context, ctrl, _ := setupMsgServerWithOneGameForPlayMove(t)
 	defer ctrl.Finish()
