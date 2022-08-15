@@ -27,6 +27,7 @@ func setupMsgServerWithOneGameForRejectGame(t testing.TB) (types.MsgServer, keep
 		Black:   bob,
 		Red:     carol,
 		Wager:   45,
+		Denom:   "stake",
 	})
 	return server, *k, context, ctrl, bankMock
 }

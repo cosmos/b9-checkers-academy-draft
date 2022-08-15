@@ -13,6 +13,7 @@ func (suite *IntegrationTestSuite) setupSuiteWithOneGameForPlayMove() {
 		Black:   bob,
 		Red:     carol,
 		Wager:   45,
+		Denom:   "stake",
 	})
 }
 
@@ -49,6 +50,7 @@ func (suite *IntegrationTestSuite) TestPlayMoveSavedGame() {
 		Deadline:    types.FormatDeadline(suite.ctx.BlockTime().Add(types.MaxTurnDuration)),
 		Winner:      "*",
 		Wager:       45,
+		Denom:       "stake",
 	}, game1)
 }
 
@@ -81,6 +83,7 @@ func (suite *IntegrationTestSuite) TestPlayMovePlayerPaidEvenZero() {
 		Black:   carol,
 		Red:     alice,
 		Wager:   0,
+		Denom:   "stake",
 	})
 	suite.RequireBankBalance(balAlice, alice)
 	suite.RequireBankBalance(balBob, bob)
@@ -108,6 +111,7 @@ func (suite *IntegrationTestSuite) TestPlayMoveCannotPayFails() {
 		Black:   carol,
 		Red:     alice,
 		Wager:   balCarol + 1,
+		Denom:   "stake",
 	})
 	suite.RequireBankBalance(balAlice, alice)
 	suite.RequireBankBalance(balBob, bob)
@@ -170,6 +174,7 @@ func (suite *IntegrationTestSuite) TestPlayMoveEmittedEvenZero() {
 		Black:   carol,
 		Red:     alice,
 		Wager:   0,
+		Denom:   "stake",
 	})
 	suite.msgServer.PlayMove(goCtx, &types.MsgPlayMove{
 		Creator:   carol,
@@ -242,6 +247,7 @@ func (suite *IntegrationTestSuite) TestPlayMove2CannotPayFails() {
 		Black:   bob,
 		Red:     carol,
 		Wager:   balCarol + 1,
+		Denom:   "stake",
 	})
 	suite.RequireBankBalance(balAlice, alice)
 	suite.RequireBankBalance(balBob, bob)
@@ -311,4 +317,33 @@ func (suite *IntegrationTestSuite) TestPlayMoveToWinnerBankPaid() {
 	suite.RequireBankBalance(balBob+45, bob)
 	suite.RequireBankBalance(balCarol-45, carol)
 	suite.RequireBankBalance(0, checkersModuleAddress)
+}
+
+func (suite *IntegrationTestSuite) TestPlayMoveToWinnerBankPaidDifferentTokens() {
+	suite.setupSuiteWithOneGameForPlayMove()
+	goCtx := sdk.WrapSDKContext(suite.ctx)
+	suite.msgServer.CreateGame(goCtx, &types.MsgCreateGame{
+		Creator: alice,
+		Black:   bob,
+		Red:     carol,
+		Wager:   46,
+		Denom:   "coin",
+	})
+	suite.RequireBankBalance(balAlice, alice)
+	suite.RequireBankBalanceWithDenom(0, "coin", alice)
+	suite.RequireBankBalance(balBob, bob)
+	suite.RequireBankBalanceWithDenom(balBob, "coin", bob)
+	suite.RequireBankBalance(balCarol, carol)
+	suite.RequireBankBalanceWithDenom(balCarol, "coin", carol)
+	suite.RequireBankBalance(0, checkersModuleAddress)
+	playAllMoves(suite.T(), suite.msgServer, sdk.WrapSDKContext(suite.ctx), "1", game1Moves)
+	playAllMoves(suite.T(), suite.msgServer, sdk.WrapSDKContext(suite.ctx), "2", game1Moves)
+	suite.RequireBankBalance(balAlice, alice)
+	suite.RequireBankBalanceWithDenom(0, "coin", alice)
+	suite.RequireBankBalance(balBob+45, bob)
+	suite.RequireBankBalanceWithDenom(balBob+46, "coin", bob)
+	suite.RequireBankBalance(balCarol-45, carol)
+	suite.RequireBankBalanceWithDenom(balCarol-46, "coin", carol)
+	suite.RequireBankBalance(0, checkersModuleAddress)
+	suite.RequireBankBalanceWithDenom(0, "coin", checkersModuleAddress)
 }
