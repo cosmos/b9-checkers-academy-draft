@@ -15,5 +15,6 @@ message StoredGame {
   string beforeIndex = 9;
   string afterIndex = 10;
   uint64 wager = 11;
+  string denom = 12;
 }
 
