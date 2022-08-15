@@ -1,4 +1,4 @@
-FROM --platform=linux ubuntu:22.04
+FROM --platform=linux ubuntu:22.04 as base
 ARG BUILDARCH
 
 # Change your versions here
@@ -6,6 +6,15 @@ ENV GO_VERSION=1.18.3
 ENV IGNITE_VERSION=0.22.1
 ENV NODE_VERSION=18.x
 ENV MOCKGEN_VERSION=1.6.0
+ENV PROTOC_VERSION=21.7
+
+FROM base AS platform-amd64
+ENV PROTOC_PLATFORM=x86_64
+
+FROM base AS platform-arm64
+ENV PROTOC_PLATFORM=aarch_64
+
+FROM platform-${BUILDARCH}
 
 ENV LOCAL=/usr/local
 ENV GOROOT=$LOCAL/go
@@ -15,7 +24,7 @@ ENV PATH=$GOROOT/bin:$GOPATH/bin:$PATH
 
 RUN mkdir -p $GOPATH/bin
 
-ENV PACKAGES curl gcc jq make
+ENV PACKAGES curl gcc jq make unzip
 RUN apt-get update
 RUN apt-get install -y $PACKAGES
 
@@ -31,6 +40,14 @@ RUN apt-get install -y nodejs
 
 # Install Mockgen
 RUN go install github.com/golang/mock/mockgen@v${MOCKGEN_VERSION}
+
+# Install ProtoC
+RUN mkdir -p /usr/lib/protoc
+WORKDIR /usr/lib/protoc
+RUN curl -L https://github.com/protocolbuffers/protobuf/releases/download/v${PROTOC_VERSION}/protoc-${PROTOC_VERSION}-linux-${PROTOC_PLATFORM}.zip -o protoc.zip
+RUN unzip -o protoc.zip
+RUN rm protoc.zip
+RUN ln -s /usr/lib/protoc/bin/protoc ${LOCAL}/bin/protoc
 
 RUN apt-get clean
 
