@@ -18,6 +18,7 @@ func TestPlayMove2Games1MoveHasSavedFifo(t *testing.T) {
 		Black:   carol,
 		Red:     alice,
 		Wager:   46,
+		Denom:   "coin",
 	})
 
 	msgServer.PlayMove(context, &types.MsgPlayMove{
@@ -49,6 +50,7 @@ func TestPlayMove2Games1MoveHasSavedFifo(t *testing.T) {
 		BeforeIndex: "2",
 		AfterIndex:  "-1",
 		Wager:       45,
+		Denom:       "stake",
 	}, game1)
 	game2, found := keeper.GetStoredGame(ctx, "2")
 	require.True(t, found)
@@ -64,6 +66,7 @@ func TestPlayMove2Games1MoveHasSavedFifo(t *testing.T) {
 		BeforeIndex: "-1",
 		AfterIndex:  "1",
 		Wager:       46,
+		Denom:       "coin",
 	}, game2)
 }
 
@@ -77,6 +80,7 @@ func TestPlayMove2Games2MovesHasSavedFifo(t *testing.T) {
 		Black:   carol,
 		Red:     alice,
 		Wager:   46,
+		Denom:   "coin",
 	})
 	msgServer.PlayMove(context, &types.MsgPlayMove{
 		Creator:   bob,
@@ -116,6 +120,7 @@ func TestPlayMove2Games2MovesHasSavedFifo(t *testing.T) {
 		BeforeIndex: "-1",
 		AfterIndex:  "2",
 		Wager:       45,
+		Denom:       "stake",
 	}, game1)
 	game2, found := keeper.GetStoredGame(ctx, "2")
 	require.True(t, found)
@@ -131,5 +136,6 @@ func TestPlayMove2Games2MovesHasSavedFifo(t *testing.T) {
 		BeforeIndex: "1",
 		AfterIndex:  "-1",
 		Wager:       46,
+		Denom:       "coin",
 	}, game2)
 }
