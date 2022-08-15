@@ -15,7 +15,7 @@ ENV PATH=$GOROOT/bin:$GOPATH/bin:$PATH
 
 RUN mkdir -p $GOPATH/bin
 
-ENV PACKAGES curl gcc jq make
+ENV PACKAGES curl gcc jq make unzip
 RUN apt-get update
 RUN apt-get install -y $PACKAGES
 
