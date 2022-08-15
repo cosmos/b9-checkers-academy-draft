@@ -13,6 +13,7 @@ func (suite *IntegrationTestSuite) TestCreate1GameHasSaved() {
 		Black:   bob,
 		Red:     carol,
 		Wager:   45,
+		Denom:   "stake",
 	})
 	keeper := suite.app.CheckersKeeper
 	systemInfo, found := keeper.GetSystemInfo(suite.ctx)
@@ -36,6 +37,7 @@ func (suite *IntegrationTestSuite) TestCreate1GameHasSaved() {
 		Deadline:    types.FormatDeadline(suite.ctx.BlockTime().Add(types.MaxTurnDuration)),
 		Winner:      "*",
 		Wager:       45,
+		Denom:       "stake",
 	}, game1)
 }
 
@@ -51,6 +53,7 @@ func (suite *IntegrationTestSuite) TestCreateGameDidNotPay() {
 		Black:   bob,
 		Red:     carol,
 		Wager:   45,
+		Denom:   "stake",
 	})
 	suite.RequireBankBalance(balAlice, alice)
 	suite.RequireBankBalance(balBob, bob)

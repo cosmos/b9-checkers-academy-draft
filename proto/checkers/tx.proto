@@ -17,6 +17,7 @@ message MsgCreateGame {
   string black = 2;
   string red = 3;
   uint64 wager = 4;
+  string denom = 5;
 }
 
 message MsgCreateGameResponse {
