@@ -43,6 +43,7 @@ Branches:
 * [`gas-meter`](../../tree/gas-meter), [diff](../../compare/integration-tests..gas-meter)
 * [`can-play-move-query`](../../tree/can-play-move-query), [diff](../../compare/gas-meter..can-play-move-query)
 * [`can-play-move-handler`](../../tree/can-play-move-handler), [diff](../../compare/can-play-move-query..can-play-move-handler)
+* [`wager-denomination`](../../tree/wager-denomination), [diff](../../compare/can-play-move-handler..wager-denomination)
 
 ## Version 1 progressive tags
 
