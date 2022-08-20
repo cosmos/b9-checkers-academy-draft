@@ -7,6 +7,7 @@ import "cosmos/base/query/v1beta1/pagination.proto";
 import "checkers/params.proto";
 import "checkers/system_info.proto";
 import "checkers/stored_game.proto";
+import "checkers/player_info.proto";
 // this line is used by starport scaffolding # 1
 
 option go_package = "github.com/b9lab/checkers/x/checkers/types";
@@ -34,6 +35,16 @@ service Query {
 // Queries a list of CanPlayMove items.
 	rpc CanPlayMove(QueryCanPlayMoveRequest) returns (QueryCanPlayMoveResponse) {
 		option (google.api.http).get = "/b9lab/checkers/checkers/can_play_move/{gameIndex}/{player}/{fromX}/{fromY}/{toX}/{toY}";
+	}
+
+// Queries a PlayerInfo by index.
+	rpc PlayerInfo(QueryGetPlayerInfoRequest) returns (QueryGetPlayerInfoResponse) {
+		option (google.api.http).get = "/b9lab/checkers/checkers/player_info/{index}";
+	}
+
+	// Queries a list of PlayerInfo items.
+	rpc PlayerInfoAll(QueryAllPlayerInfoRequest) returns (QueryAllPlayerInfoResponse) {
+		option (google.api.http).get = "/b9lab/checkers/checkers/player_info";
 	}
 
 // this line is used by starport scaffolding # 2
@@ -83,6 +94,24 @@ message QueryCanPlayMoveRequest {
 message QueryCanPlayMoveResponse {
   bool possible = 1;
   string reason = 2;
+}
+
+message QueryGetPlayerInfoRequest {
+	  string index = 1;
+
+}
+
+message QueryGetPlayerInfoResponse {
+	PlayerInfo playerInfo = 1 [(gogoproto.nullable) = false];
+}
+
+message QueryAllPlayerInfoRequest {
+	cosmos.base.query.v1beta1.PageRequest pagination = 1;
+}
+
+message QueryAllPlayerInfoResponse {
+	repeated PlayerInfo playerInfo = 1 [(gogoproto.nullable) = false];
+	cosmos.base.query.v1beta1.PageResponse pagination = 2;
 }
 
 // this line is used by starport scaffolding # 3
