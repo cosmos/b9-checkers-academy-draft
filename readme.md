@@ -43,6 +43,7 @@ Branches:
 * [`can-play-move-query`](../../tree/can-play-move-query), [diff](../../compare/gas-meter..can-play-move-query)
 * [`can-play-move-handler`](../../tree/can-play-move-handler), [diff](../../compare/can-play-move-query..can-play-move-handler)
 * [`wager-denomination`](../../tree/wager-denomination), [diff](../../compare/can-play-move-handler..wager-denomination)
+* [`cosmjs-elements`](../../tree/cosmjs-elements), [diff](../../compare/wager-denomination..cosmjs-elements)
 
 ## Version 1 progressive tags
 
