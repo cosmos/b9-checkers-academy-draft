@@ -512,3 +512,59 @@ func TestSavedPlayedDeadlineIsParseable(t *testing.T) {
 	_, err := game.GetDeadlineAsTime()
 	require.Nil(t, err)
 }
+
+func TestPlayerInfoNoAdditionOnNoWinner(t *testing.T) {
+	msgServer, keeper, context := setupMsgServerWithOneGameForPlayMove(t)
+	ctx := sdk.UnwrapSDKContext(context)
+	msgServer.PlayMove(context, &types.MsgPlayMove{
+		Creator:   bob,
+		GameIndex: "1",
+		FromX:     1,
+		FromY:     2,
+		ToX:       2,
+		ToY:       3,
+	})
+	bobInfo, found := keeper.GetPlayerInfo(ctx, bob)
+	require.False(t, found)
+	require.EqualValues(t, types.PlayerInfo{
+		Index:          "",
+		WonCount:       0,
+		LostCount:      0,
+		ForfeitedCount: 0,
+	}, bobInfo)
+}
+
+func TestPlayerInfoNoUpdatedOnNoWinner(t *testing.T) {
+	msgServer, keeper, context := setupMsgServerWithOneGameForPlayMove(t)
+	ctx := sdk.UnwrapSDKContext(context)
+	keeper.SetPlayerInfo(ctx, types.PlayerInfo{
+		Index: bob,
+	})
+	keeper.SetPlayerInfo(ctx, types.PlayerInfo{
+		Index: carol,
+	})
+	msgServer.PlayMove(context, &types.MsgPlayMove{
+		Creator:   bob,
+		GameIndex: "1",
+		FromX:     1,
+		FromY:     2,
+		ToX:       2,
+		ToY:       3,
+	})
+	bobInfo, found := keeper.GetPlayerInfo(ctx, bob)
+	require.True(t, found)
+	require.EqualValues(t, types.PlayerInfo{
+		Index:          bob,
+		WonCount:       0,
+		LostCount:      0,
+		ForfeitedCount: 0,
+	}, bobInfo)
+	carolInfo, found := keeper.GetPlayerInfo(ctx, carol)
+	require.True(t, found)
+	require.EqualValues(t, types.PlayerInfo{
+		Index:          carol,
+		WonCount:       0,
+		LostCount:      0,
+		ForfeitedCount: 0,
+	}, carolInfo)
+}
