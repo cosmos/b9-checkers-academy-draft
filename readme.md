@@ -47,6 +47,7 @@ Branches:
 * [`cosmjs-elements`](../../tree/cosmjs-elements), [diff](../../compare/wager-denomination..cosmjs-elements)
 * [`run-prod`](../../tree/run-prod), [diff](../../compare/cosmjs-elements..run-prod)
 * [`player-info-object`](../../tree/v1-player-info-object), [diff](../../compare/run-prod..v1-player-info-object)
+* [`player-info-handling`](../../tree/player-info-handling), [diff](../../compare/player-info-object..player-info-handling)
 
 ## Version 1 progressive tags
 
