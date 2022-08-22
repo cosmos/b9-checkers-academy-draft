@@ -49,6 +49,7 @@ Branches:
 * [`v2-wager-denomination`](../../tree/v2-wager-denomination), [diff](../../compare/v2-can-play-move-handler..v2-wager-denomination)
 * [`v2-cosmjs-elements`](../../tree/v2-cosmjs-elements), [diff](../../compare/v2-wager-denomination..v2-cosmjs-elements)
 * [`v2-run-prod`](../../tree/v2-run-prod), [diff](../../compare/v2-cosmjs-elements..v2-run-prod)
+* [`v2-player-info-object`](../../tree/v2-player-info-object), [diff](../../compare/v2-run-prod..v2-player-info-object)
 
 ## Version 1 progressive tags
 
