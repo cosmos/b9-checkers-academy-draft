@@ -6,6 +6,7 @@ import "checkers/params.proto";
 import "checkers/system_info.proto";
 import "checkers/stored_game.proto";
 import "checkers/player_info.proto";
+import "checkers/leaderboard.proto";
 // this line is used by starport scaffolding # genesis/proto/import
 
 option go_package = "github.com/b9lab/checkers/x/checkers/types";
@@ -16,5 +17,6 @@ message GenesisState {
   SystemInfo systemInfo = 2 [(gogoproto.nullable) = false];
   repeated StoredGame storedGameList = 3 [(gogoproto.nullable) = false];
   repeated PlayerInfo playerInfoList = 4 [(gogoproto.nullable) = false];
+  Leaderboard leaderboard = 5 [(gogoproto.nullable) = false];
   // this line is used by starport scaffolding # genesis/proto/state
 }

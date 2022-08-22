@@ -67,6 +67,51 @@ paths:
           format: uint64
       tags:
         - Query
+  /b9lab/checkers/checkers/leaderboard:
+    get:
+      summary: Queries a Leaderboard by index.
+      operationId: B9LabCheckersCheckersLeaderboard
+      responses:
+        '200':
+          description: A successful response.
+          schema:
+            type: object
+            properties:
+              Leaderboard:
+                type: object
+                properties:
+                  winners:
+                    type: array
+                    items:
+                      type: object
+                      properties:
+                        playerAddress:
+                          type: string
+                        wonCount:
+                          type: string
+                          format: uint64
+                        dateAdded:
+                          type: string
+        default:
+          description: An unexpected error response.
+          schema:
+            type: object
+            properties:
+              code:
+                type: integer
+                format: int32
+              message:
+                type: string
+              details:
+                type: array
+                items:
+                  type: object
+                  properties:
+                    '@type':
+                      type: string
+                  additionalProperties: {}
+      tags:
+        - Query
   /b9lab/checkers/checkers/params:
     get:
       summary: Parameters queries the parameters of the module.
@@ -30961,6 +31006,21 @@ paths:
       tags:
         - Query
 definitions:
+  b9lab.checkers.checkers.Leaderboard:
+    type: object
+    properties:
+      winners:
+        type: array
+        items:
+          type: object
+          properties:
+            playerAddress:
+              type: string
+            wonCount:
+              type: string
+              format: uint64
+            dateAdded:
+              type: string
   b9lab.checkers.checkers.MsgCreateGameResponse:
     type: object
     properties:
@@ -31106,6 +31166,24 @@ definitions:
         type: boolean
       reason:
         type: string
+  b9lab.checkers.checkers.QueryGetLeaderboardResponse:
+    type: object
+    properties:
+      Leaderboard:
+        type: object
+        properties:
+          winners:
+            type: array
+            items:
+              type: object
+              properties:
+                playerAddress:
+                  type: string
+                wonCount:
+                  type: string
+                  format: uint64
+                dateAdded:
+                  type: string
   b9lab.checkers.checkers.QueryGetPlayerInfoResponse:
     type: object
     properties:
@@ -31213,6 +31291,16 @@ definitions:
       fifoHeadIndex:
         type: string
       fifoTailIndex:
+        type: string
+  b9lab.checkers.checkers.WinningPlayer:
+    type: object
+    properties:
+      playerAddress:
+        type: string
+      wonCount:
+        type: string
+        format: uint64
+      dateAdded:
         type: string
   cosmos.base.query.v1beta1.PageRequest:
     type: object

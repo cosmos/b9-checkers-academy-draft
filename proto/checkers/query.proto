@@ -8,6 +8,7 @@ import "checkers/params.proto";
 import "checkers/system_info.proto";
 import "checkers/stored_game.proto";
 import "checkers/player_info.proto";
+import "checkers/leaderboard.proto";
 // this line is used by starport scaffolding # 1
 
 option go_package = "github.com/b9lab/checkers/x/checkers/types";
@@ -47,6 +48,10 @@ service Query {
 		option (google.api.http).get = "/b9lab/checkers/checkers/player_info";
 	}
 
+// Queries a Leaderboard by index.
+	rpc Leaderboard(QueryGetLeaderboardRequest) returns (QueryGetLeaderboardResponse) {
+		option (google.api.http).get = "/b9lab/checkers/checkers/leaderboard";
+	}
 // this line is used by starport scaffolding # 2
 }
 
@@ -114,4 +119,9 @@ message QueryAllPlayerInfoResponse {
 	cosmos.base.query.v1beta1.PageResponse pagination = 2;
 }
 
+message QueryGetLeaderboardRequest {}
+
+message QueryGetLeaderboardResponse {
+	Leaderboard Leaderboard = 1 [(gogoproto.nullable) = false];
+}
 // this line is used by starport scaffolding # 3

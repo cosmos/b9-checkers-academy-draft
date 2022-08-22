@@ -9,6 +9,10 @@
  * ---------------------------------------------------------------
  */
 
+export interface CheckersLeaderboard {
+  winners?: CheckersWinningPlayer[];
+}
+
 export interface CheckersMsgCreateGameResponse {
   gameIndex?: string;
 }
@@ -77,6 +81,10 @@ export interface CheckersQueryCanPlayMoveResponse {
   reason?: string;
 }
 
+export interface CheckersQueryGetLeaderboardResponse {
+  Leaderboard?: CheckersLeaderboard;
+}
+
 export interface CheckersQueryGetPlayerInfoResponse {
   playerInfo?: CheckersPlayerInfo;
 }
@@ -121,6 +129,14 @@ export interface CheckersSystemInfo {
   nextId?: string;
   fifoHeadIndex?: string;
   fifoTailIndex?: string;
+}
+
+export interface CheckersWinningPlayer {
+  playerAddress?: string;
+
+  /** @format uint64 */
+  wonCount?: string;
+  dateAdded?: string;
 }
 
 export interface ProtobufAny {
@@ -412,6 +428,22 @@ export class Api<SecurityDataType extends unknown> extends HttpClient<SecurityDa
   ) =>
     this.request<CheckersQueryCanPlayMoveResponse, RpcStatus>({
       path: `/b9lab/checkers/checkers/can_play_move/${gameIndex}/${player}/${fromX}/${fromY}/${toX}/${toY}`,
+      method: "GET",
+      format: "json",
+      ...params,
+    });
+
+  /**
+   * No description
+   *
+   * @tags Query
+   * @name QueryLeaderboard
+   * @summary Queries a Leaderboard by index.
+   * @request GET:/b9lab/checkers/checkers/leaderboard
+   */
+  queryLeaderboard = (params: RequestParams = {}) =>
+    this.request<CheckersQueryGetLeaderboardResponse, RpcStatus>({
+      path: `/b9lab/checkers/checkers/leaderboard`,
       method: "GET",
       format: "json",
       ...params,

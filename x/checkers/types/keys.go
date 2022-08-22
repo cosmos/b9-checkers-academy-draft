@@ -74,3 +74,7 @@ const (
 	PlayMoveGas         = 1000
 	RejectGameRefundGas = 14000
 )
+
+const (
+	LeaderboardKey = "Leaderboard-value-"
+)

@@ -1,0 +1,11 @@
+syntax = "proto3";
+package b9lab.checkers.checkers;
+
+import "gogoproto/gogo.proto";
+import "checkers/winning_player.proto";
+
+option go_package = "github.com/b9lab/checkers/x/checkers/types";
+
+message Leaderboard {
+    repeated WinningPlayer winners = 1 [(gogoproto.nullable) = false];
+}

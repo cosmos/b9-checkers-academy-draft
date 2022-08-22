@@ -3,6 +3,7 @@ import { Params } from "../checkers/params";
 import { SystemInfo } from "../checkers/system_info";
 import { StoredGame } from "../checkers/stored_game";
 import { PlayerInfo } from "../checkers/player_info";
+import { Leaderboard } from "../checkers/leaderboard";
 import { Writer, Reader } from "protobufjs/minimal";
 
 export const protobufPackage = "b9lab.checkers.checkers";
@@ -12,8 +13,9 @@ export interface GenesisState {
   params: Params | undefined;
   systemInfo: SystemInfo | undefined;
   storedGameList: StoredGame[];
-  /** this line is used by starport scaffolding # genesis/proto/state */
   playerInfoList: PlayerInfo[];
+  /** this line is used by starport scaffolding # genesis/proto/state */
+  leaderboard: Leaderboard | undefined;
 }
 
 const baseGenesisState: object = {};
@@ -31,6 +33,12 @@ export const GenesisState = {
     }
     for (const v of message.playerInfoList) {
       PlayerInfo.encode(v!, writer.uint32(34).fork()).ldelim();
+    }
+    if (message.leaderboard !== undefined) {
+      Leaderboard.encode(
+        message.leaderboard,
+        writer.uint32(42).fork()
+      ).ldelim();
     }
     return writer;
   },
@@ -59,6 +67,9 @@ export const GenesisState = {
           message.playerInfoList.push(
             PlayerInfo.decode(reader, reader.uint32())
           );
+          break;
+        case 5:
+          message.leaderboard = Leaderboard.decode(reader, reader.uint32());
           break;
         default:
           reader.skipType(tag & 7);
@@ -92,6 +103,11 @@ export const GenesisState = {
         message.playerInfoList.push(PlayerInfo.fromJSON(e));
       }
     }
+    if (object.leaderboard !== undefined && object.leaderboard !== null) {
+      message.leaderboard = Leaderboard.fromJSON(object.leaderboard);
+    } else {
+      message.leaderboard = undefined;
+    }
     return message;
   },
 
@@ -117,6 +133,10 @@ export const GenesisState = {
     } else {
       obj.playerInfoList = [];
     }
+    message.leaderboard !== undefined &&
+      (obj.leaderboard = message.leaderboard
+        ? Leaderboard.toJSON(message.leaderboard)
+        : undefined);
     return obj;
   },
 
@@ -143,6 +163,11 @@ export const GenesisState = {
       for (const e of object.playerInfoList) {
         message.playerInfoList.push(PlayerInfo.fromPartial(e));
       }
+    }
+    if (object.leaderboard !== undefined && object.leaderboard !== null) {
+      message.leaderboard = Leaderboard.fromPartial(object.leaderboard);
+    } else {
+      message.leaderboard = undefined;
     }
     return message;
   },
