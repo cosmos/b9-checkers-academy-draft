@@ -139,3 +139,68 @@ func TestPlayMoveUpToWinnerCalledBank(t *testing.T) {
 
 	playAllMoves(t, msgServer, context, "1", game1Moves)
 }
+
+func TestCompleteGameAddPlayerInfo(t *testing.T) {
+	msgServer, keeper, context, ctrl, escrow := setupMsgServerWithOneGameForPlayMove(t)
+	ctx := sdk.UnwrapSDKContext(context)
+	defer ctrl.Finish()
+	escrow.ExpectAny(context)
+
+	playAllMoves(t, msgServer, context, "1", game1Moves)
+
+	bobInfo, found := keeper.GetPlayerInfo(ctx, bob)
+	require.True(t, found)
+	require.EqualValues(t, types.PlayerInfo{
+		Index:          bob,
+		WonCount:       1,
+		LostCount:      0,
+		ForfeitedCount: 0,
+	}, bobInfo)
+	carolInfo, found := keeper.GetPlayerInfo(ctx, carol)
+	require.True(t, found)
+	require.EqualValues(t, types.PlayerInfo{
+		Index:          carol,
+		WonCount:       0,
+		LostCount:      1,
+		ForfeitedCount: 0,
+	}, carolInfo)
+}
+
+func TestCompleteGameUpdatePlayerInfo(t *testing.T) {
+	msgServer, keeper, context, ctrl, escrow := setupMsgServerWithOneGameForPlayMove(t)
+	ctx := sdk.UnwrapSDKContext(context)
+	defer ctrl.Finish()
+	escrow.ExpectAny(context)
+
+	keeper.SetPlayerInfo(ctx, types.PlayerInfo{
+		Index:          bob,
+		WonCount:       1,
+		LostCount:      2,
+		ForfeitedCount: 3,
+	})
+	keeper.SetPlayerInfo(ctx, types.PlayerInfo{
+		Index:          carol,
+		WonCount:       4,
+		LostCount:      5,
+		ForfeitedCount: 6,
+	})
+
+	playAllMoves(t, msgServer, context, "1", game1Moves)
+
+	bobInfo, found := keeper.GetPlayerInfo(ctx, bob)
+	require.True(t, found)
+	require.EqualValues(t, types.PlayerInfo{
+		Index:          bob,
+		WonCount:       2,
+		LostCount:      2,
+		ForfeitedCount: 3,
+	}, bobInfo)
+	carolInfo, found := keeper.GetPlayerInfo(ctx, carol)
+	require.True(t, found)
+	require.EqualValues(t, types.PlayerInfo{
+		Index:          carol,
+		WonCount:       4,
+		LostCount:      6,
+		ForfeitedCount: 6,
+	}, carolInfo)
+}

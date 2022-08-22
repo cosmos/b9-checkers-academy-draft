@@ -303,3 +303,79 @@ func TestRejectGameByRedWrong2Moves(t *testing.T) {
 	require.Nil(t, rejectGameResponse)
 	require.Equal(t, "red player has already played", err.Error())
 }
+
+func TestRejectPlayerInfoNoteAdded(t *testing.T) {
+	msgServer, keeper, context, ctrl, escrow := setupMsgServerWithOneGameForRejectGame(t)
+	ctx := sdk.UnwrapSDKContext(context)
+	defer ctrl.Finish()
+	escrow.ExpectAny(context)
+	msgServer.PlayMove(context, &types.MsgPlayMove{
+		Creator:   bob,
+		GameIndex: "1",
+		FromX:     1,
+		FromY:     2,
+		ToX:       2,
+		ToY:       3,
+	})
+	msgServer.RejectGame(context, &types.MsgRejectGame{
+		Creator:   carol,
+		GameIndex: "1",
+	})
+	bobInfo, found := keeper.GetPlayerInfo(ctx, bob)
+	require.False(t, found)
+	require.EqualValues(t, types.PlayerInfo{
+		Index:          "",
+		WonCount:       0,
+		LostCount:      0,
+		ForfeitedCount: 0,
+	}, bobInfo)
+	carolInfo, found := keeper.GetPlayerInfo(ctx, carol)
+	require.False(t, found)
+	require.EqualValues(t, types.PlayerInfo{
+		Index:          "",
+		WonCount:       0,
+		LostCount:      0,
+		ForfeitedCount: 0,
+	}, carolInfo)
+}
+
+func TestRejectPlayerInfoNotUpdated(t *testing.T) {
+	msgServer, keeper, context, ctrl, escrow := setupMsgServerWithOneGameForRejectGame(t)
+	ctx := sdk.UnwrapSDKContext(context)
+	defer ctrl.Finish()
+	escrow.ExpectAny(context)
+	keeper.SetPlayerInfo(ctx, types.PlayerInfo{
+		Index: bob,
+	})
+	keeper.SetPlayerInfo(ctx, types.PlayerInfo{
+		Index: carol,
+	})
+	msgServer.PlayMove(context, &types.MsgPlayMove{
+		Creator:   bob,
+		GameIndex: "1",
+		FromX:     1,
+		FromY:     2,
+		ToX:       2,
+		ToY:       3,
+	})
+	msgServer.RejectGame(context, &types.MsgRejectGame{
+		Creator:   carol,
+		GameIndex: "1",
+	})
+	bobInfo, found := keeper.GetPlayerInfo(ctx, bob)
+	require.True(t, found)
+	require.EqualValues(t, types.PlayerInfo{
+		Index:          bob,
+		WonCount:       0,
+		LostCount:      0,
+		ForfeitedCount: 0,
+	}, bobInfo)
+	carolInfo, found := keeper.GetPlayerInfo(ctx, carol)
+	require.True(t, found)
+	require.EqualValues(t, types.PlayerInfo{
+		Index:          carol,
+		WonCount:       0,
+		LostCount:      0,
+		ForfeitedCount: 0,
+	}, carolInfo)
+}
