@@ -379,3 +379,66 @@ func TestRejectPlayerInfoNotUpdated(t *testing.T) {
 		ForfeitedCount: 0,
 	}, carolInfo)
 }
+
+func TestRejectLeaderboardNoAddition(t *testing.T) {
+	msgServer, keeper, context, ctrl, escrow := setupMsgServerWithOneGameForRejectGame(t)
+	ctx := sdk.UnwrapSDKContext(context)
+	defer ctrl.Finish()
+	escrow.ExpectAny(context)
+	msgServer.PlayMove(context, &types.MsgPlayMove{
+		Creator:   bob,
+		GameIndex: "1",
+		FromX:     1,
+		FromY:     2,
+		ToX:       2,
+		ToY:       3,
+	})
+	msgServer.RejectGame(context, &types.MsgRejectGame{
+		Creator:   carol,
+		GameIndex: "1",
+	})
+	leaderboard, found := keeper.GetLeaderboard(ctx)
+	require.True(t, found)
+	require.Equal(t, 0, len(leaderboard.Winners))
+}
+
+func TestRejectLeaderboardNoUpdated(t *testing.T) {
+	msgServer, keeper, context, ctrl, escrow := setupMsgServerWithOneGameForRejectGame(t)
+	ctx := sdk.UnwrapSDKContext(context)
+	defer ctrl.Finish()
+	escrow.ExpectAny(context)
+	keeper.SetPlayerInfo(ctx, types.PlayerInfo{
+		Index:    bob,
+		WonCount: 2,
+	})
+	keeper.SetLeaderboard(ctx, types.Leaderboard{
+		Winners: []types.WinningPlayer{
+			{
+				PlayerAddress: "bob",
+				WonCount:      2,
+				DateAdded:     "2006-01-02 15:05:06.999999999 +0000 UTC",
+			},
+		},
+	})
+	msgServer.PlayMove(context, &types.MsgPlayMove{
+		Creator:   bob,
+		GameIndex: "1",
+		FromX:     1,
+		FromY:     2,
+		ToX:       2,
+		ToY:       3,
+	})
+	msgServer.RejectGame(context, &types.MsgRejectGame{
+		Creator:   carol,
+		GameIndex: "1",
+	})
+	leaderboard, found := keeper.GetLeaderboard(ctx)
+	require.True(t, found)
+	require.EqualValues(t, []types.WinningPlayer{
+		{
+			PlayerAddress: "bob",
+			WonCount:      2,
+			DateAdded:     "2006-01-02 15:05:06.999999999 +0000 UTC",
+		},
+	}, leaderboard.Winners)
+}

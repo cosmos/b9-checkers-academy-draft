@@ -54,7 +54,8 @@ func (k Keeper) ForfeitExpiredGames(goCtx context.Context) {
 					panic(fmt.Sprintf(types.ErrCannotFindWinnerByColor.Error(), storedGame.Turn))
 				}
 				k.MustPayWinnings(ctx, &storedGame)
-				k.MustRegisterPlayerForfeit(ctx, &storedGame)
+				winnerInfo, _ := k.MustRegisterPlayerForfeit(ctx, &storedGame)
+				k.MustAddToLeaderboard(ctx, winnerInfo)
 				storedGame.Board = ""
 				k.SetStoredGame(ctx, storedGame)
 			}

@@ -77,7 +77,8 @@ func (k msgServer) PlayMove(goCtx context.Context, msg *types.MsgPlayMove) (*typ
 		k.Keeper.RemoveFromFifo(ctx, &storedGame, &systemInfo)
 		storedGame.Board = ""
 		k.Keeper.MustPayWinnings(ctx, &storedGame)
-		k.Keeper.MustRegisterPlayerWin(ctx, &storedGame)
+		winnerInfo, _ := k.Keeper.MustRegisterPlayerWin(ctx, &storedGame)
+		k.Keeper.MustAddToLeaderboard(ctx, winnerInfo)
 	}
 
 	storedGame.MoveCount++

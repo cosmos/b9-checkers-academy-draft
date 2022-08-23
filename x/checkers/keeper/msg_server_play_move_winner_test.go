@@ -204,3 +204,54 @@ func TestCompleteGameUpdatePlayerInfo(t *testing.T) {
 		ForfeitedCount: 6,
 	}, carolInfo)
 }
+
+func TestCompleteGameLeaderboardAddWinner(t *testing.T) {
+	msgServer, keeper, context, ctrl, escrow := setupMsgServerWithOneGameForPlayMove(t)
+	ctx := sdk.UnwrapSDKContext(context)
+	defer ctrl.Finish()
+	escrow.ExpectAny(context)
+
+	playAllMoves(t, msgServer, context, "1", game1Moves)
+
+	leaderboard, found := keeper.GetLeaderboard(ctx)
+	require.True(t, found)
+	require.EqualValues(t, []types.WinningPlayer{
+		{
+			PlayerAddress: bob,
+			WonCount:      1,
+			DateAdded:     types.FormatDateAdded(types.GetDateAdded(ctx)),
+		},
+	}, leaderboard.Winners)
+}
+
+func TestCompleteGameLeaderboardUpdatedWinner(t *testing.T) {
+	msgServer, keeper, context, ctrl, escrow := setupMsgServerWithOneGameForPlayMove(t)
+	ctx := sdk.UnwrapSDKContext(context)
+	defer ctrl.Finish()
+	escrow.ExpectAny(context)
+	keeper.SetPlayerInfo(ctx, types.PlayerInfo{
+		Index:    bob,
+		WonCount: 2,
+	})
+	keeper.SetLeaderboard(ctx, types.Leaderboard{
+		Winners: []types.WinningPlayer{
+			{
+				PlayerAddress: bob,
+				WonCount:      2,
+				DateAdded:     "2006-01-02 15:05:06.999999999 +0000 UTC",
+			},
+		},
+	})
+
+	playAllMoves(t, msgServer, context, "1", game1Moves)
+
+	leaderboard, found := keeper.GetLeaderboard(ctx)
+	require.True(t, found)
+	require.EqualValues(t, []types.WinningPlayer{
+		{
+			PlayerAddress: bob,
+			WonCount:      3,
+			DateAdded:     types.FormatDateAdded(types.GetDateAdded(ctx)),
+		},
+	}, leaderboard.Winners)
+}

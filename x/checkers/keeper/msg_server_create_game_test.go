@@ -496,3 +496,58 @@ func TestCreatePlayerInfoNotUpdated(t *testing.T) {
 		ForfeitedCount: 0,
 	}, carolInfo)
 }
+
+func TestCreateLeaderboardNotAdded(t *testing.T) {
+	msgServer, keeper, context := setupMsgServerCreateGame(t)
+	ctx := sdk.UnwrapSDKContext(context)
+	msgServer.CreateGame(context, &types.MsgCreateGame{
+		Creator: alice,
+		Black:   bob,
+		Red:     carol,
+		Wager:   45,
+		Denom:   "stake",
+	})
+	leaderboard, found := keeper.GetLeaderboard(ctx)
+	require.True(t, found)
+	require.Equal(t, 0, len(leaderboard.Winners))
+}
+
+func TestCreateLeaderboardNotUpdated(t *testing.T) {
+	msgServer, keeper, context := setupMsgServerCreateGame(t)
+	ctx := sdk.UnwrapSDKContext(context)
+	keeper.SetPlayerInfo(ctx, types.PlayerInfo{
+		Index: alice,
+	})
+	keeper.SetPlayerInfo(ctx, types.PlayerInfo{
+		Index:    bob,
+		WonCount: 2,
+	})
+	keeper.SetPlayerInfo(ctx, types.PlayerInfo{
+		Index: carol,
+	})
+	keeper.SetLeaderboard(ctx, types.Leaderboard{
+		Winners: []types.WinningPlayer{
+			{
+				PlayerAddress: "bob",
+				WonCount:      2,
+				DateAdded:     "2006-01-02 15:05:06.999999999 +0000 UTC",
+			},
+		},
+	})
+	msgServer.CreateGame(context, &types.MsgCreateGame{
+		Creator: alice,
+		Black:   bob,
+		Red:     carol,
+		Wager:   45,
+		Denom:   "stake",
+	})
+	leaderboard, found := keeper.GetLeaderboard(ctx)
+	require.True(t, found)
+	require.EqualValues(t, []types.WinningPlayer{
+		{
+			PlayerAddress: "bob",
+			WonCount:      2,
+			DateAdded:     "2006-01-02 15:05:06.999999999 +0000 UTC",
+		},
+	}, leaderboard.Winners)
+}
