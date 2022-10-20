@@ -1,0 +1,8 @@
+FROM --platform=linux debian:11-slim
+ARG BUILDARCH
+
+ENV LOCAL=/usr/local
+
+COPY build/checkersd-linux-${BUILDARCH} ${LOCAL}/bin/checkersd
+
+ENTRYPOINT [ "checkersd" ]
