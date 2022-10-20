@@ -1,0 +1,75 @@
+# Faucet: docker build --target faucet
+FROM --platform=linux node:18.7-alpine AS cosmos-faucet
+
+ENV COSMJS_VERSION=0.28.11
+
+RUN npm install @cosmjs/faucet@${COSMJS_VERSION} --global --production
+
+ENV FAUCET_CONCURRENCY=2
+ENV FAUCET_PORT=4500
+ENV FAUCET_GAS_PRICE=0.001stake
+# Prepared keys for determinism
+ENV FAUCET_MNEMONIC="zebra burden afford work power afraid field creek laugh govern upgrade project glue ceiling lounge mobile romance pear relief either panel expect eagle jacket"
+ENV FAUCET_ADDRESS_PREFIX=cosmos
+ENV FAUCET_TOKENS="stake, token"
+ENV FAUCET_CREDIT_AMOUNT_STAKE=100
+ENV FAUCET_CREDIT_AMOUNT_TOKEN=100
+ENV FAUCET_COOLDOWN_TIME=0
+
+EXPOSE 4500
+
+ENTRYPOINT [ "cosmos-faucet" ]
+
+# Checkersd builder
+FROM --platform=linux golang:1.18.7-alpine AS builder
+
+ENV CHECKERS_VERSION=main
+
+RUN apk add --update --no-cache make git
+
+WORKDIR /root
+RUN git clone --depth 1 --branch ${CHECKERS_VERSION} https://github.com/cosmos/b9-checkers-academy-draft.git checkers
+
+WORKDIR /root/checkers
+RUN go build -o ./build/checkersd ./cmd/checkersd/main.go
+
+# Checkersd in production
+FROM --platform=linux alpine
+
+COPY --from=builder /root/checkers/build/checkersd /usr/local/bin/checkersd
+
+# This address corresponds to the mnemonic above
+ENV ALICE=cosmos1am3fnp5dd6nndk5jyjq9mpqh3yvt2jmmdv83xn
+
+RUN mkdir -p /root/.checkers/keys
+
+# This private key file corresponds to the mnemonic above
+RUN echo -----BEGIN TENDERMINT PRIVATE KEY----- > /root/.checkers/keys/encrypted-private-key-alice.txt
+RUN echo kdf: bcrypt >> /root/.checkers/keys/encrypted-private-key-alice.txt
+RUN echo salt: A67D88136A462383A2DD30727510DF59 >> /root/.checkers/keys/encrypted-private-key-alice.txt
+RUN echo type: secp256k1 >> /root/.checkers/keys/encrypted-private-key-alice.txt
+RUN echo  >> /root/.checkers/keys/encrypted-private-key-alice.txt
+RUN echo 7gttUkxkpWxlI9tF0/vEYHvysmKTc/mG/aZ8dMF3u7a8xkPgVLa/Z75k/46nr0yN >> /root/.checkers/keys/encrypted-private-key-alice.txt
+RUN echo FP/h5zTVYoP8tMnvVLV0koVAOV4QQurD5C7l3N8= >> /root/.checkers/keys/encrypted-private-key-alice.txt
+RUN echo =qyP6 >> /root/.checkers/keys/encrypted-private-key-alice.txt
+RUN echo -----END TENDERMINT PRIVATE KEY----- >> /root/.checkers/keys/encrypted-private-key-alice.txt
+
+RUN echo password | checkersd keys import alice /root/.checkers/keys/encrypted-private-key-alice.txt --keyring-backend test
+
+RUN checkersd init checkers
+RUN sed -Ei 's/^enable-unsafe-cors = false/enable-unsafe-cors = true/g' /root/.checkers/config/app.toml
+RUN sed -Ei 's/^enabled-unsafe-cors = false/enabled-unsafe-cors = true/g' /root/.checkers/config/app.toml
+RUN sed -Ei 's/^laddr = "tcp:\/\/127.0.0.1:26657"/laddr = "tcp:\/\/0.0.0.0:26657"/g' /root/.checkers/config/config.toml
+RUN sed -Ei 's/^cors_allowed_origins = \[\]/cors_allowed_origins = \["\*"\]/g' /root/.checkers/config/config.toml
+RUN sed -Ei 's/^chain-id = .*$/chain-id = "checkers-1"/g' /root/.checkers/config/client.toml
+
+RUN sed -Ei 's/"chain_id": "checkers"/"chain_id": "checkers-1"/g' /root/.checkers/config/genesis.json
+RUN checkersd add-genesis-account $ALICE 1000000000000000stake,1000000000000000token
+RUN checkersd gentx alice 10000000stake --keyring-backend test \
+    --account-number 0 --sequence 0 --chain-id checkers-1 \
+    --gas 1000000 --gas-prices 0.1stake
+RUN checkersd collect-gentxs
+
+EXPOSE 26657
+
+ENTRYPOINT [ "checkersd" ]
