@@ -1,0 +1,16 @@
+FROM --platform=linux golang:1.18.7-alpine AS builder
+
+RUN apk update
+RUN apk add make
+
+WORKDIR /original
+ADD . /original
+RUN go build -o ./build/checkersd ./cmd/checkersd/main.go
+
+FROM --platform=linux alpine
+
+ENV LOCAL=/usr/local
+
+COPY --from=builder /original/build/checkersd ${LOCAL}/bin/checkersd
+
+ENTRYPOINT [ "checkersd" ]

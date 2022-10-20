@@ -1,6 +1,11 @@
 vue/node_modules
 vue/dist
 release/
+build/
+prod-sim/*/config/addrbook.json
+prod-sim/*/config/write-file-atomic-*
+prod-sim/*/data/*
+!prod-sim/*/data/priv_validator_state.json
 .idea/
 .vscode/
 .DS_Store
