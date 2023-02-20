@@ -314,7 +314,7 @@ func (suite *IntegrationTestSuite) TestForfeitOlderPlayedTwicePaidEvenZero() {
 	suite.RequireBankBalance(0, checkersModuleAddress)
 }
 
-func (suite *IntegrationTestSuite) TestForfeitOlderPlayedTwicePaidEmittedvenZero() {
+func (suite *IntegrationTestSuite) TestForfeitOlderPlayedTwicePaidEmittedEvenZero() {
 	suite.setupSuiteWithBalances()
 	goCtx := sdk.WrapSDKContext(suite.ctx)
 	suite.msgServer.CreateGame(goCtx, &types.MsgCreateGame{
