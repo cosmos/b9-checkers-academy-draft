@@ -51,3 +51,13 @@ func TestPlayMoveUpToWinner(t *testing.T) {
 		{Key: "board", Value: "*b*b****|**b*b***|*****b**|********|***B****|********|*****b**|********"},
 	}, event.Attributes[(len(testutil.Game1Moves)-1)*6:])
 }
+
+func TestPlayMoveUpToWinnerCalledBank(t *testing.T) {
+	msgServer, _, context, ctrl, escrow := setupMsgServerWithOneGameForPlayMoveWithMock(t)
+	defer ctrl.Finish()
+	payBob := escrow.ExpectPay(context, bob, 45).Times(1)
+	payCarol := escrow.ExpectPay(context, carol, 45).Times(1).After(payBob)
+	escrow.ExpectRefund(context, bob, 90).Times(1).After(payCarol)
+
+	testutil.PlayAllMoves(t, msgServer, context, "1", bob, carol, testutil.Game1Moves)
+}

@@ -172,6 +172,27 @@ func TestForfeitPlayedOnce(t *testing.T) {
 	}, event)
 }
 
+func TestForfeitPlayedOnceCalledBank(t *testing.T) {
+	msgServer, keeper, context, ctrl, escrow := setupMsgServerWithOneGameForPlayMoveWithMock(t)
+	ctx := sdk.UnwrapSDKContext(context)
+	defer ctrl.Finish()
+	pay := escrow.ExpectPay(context, bob, 45).Times(1)
+	escrow.ExpectRefund(context, bob, 45).Times(1).After(pay)
+	msgServer.PlayMove(context, &types.MsgPlayMove{
+		Creator:   bob,
+		GameIndex: "1",
+		FromX:     1,
+		FromY:     2,
+		ToX:       2,
+		ToY:       3,
+	})
+	game1, found := keeper.GetStoredGame(ctx, "1")
+	require.True(t, found)
+	game1.Deadline = types.FormatDeadline(ctx.BlockTime().Add(time.Duration(-1)))
+	keeper.SetStoredGame(ctx, game1)
+	keeper.ForfeitExpiredGames(context)
+}
+
 func TestForfeitOlderPlayedOnce(t *testing.T) {
 	msgServer, keeper, context := setupMsgServerWithOneGameForPlayMove(t)
 	ctx := sdk.UnwrapSDKContext(context)
@@ -216,6 +237,33 @@ func TestForfeitOlderPlayedOnce(t *testing.T) {
 			{Key: "board", Value: "*b*b*b*b|b*b*b*b*|***b*b*b|**b*****|********|r*r*r*r*|*r*r*r*r|r*r*r*r*"},
 		},
 	}, event)
+}
+
+func TestForfeitOlderPlayedOnceCalledBank(t *testing.T) {
+	msgServer, keeper, context, ctrl, escrow := setupMsgServerWithOneGameForPlayMoveWithMock(t)
+	ctx := sdk.UnwrapSDKContext(context)
+	defer ctrl.Finish()
+	pay := escrow.ExpectPay(context, bob, 45).Times(1)
+	escrow.ExpectRefund(context, bob, 45).Times(1).After(pay)
+	msgServer.PlayMove(context, &types.MsgPlayMove{
+		Creator:   bob,
+		GameIndex: "1",
+		FromX:     1,
+		FromY:     2,
+		ToX:       2,
+		ToY:       3,
+	})
+	msgServer.CreateGame(context, &types.MsgCreateGame{
+		Creator: bob,
+		Red:     carol,
+		Black:   alice,
+		Wager:   46,
+	})
+	game1, found := keeper.GetStoredGame(ctx, "1")
+	require.True(t, found)
+	game1.Deadline = types.FormatDeadline(ctx.BlockTime().Add(time.Duration(-1)))
+	keeper.SetStoredGame(ctx, game1)
+	keeper.ForfeitExpiredGames(context)
 }
 
 func TestForfeit2OldestPlayedOnceIn1Call(t *testing.T) {
@@ -288,6 +336,53 @@ func TestForfeit2OldestPlayedOnceIn1Call(t *testing.T) {
 		}, event)
 }
 
+func TestForfeit2OldestPlayedOnceIn1CallCalledBank(t *testing.T) {
+	msgServer, keeper, context, ctrl, escrow := setupMsgServerWithOneGameForPlayMoveWithMock(t)
+	ctx := sdk.UnwrapSDKContext(context)
+	defer ctrl.Finish()
+	payBob := escrow.ExpectPay(context, bob, 45).Times(1)
+	payCarol := escrow.ExpectPay(context, carol, 46).Times(1).After(payBob)
+	refundBob := escrow.ExpectRefund(context, bob, 45).Times(1).After(payCarol)
+	escrow.ExpectRefund(context, carol, 46).Times(1).After(refundBob)
+	msgServer.PlayMove(context, &types.MsgPlayMove{
+		Creator:   bob,
+		GameIndex: "1",
+		FromX:     1,
+		FromY:     2,
+		ToX:       2,
+		ToY:       3,
+	})
+	msgServer.CreateGame(context, &types.MsgCreateGame{
+		Creator: bob,
+		Black:   carol,
+		Red:     alice,
+		Wager:   46,
+	})
+	msgServer.PlayMove(context, &types.MsgPlayMove{
+		Creator:   carol,
+		GameIndex: "2",
+		FromX:     1,
+		FromY:     2,
+		ToX:       2,
+		ToY:       3,
+	})
+	msgServer.CreateGame(context, &types.MsgCreateGame{
+		Creator: carol,
+		Black:   alice,
+		Red:     bob,
+		Wager:   47,
+	})
+	game1, found := keeper.GetStoredGame(ctx, "1")
+	require.True(t, found)
+	game1.Deadline = types.FormatDeadline(ctx.BlockTime().Add(time.Duration(-1)))
+	keeper.SetStoredGame(ctx, game1)
+	game2, found := keeper.GetStoredGame(ctx, "2")
+	require.True(t, found)
+	game2.Deadline = types.FormatDeadline(ctx.BlockTime().Add(time.Duration(-1)))
+	keeper.SetStoredGame(ctx, game2)
+	keeper.ForfeitExpiredGames(context)
+}
+
 func TestForfeitPlayedTwice(t *testing.T) {
 	msgServer, keeper, context := setupMsgServerWithOneGameForPlayMove(t)
 	ctx := sdk.UnwrapSDKContext(context)
@@ -348,6 +443,37 @@ func TestForfeitPlayedTwice(t *testing.T) {
 			{Key: "board", Value: "*b*b*b*b|b*b*b*b*|***b*b*b|**b*****|*r******|**r*r*r*|*r*r*r*r|r*r*r*r*"},
 		},
 	}, event)
+}
+
+func TestForfeitPlayedTwiceCalledBank(t *testing.T) {
+	msgServer, keeper, context, ctrl, escrow := setupMsgServerWithOneGameForPlayMoveWithMock(t)
+	ctx := sdk.UnwrapSDKContext(context)
+	defer ctrl.Finish()
+	payBob := escrow.ExpectPay(context, bob, 45).Times(1)
+	payCarol := escrow.ExpectPay(context, carol, 45).Times(1).After(payBob)
+	escrow.ExpectRefund(context, carol, 90).Times(1).After(payCarol)
+	msgServer.PlayMove(context, &types.MsgPlayMove{
+		Creator:   bob,
+		GameIndex: "1",
+		FromX:     1,
+		FromY:     2,
+		ToX:       2,
+		ToY:       3,
+	})
+	msgServer.PlayMove(context, &types.MsgPlayMove{
+		Creator:   carol,
+		GameIndex: "1",
+		FromX:     0,
+		FromY:     5,
+		ToX:       1,
+		ToY:       4,
+	})
+	game1, found := keeper.GetStoredGame(ctx, "1")
+	require.True(t, found)
+	oldDeadline := types.FormatDeadline(ctx.BlockTime().Add(time.Duration(-1)))
+	game1.Deadline = oldDeadline
+	keeper.SetStoredGame(ctx, game1)
+	keeper.ForfeitExpiredGames(context)
 }
 
 func TestForfeitOlderPlayedTwice(t *testing.T) {
@@ -416,6 +542,43 @@ func TestForfeitOlderPlayedTwice(t *testing.T) {
 			{Key: "board", Value: "*b*b*b*b|b*b*b*b*|***b*b*b|**b*****|*r******|**r*r*r*|*r*r*r*r|r*r*r*r*"},
 		},
 	}, event)
+}
+
+func TestForfeitOlderPlayedTwiceCalledBank(t *testing.T) {
+	msgServer, keeper, context, ctrl, escrow := setupMsgServerWithOneGameForPlayMoveWithMock(t)
+	ctx := sdk.UnwrapSDKContext(context)
+	defer ctrl.Finish()
+	payBob := escrow.ExpectPay(context, bob, 45).Times(1)
+	payCarol := escrow.ExpectPay(context, carol, 45).Times(1).After(payBob)
+	escrow.ExpectRefund(context, carol, 90).Times(1).After(payCarol)
+	msgServer.PlayMove(context, &types.MsgPlayMove{
+		Creator:   bob,
+		GameIndex: "1",
+		FromX:     1,
+		FromY:     2,
+		ToX:       2,
+		ToY:       3,
+	})
+	msgServer.PlayMove(context, &types.MsgPlayMove{
+		Creator:   carol,
+		GameIndex: "1",
+		FromX:     0,
+		FromY:     5,
+		ToX:       1,
+		ToY:       4,
+	})
+	msgServer.CreateGame(context, &types.MsgCreateGame{
+		Creator: bob,
+		Black:   carol,
+		Red:     alice,
+		Wager:   46,
+	})
+	game1, found := keeper.GetStoredGame(ctx, "1")
+	require.True(t, found)
+	oldDeadline := types.FormatDeadline(ctx.BlockTime().Add(time.Duration(-1)))
+	game1.Deadline = oldDeadline
+	keeper.SetStoredGame(ctx, game1)
+	keeper.ForfeitExpiredGames(context)
 }
 
 func TestForfeit2OldestPlayedTwiceIn1Call(t *testing.T) {
@@ -530,4 +693,70 @@ func TestForfeit2OldestPlayedTwiceIn1Call(t *testing.T) {
 			{Key: "board", Value: "*b*b*b*b|b*b*b*b*|***b*b*b|**b*****|*r******|**r*r*r*|*r*r*r*r|r*r*r*r*"},
 		},
 	}, event)
+}
+
+func TestForfeit2OldestPlayedTwiceIn1CallCalledBank(t *testing.T) {
+	msgServer, keeper, context, ctrl, escrow := setupMsgServerWithOneGameForPlayMoveWithMock(t)
+	ctx := sdk.UnwrapSDKContext(context)
+	defer ctrl.Finish()
+	payBob := escrow.ExpectPay(context, bob, 45).Times(1)
+	payCarol1 := escrow.ExpectPay(context, carol, 45).Times(1).After(payBob)
+	payCarol2 := escrow.ExpectPay(context, carol, 46).Times(1).After(payCarol1)
+	payAlice := escrow.ExpectPay(context, alice, 46).Times(1).After(payCarol2)
+	refundCarol := escrow.ExpectRefund(context, carol, 90).Times(1).After(payAlice)
+	escrow.ExpectRefund(context, alice, 92).Times(1).After(refundCarol)
+	msgServer.PlayMove(context, &types.MsgPlayMove{
+		Creator:   bob,
+		GameIndex: "1",
+		FromX:     1,
+		FromY:     2,
+		ToX:       2,
+		ToY:       3,
+	})
+	msgServer.PlayMove(context, &types.MsgPlayMove{
+		Creator:   carol,
+		GameIndex: "1",
+		FromX:     0,
+		FromY:     5,
+		ToX:       1,
+		ToY:       4,
+	})
+	msgServer.CreateGame(context, &types.MsgCreateGame{
+		Creator: bob,
+		Black:   carol,
+		Red:     alice,
+		Wager:   46,
+	})
+	msgServer.PlayMove(context, &types.MsgPlayMove{
+		Creator:   carol,
+		GameIndex: "2",
+		FromX:     1,
+		FromY:     2,
+		ToX:       2,
+		ToY:       3,
+	})
+	msgServer.PlayMove(context, &types.MsgPlayMove{
+		Creator:   alice,
+		GameIndex: "2",
+		FromX:     0,
+		FromY:     5,
+		ToX:       1,
+		ToY:       4,
+	})
+	msgServer.CreateGame(context, &types.MsgCreateGame{
+		Creator: carol,
+		Black:   alice,
+		Red:     bob,
+		Wager:   47,
+	})
+	game1, found := keeper.GetStoredGame(ctx, "1")
+	require.True(t, found)
+	oldDeadline := types.FormatDeadline(ctx.BlockTime().Add(time.Duration(-1)))
+	game1.Deadline = oldDeadline
+	keeper.SetStoredGame(ctx, game1)
+	game2, found := keeper.GetStoredGame(ctx, "2")
+	require.True(t, found)
+	game2.Deadline = oldDeadline
+	keeper.SetStoredGame(ctx, game2)
+	keeper.ForfeitExpiredGames(context)
 }

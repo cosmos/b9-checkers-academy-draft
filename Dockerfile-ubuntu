@@ -5,6 +5,7 @@ ARG BUILDARCH
 ENV GO_VERSION=1.18.3
 ENV IGNITE_VERSION=0.22.1
 ENV NODE_VERSION=18.x
+ENV MOCKGEN_VERSION=1.6.0
 
 ENV LOCAL=/usr/local
 ENV GOROOT=$LOCAL/go
@@ -14,7 +15,7 @@ ENV PATH=$GOROOT/bin:$GOPATH/bin:$PATH
 
 RUN mkdir -p $GOPATH/bin
 
-ENV PACKAGES curl gcc jq
+ENV PACKAGES curl gcc jq make
 RUN apt-get update
 RUN apt-get install -y $PACKAGES
 
@@ -27,6 +28,9 @@ RUN curl -L https://get.ignite.com/cli@v${IGNITE_VERSION}! | bash
 # Install Node
 RUN curl -fsSL https://deb.nodesource.com/setup_${NODE_VERSION} | bash -
 RUN apt-get install -y nodejs
+
+# Install Mockgen
+RUN go install github.com/golang/mock/mockgen@v${MOCKGEN_VERSION}
 
 RUN apt-get clean
 
