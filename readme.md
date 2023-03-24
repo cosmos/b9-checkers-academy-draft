@@ -39,6 +39,7 @@ Branches:
 * [`forfeit-game`](../../tree/forfeit-game), [diff](../../compare/game-fifo..forfeit-game)
 * [`game-wager`](../../tree/game-wager), [diff](../../compare/forfeit-game..game-wager)
 * [`payment-winning`](../../tree/payment-winning), [diff](../../compare/game-wager..payment-winning)
+* [`integration-tests`](../../tree/integration-tests), [diff](../../compare/payment-winning..integration-tests)
 
 ## Version 1 progressive tags
 
