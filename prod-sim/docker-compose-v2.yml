@@ -1,0 +1,33 @@
+version: "3.7"
+
+services:
+
+  val-alice:
+    extends:
+      file: docker-compose.yml
+      service: val-alice
+    image: checkersd_i:v2-alpine
+
+  sentry-alice:
+    extends:
+      file: docker-compose.yml
+      service: sentry-alice
+    image: checkersd_i:v2-alpine
+
+  val-bob:
+    extends:
+      file: docker-compose.yml
+      service: val-bob
+    image: checkersd_i:v2-alpine
+
+  sentry-bob:
+    extends:
+      file: docker-compose.yml
+      service: sentry-bob
+    image: checkersd_i:v2-alpine
+
+  node-carol:
+    extends:
+      file: docker-compose.yml
+      service: node-carol
+    image: checkersd_i:v2-alpine
