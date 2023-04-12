@@ -51,6 +51,7 @@ Branches:
 * [`v2-run-prod`](../../tree/v2-run-prod), [diff](../../compare/v2-cosmjs-elements..v2-run-prod)
 * [`v2-player-info-object`](../../tree/v2-player-info-object), [diff](../../compare/v2-run-prod..v2-player-info-object)
 * [`v2-player-info-handling`](../../tree/v2-player-info-handling), [diff](../../compare/v2-player-info-object..v2-player-info-handling)
+* [`v2-player-info-migration`](../../tree/v2-player-info-migration), [diff](../../compare/v2-player-info-handling..v2-player-info-migration)
 
 ## Version 1 progressive tags
 
