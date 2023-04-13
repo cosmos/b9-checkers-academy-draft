@@ -1,0 +1,20 @@
+syntax = "proto3";
+package b9lab.checkers.leaderboard;
+
+option go_package = "github.com/b9lab/checkers/x/leaderboard/types";
+import "gogoproto/gogo.proto";
+
+message Leaderboard {
+  repeated Winner winners = 1 [(gogoproto.nullable) = false];
+}
+
+message Winner {
+  string address = 1;
+  uint64 wonCount = 2;
+  uint64 addedAt = 3;
+}
+
+message Candidate {
+  bytes address = 1;
+  uint64 wonCount = 2;
+}

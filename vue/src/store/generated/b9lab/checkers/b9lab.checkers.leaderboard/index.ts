@@ -1,9 +1,12 @@
 import { txClient, queryClient, MissingWalletError , registry} from './module'
 
+import { Leaderboard } from "./module/types/leaderboard/leaderboard"
+import { Winner } from "./module/types/leaderboard/leaderboard"
+import { Candidate } from "./module/types/leaderboard/leaderboard"
 import { Params } from "./module/types/leaderboard/params"
 
 
-export { Params };
+export { Leaderboard, Winner, Candidate, Params };
 
 async function initTxClient(vuexGetters) {
 	return await txClient(vuexGetters['common/wallet/signer'], {
@@ -42,8 +45,12 @@ function getStructure(template) {
 const getDefaultState = () => {
 	return {
 				Params: {},
+				Leaderboard: {},
 				
 				_Structure: {
+						Leaderboard: getStructure(Leaderboard.fromPartial({})),
+						Winner: getStructure(Winner.fromPartial({})),
+						Candidate: getStructure(Candidate.fromPartial({})),
 						Params: getStructure(Params.fromPartial({})),
 						
 		},
@@ -78,6 +85,12 @@ export default {
 						(<any> params).query=null
 					}
 			return state.Params[JSON.stringify(params)] ?? {}
+		},
+				getLeaderboard: (state) => (params = { params: {}}) => {
+					if (!(<any> params).query) {
+						(<any> params).query=null
+					}
+			return state.Leaderboard[JSON.stringify(params)] ?? {}
 		},
 				
 		getTypeStructure: (state) => (type) => {
@@ -130,6 +143,28 @@ export default {
 				return getters['getParams']( { params: {...key}, query}) ?? {}
 			} catch (e) {
 				throw new Error('QueryClient:QueryParams API Node Unavailable. Could not perform query: ' + e.message)
+				
+			}
+		},
+		
+		
+		
+		
+		 		
+		
+		
+		async QueryLeaderboard({ commit, rootGetters, getters }, { options: { subscribe, all} = { subscribe:false, all:false}, params, query=null }) {
+			try {
+				const key = params ?? {};
+				const queryClient=await initQueryClient(rootGetters)
+				let value= (await queryClient.queryLeaderboard()).data
+				
+					
+				commit('QUERY', { query: 'Leaderboard', key: { params: {...key}, query}, value })
+				if (subscribe) commit('SUBSCRIBE', { action: 'QueryLeaderboard', payload: { options: { all }, params: {...key},query }})
+				return getters['getLeaderboard']( { params: {...key}, query}) ?? {}
+			} catch (e) {
+				throw new Error('QueryClient:QueryLeaderboard API Node Unavailable. Could not perform query: ' + e.message)
 				
 			}
 		},
