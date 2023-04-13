@@ -1,0 +1,13 @@
+syntax = "proto3";
+package b9lab.checkers.leaderboard;
+
+import "gogoproto/gogo.proto";
+
+option go_package = "github.com/b9lab/checkers/x/leaderboard/types";
+
+// Params defines the parameters for the module.
+message Params {
+  option (gogoproto.goproto_stringer) = false;
+  
+  uint64 length = 1 [(gogoproto.moretags) = "yaml:\"length\""];
+}
