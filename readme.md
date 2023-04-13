@@ -52,6 +52,7 @@ Branches:
 * [`v2-player-info-object`](../../tree/v2-player-info-object), [diff](../../compare/v2-run-prod..v2-player-info-object)
 * [`v2-player-info-handling`](../../tree/v2-player-info-handling), [diff](../../compare/v2-player-info-object..v2-player-info-handling)
 * [`v2-player-info-migration`](../../tree/v2-player-info-migration), [diff](../../compare/v2-player-info-handling..v2-player-info-migration)
+* [`v2-leaderboard-module`](../../tree/v2-leaderboard-module), [diff](../../compare/v2-player-info-migration..v2-leaderboard-module)
 
 ## Version 1 progressive tags
 
