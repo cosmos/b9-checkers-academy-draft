@@ -49,6 +49,7 @@ Branches:
 * [`player-info-object`](../../tree/v1-player-info-object), [diff](../../compare/run-prod..v1-player-info-object)
 * [`player-info-handling`](../../tree/player-info-handling), [diff](../../compare/player-info-object..player-info-handling)
 * [`player-info-migration`](../../tree/player-info-migration), [diff](../../compare/player-info-handling..player-info-migration)
+* [`leaderboard-module`](../../tree/leaderboard-module), [diff](../../compare/player-info-migration..leaderboard-module)
 
 ## Version 1 progressive tags
 
