@@ -11,8 +11,10 @@ var _ paramtypes.ParamSet = (*Params)(nil)
 
 var (
 	KeyLength = []byte("Length")
-	// TODO: Determine the default value
-	DefaultLength uint64 = 0
+)
+
+const (
+	DefaultLength uint64 = 100
 )
 
 // ParamKeyTable the param key table for launch module
