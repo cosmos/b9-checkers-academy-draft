@@ -9,6 +9,10 @@
  * ---------------------------------------------------------------
  */
 
+export interface LeaderboardLeaderboard {
+  winners?: LeaderboardWinner[];
+}
+
 /**
  * Params defines the parameters for the module.
  */
@@ -17,12 +21,26 @@ export interface LeaderboardParams {
   length?: string;
 }
 
+export interface LeaderboardQueryGetLeaderboardResponse {
+  Leaderboard?: LeaderboardLeaderboard;
+}
+
 /**
  * QueryParamsResponse is response type for the Query/Params RPC method.
  */
 export interface LeaderboardQueryParamsResponse {
   /** params holds all the parameters of this module. */
   params?: LeaderboardParams;
+}
+
+export interface LeaderboardWinner {
+  address?: string;
+
+  /** @format uint64 */
+  wonCount?: string;
+
+  /** @format uint64 */
+  addedAt?: string;
 }
 
 export interface ProtobufAny {
@@ -232,6 +250,22 @@ export class HttpClient<SecurityDataType = unknown> {
  * @version version not set
  */
 export class Api<SecurityDataType extends unknown> extends HttpClient<SecurityDataType> {
+  /**
+   * No description
+   *
+   * @tags Query
+   * @name QueryLeaderboard
+   * @summary Queries a Leaderboard by index.
+   * @request GET:/b9lab/checkers/leaderboard/leaderboard
+   */
+  queryLeaderboard = (params: RequestParams = {}) =>
+    this.request<LeaderboardQueryGetLeaderboardResponse, RpcStatus>({
+      path: `/b9lab/checkers/leaderboard/leaderboard`,
+      method: "GET",
+      format: "json",
+      ...params,
+    });
+
   /**
    * No description
    *
