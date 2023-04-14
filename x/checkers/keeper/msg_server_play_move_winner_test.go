@@ -129,3 +129,37 @@ func TestCompleteGameUpdatePlayerInfo(t *testing.T) {
 		ForfeitedCount: 6,
 	}, carolInfo)
 }
+
+func TestCompleteGameCallsHook(t *testing.T) {
+	msgServer, keeper, context, ctrl, escrow, hookMock := setupMsgServerWithOneGameForPlayMoveAndHooks(t)
+	ctx := sdk.UnwrapSDKContext(context)
+	defer ctrl.Finish()
+	escrow.ExpectAny(context)
+	bobCall := hookMock.EXPECT().AfterPlayerInfoChanged(ctx, types.PlayerInfo{
+		Index:          bob,
+		WonCount:       2,
+		LostCount:      2,
+		ForfeitedCount: 3,
+	}).Times(1)
+	hookMock.EXPECT().AfterPlayerInfoChanged(ctx, types.PlayerInfo{
+		Index:          carol,
+		WonCount:       4,
+		LostCount:      6,
+		ForfeitedCount: 6,
+	}).Times(1).After(bobCall)
+
+	keeper.SetPlayerInfo(ctx, types.PlayerInfo{
+		Index:          bob,
+		WonCount:       1,
+		LostCount:      2,
+		ForfeitedCount: 3,
+	})
+	keeper.SetPlayerInfo(ctx, types.PlayerInfo{
+		Index:          carol,
+		WonCount:       4,
+		LostCount:      5,
+		ForfeitedCount: 6,
+	})
+
+	testutil.PlayAllMoves(t, msgServer, context, "1", bob, carol, testutil.Game1Moves)
+}

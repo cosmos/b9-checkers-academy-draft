@@ -680,3 +680,58 @@ func TestForfeiGameUpdatePlayerInfo(t *testing.T) {
 		ForfeitedCount: 6,
 	}, carolInfo)
 }
+
+func TestForfeiGameCallsHook(t *testing.T) {
+	msgServer, keeper, context, ctrl, escrow, hookMock := setupMsgServerWithOneGameForPlayMoveAndHooks(t)
+	ctx := sdk.UnwrapSDKContext(context)
+	defer ctrl.Finish()
+	escrow.ExpectAny(context)
+	carolCall := hookMock.EXPECT().AfterPlayerInfoChanged(ctx, types.PlayerInfo{
+		Index:          carol,
+		WonCount:       5,
+		LostCount:      5,
+		ForfeitedCount: 6,
+	}).Times(1)
+	hookMock.EXPECT().AfterPlayerInfoChanged(ctx, types.PlayerInfo{
+		Index:          bob,
+		WonCount:       1,
+		LostCount:      2,
+		ForfeitedCount: 4,
+	}).Times(1).After(carolCall)
+
+	keeper.SetPlayerInfo(ctx, types.PlayerInfo{
+		Index:          bob,
+		WonCount:       1,
+		LostCount:      2,
+		ForfeitedCount: 3,
+	})
+	keeper.SetPlayerInfo(ctx, types.PlayerInfo{
+		Index:          carol,
+		WonCount:       4,
+		LostCount:      5,
+		ForfeitedCount: 6,
+	})
+
+	msgServer.PlayMove(context, &types.MsgPlayMove{
+		Creator:   bob,
+		GameIndex: "1",
+		FromX:     1,
+		FromY:     2,
+		ToX:       2,
+		ToY:       3,
+	})
+	msgServer.PlayMove(context, &types.MsgPlayMove{
+		Creator:   carol,
+		GameIndex: "1",
+		FromX:     0,
+		FromY:     5,
+		ToX:       1,
+		ToY:       4,
+	})
+	game1, found := keeper.GetStoredGame(ctx, "1")
+	require.True(t, found)
+	oldDeadline := types.FormatDeadline(ctx.BlockTime().Add(time.Duration(-1)))
+	game1.Deadline = oldDeadline
+	keeper.SetStoredGame(ctx, game1)
+	keeper.ForfeitExpiredGames(context)
+}
