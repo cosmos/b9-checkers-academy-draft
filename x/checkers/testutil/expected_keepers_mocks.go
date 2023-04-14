@@ -7,8 +7,9 @@ package testutil
 import (
 	reflect "reflect"
 
-	types "github.com/cosmos/cosmos-sdk/types"
-	types0 "github.com/cosmos/cosmos-sdk/x/auth/types"
+	types "github.com/b9lab/checkers/x/checkers/types"
+	types0 "github.com/cosmos/cosmos-sdk/types"
+	types1 "github.com/cosmos/cosmos-sdk/x/auth/types"
 	gomock "github.com/golang/mock/gomock"
 )
 
@@ -36,10 +37,10 @@ func (m *MockAccountKeeper) EXPECT() *MockAccountKeeperMockRecorder {
 }
 
 // GetAccount mocks base method.
-func (m *MockAccountKeeper) GetAccount(ctx types.Context, addr types.AccAddress) types0.AccountI {
+func (m *MockAccountKeeper) GetAccount(ctx types0.Context, addr types0.AccAddress) types1.AccountI {
 	m.ctrl.T.Helper()
 	ret := m.ctrl.Call(m, "GetAccount", ctx, addr)
-	ret0, _ := ret[0].(types0.AccountI)
+	ret0, _ := ret[0].(types1.AccountI)
 	return ret0
 }
 
@@ -73,10 +74,10 @@ func (m *MockBankKeeper) EXPECT() *MockBankKeeperMockRecorder {
 }
 
 // SpendableCoins mocks base method.
-func (m *MockBankKeeper) SpendableCoins(ctx types.Context, addr types.AccAddress) types.Coins {
+func (m *MockBankKeeper) SpendableCoins(ctx types0.Context, addr types0.AccAddress) types0.Coins {
 	m.ctrl.T.Helper()
 	ret := m.ctrl.Call(m, "SpendableCoins", ctx, addr)
-	ret0, _ := ret[0].(types.Coins)
+	ret0, _ := ret[0].(types0.Coins)
 	return ret0
 }
 
@@ -110,7 +111,7 @@ func (m *MockBankEscrowKeeper) EXPECT() *MockBankEscrowKeeperMockRecorder {
 }
 
 // SendCoinsFromAccountToModule mocks base method.
-func (m *MockBankEscrowKeeper) SendCoinsFromAccountToModule(ctx types.Context, senderAddr types.AccAddress, recipientModule string, amt types.Coins) error {
+func (m *MockBankEscrowKeeper) SendCoinsFromAccountToModule(ctx types0.Context, senderAddr types0.AccAddress, recipientModule string, amt types0.Coins) error {
 	m.ctrl.T.Helper()
 	ret := m.ctrl.Call(m, "SendCoinsFromAccountToModule", ctx, senderAddr, recipientModule, amt)
 	ret0, _ := ret[0].(error)
@@ -124,7 +125,7 @@ func (mr *MockBankEscrowKeeperMockRecorder) SendCoinsFromAccountToModule(ctx, se
 }
 
 // SendCoinsFromModuleToAccount mocks base method.
-func (m *MockBankEscrowKeeper) SendCoinsFromModuleToAccount(ctx types.Context, senderModule string, recipientAddr types.AccAddress, amt types.Coins) error {
+func (m *MockBankEscrowKeeper) SendCoinsFromModuleToAccount(ctx types0.Context, senderModule string, recipientAddr types0.AccAddress, amt types0.Coins) error {
 	m.ctrl.T.Helper()
 	ret := m.ctrl.Call(m, "SendCoinsFromModuleToAccount", ctx, senderModule, recipientAddr, amt)
 	ret0, _ := ret[0].(error)
@@ -135,4 +136,39 @@ func (m *MockBankEscrowKeeper) SendCoinsFromModuleToAccount(ctx types.Context, s
 func (mr *MockBankEscrowKeeperMockRecorder) SendCoinsFromModuleToAccount(ctx, senderModule, recipientAddr, amt interface{}) *gomock.Call {
 	mr.mock.ctrl.T.Helper()
 	return mr.mock.ctrl.RecordCallWithMethodType(mr.mock, "SendCoinsFromModuleToAccount", reflect.TypeOf((*MockBankEscrowKeeper)(nil).SendCoinsFromModuleToAccount), ctx, senderModule, recipientAddr, amt)
+}
+
+// MockCheckersHooks is a mock of CheckersHooks interface.
+type MockCheckersHooks struct {
+	ctrl     *gomock.Controller
+	recorder *MockCheckersHooksMockRecorder
+}
+
+// MockCheckersHooksMockRecorder is the mock recorder for MockCheckersHooks.
+type MockCheckersHooksMockRecorder struct {
+	mock *MockCheckersHooks
+}
+
+// NewMockCheckersHooks creates a new mock instance.
+func NewMockCheckersHooks(ctrl *gomock.Controller) *MockCheckersHooks {
+	mock := &MockCheckersHooks{ctrl: ctrl}
+	mock.recorder = &MockCheckersHooksMockRecorder{mock}
+	return mock
+}
+
+// EXPECT returns an object that allows the caller to indicate expected use.
+func (m *MockCheckersHooks) EXPECT() *MockCheckersHooksMockRecorder {
+	return m.recorder
+}
+
+// AfterPlayerInfoChanged mocks base method.
+func (m *MockCheckersHooks) AfterPlayerInfoChanged(ctx types0.Context, playerInfo types.PlayerInfo) {
+	m.ctrl.T.Helper()
+	m.ctrl.Call(m, "AfterPlayerInfoChanged", ctx, playerInfo)
+}
+
+// AfterPlayerInfoChanged indicates an expected call of AfterPlayerInfoChanged.
+func (mr *MockCheckersHooksMockRecorder) AfterPlayerInfoChanged(ctx, playerInfo interface{}) *gomock.Call {
+	mr.mock.ctrl.T.Helper()
+	return mr.mock.ctrl.RecordCallWithMethodType(mr.mock, "AfterPlayerInfoChanged", reflect.TypeOf((*MockCheckersHooks)(nil).AfterPlayerInfoChanged), ctx, playerInfo)
 }

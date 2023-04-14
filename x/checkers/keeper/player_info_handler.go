@@ -29,6 +29,9 @@ func mustAddDeltaGameResultToPlayer(
 	playerInfo.LostCount += lostDelta
 	playerInfo.ForfeitedCount += forfeitedDelta
 	k.SetPlayerInfo(ctx, playerInfo)
+	if k.hooks != nil {
+		k.hooks.AfterPlayerInfoChanged(ctx, playerInfo)
+	}
 	return playerInfo
 }
 
