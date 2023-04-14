@@ -2,6 +2,7 @@ package types
 
 import (
 	fmt "fmt"
+	"sort"
 	"time"
 
 	sdk "github.com/cosmos/cosmos-sdk/types"
@@ -30,4 +31,55 @@ func (candidate Candidate) GetWinnerAtTime(now time.Time) Winner {
 		WonCount: candidate.WonCount,
 		AddedAt:  uint64(now.Unix()),
 	}
+}
+
+func SortWinners(winners []Winner) {
+	sort.SliceStable(winners[:], func(i, j int) bool {
+		if winners[i].WonCount > winners[j].WonCount {
+			return true
+		}
+		if winners[i].WonCount < winners[j].WonCount {
+			return false
+		}
+		return winners[i].AddedAt > winners[j].AddedAt
+	})
+}
+
+func (leaderboard Leaderboard) SortWinners() {
+	SortWinners(leaderboard.Winners)
+}
+
+func MapWinners(winners []Winner, length int) map[string]Winner {
+	mapped := make(map[string]Winner, length)
+	for _, winner := range winners {
+		already, found := mapped[winner.Address]
+		if !found {
+			mapped[winner.Address] = winner
+		} else if already.WonCount < winner.WonCount {
+			mapped[winner.Address] = winner
+		}
+	}
+	return mapped
+}
+
+func AddCandidatesAtNow(winners []Winner, now time.Time, candidates []Candidate) (updated []Winner) {
+	mapped := MapWinners(winners, len(winners)+len(candidates))
+	for _, candidate := range candidates {
+		if candidate.WonCount < 1 {
+			continue
+		}
+		candidateWinner := candidate.GetWinnerAtTime(now)
+		already, found := mapped[candidateWinner.Address]
+		if !found {
+			mapped[candidateWinner.Address] = candidateWinner
+		} else if already.WonCount < candidateWinner.WonCount {
+			mapped[candidateWinner.Address] = candidateWinner
+		}
+	}
+	updated = make([]Winner, 0, len(mapped))
+	for _, winner := range mapped {
+		updated = append(updated, winner)
+	}
+	SortWinners(updated)
+	return updated
 }

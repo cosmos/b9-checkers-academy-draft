@@ -32,6 +32,15 @@ func setupMsgServerWithOneGameForPlayMove(t testing.TB) (types.MsgServer, keeper
 	return server, *k, context, ctrl, bankMock
 }
 
+func setupMsgServerWithOneGameForPlayMoveAndHooks(t testing.TB) (types.MsgServer, keeper.Keeper, context.Context,
+	*gomock.Controller, *testutil.MockBankEscrowKeeper, *testutil.MockCheckersHooks) {
+	msgServer, k, context, ctrl, escrow := setupMsgServerWithOneGameForPlayMove(t)
+	hookMock := testutil.NewMockCheckersHooks(ctrl)
+	k.SetHooks(hookMock)
+	msgServer = keeper.NewMsgServerImpl(k)
+	return msgServer, k, context, ctrl, escrow, hookMock
+}
+
 func TestPlayMove(t *testing.T) {
 	msgServer, _, context, ctrl, escrow := setupMsgServerWithOneGameForPlayMove(t)
 	defer ctrl.Finish()
@@ -593,4 +602,25 @@ func TestPlayerInfoNoUpdatedOnNoWinner(t *testing.T) {
 		LostCount:      0,
 		ForfeitedCount: 0,
 	}, carolInfo)
+}
+
+func TestPlayerInfoNoHookOnNoWinner(t *testing.T) {
+	msgServer, keeper, context, ctrl, escrow, _ := setupMsgServerWithOneGameForPlayMoveAndHooks(t)
+	ctx := sdk.UnwrapSDKContext(context)
+	defer ctrl.Finish()
+	escrow.ExpectAny(context)
+	keeper.SetPlayerInfo(ctx, types.PlayerInfo{
+		Index: bob,
+	})
+	keeper.SetPlayerInfo(ctx, types.PlayerInfo{
+		Index: carol,
+	})
+	msgServer.PlayMove(context, &types.MsgPlayMove{
+		Creator:   bob,
+		GameIndex: "1",
+		FromX:     1,
+		FromY:     2,
+		ToX:       2,
+		ToY:       3,
+	})
 }
