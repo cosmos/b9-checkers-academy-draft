@@ -15,6 +15,9 @@ const (
 
 	// MemStoreKey defines the in-memory store key
 	MemStoreKey = "mem_leaderboard"
+
+	// TStoreKey defines the transient store key
+	TStoreKey = "transient_leaderboard"
 )
 
 func KeyPrefix(p string) []byte {
