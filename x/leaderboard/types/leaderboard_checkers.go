@@ -16,3 +16,15 @@ func MakeCandidateFromPlayerInfo(playerInfo checkerstypes.PlayerInfo) (candidate
 		WonCount: playerInfo.WonCount,
 	}, nil
 }
+
+func MakeCandidatesFromPlayerInfos(playerInfos []checkerstypes.PlayerInfo) (candidates []Candidate, err error) {
+	candidates = make([]Candidate, 0, len(playerInfos))
+	for _, receivedInfo := range playerInfos {
+		candidate, err := MakeCandidateFromPlayerInfo(receivedInfo)
+		if err != nil {
+			return nil, err
+		}
+		candidates = append(candidates, candidate)
+	}
+	return candidates, nil
+}
