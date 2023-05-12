@@ -224,6 +224,7 @@ func TestCreateGameFarFuture(t *testing.T) {
 	msgSrvr, keeper, context := setupMsgServerCreateGame(t)
 	ctx := sdk.UnwrapSDKContext(context)
 	systemInfo, found := keeper.GetSystemInfo(ctx)
+	require.True(t, found)
 	systemInfo.NextId = 1024
 	keeper.SetSystemInfo(ctx, systemInfo)
 	createResponse, err := msgSrvr.CreateGame(context, &types.MsgCreateGame{
