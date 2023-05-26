@@ -97,7 +97,7 @@ func TestParseGameWrongTurnColor(t *testing.T) {
 	storedGame.Turn = "w"
 	game, err := storedGame.ParseGame()
 	require.Nil(t, game)
-	require.EqualError(t, err, "game cannot be parsed: Turn: w")
+	require.EqualError(t, err, "game cannot be parsed: turn: w")
 	require.EqualError(t, storedGame.Validate(), err.Error())
 }
 
