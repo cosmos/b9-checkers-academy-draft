@@ -23,7 +23,7 @@ RUN curl -L https://go.dev/dl/go${GO_VERSION}.linux-amd64.tar.gz | tar -C $LOCAL
 RUN curl -L https://get.ignite.com/cli@v${IGNITE_VERSION}! | bash
 
 # Clean apt cache
-RUN apt-get cache
+RUN apt-get clean
 
 EXPOSE 1317 4500 26657
 
