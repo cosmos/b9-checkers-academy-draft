@@ -17,5 +17,5 @@ download-cosmos-proto:
 	mkdir -p proto/gogoproto
 	curl https://raw.githubusercontent.com/cosmos/cosmos-sdk/${cosmos-version}/third_party/proto/gogoproto/gogo.proto -o proto/gogoproto/gogo.proto
 
-gen-proto-ts: download-cosmos-proto install-gen-tool
+gen-proto-ts: download-cosmos-proto
 	cd scripts && npx telescope transpile --config .telescope.json

@@ -31,6 +31,9 @@ RUN curl -L https://get.ignite.com/cli@v${IGNITE_VERSION}! | bash
 RUN curl -fsSL https://deb.nodesource.com/setup_${NODE_VERSION} | bash -
 RUN apt-get install -y nodejs
 
+# Install Telescope
+RUN npm install --global @cosmology/telescope@1.0.4
+
 # Install Mockgen
 RUN go install github.com/golang/mock/mockgen@v${MOCKGEN_VERSION}
 
