@@ -1,0 +1,62 @@
+{
+  "protoDirs": [
+    "../proto"
+  ],
+  "outPath": "../client/src/types/generated",
+  "options": {
+    "env": "v-next",
+    "useSDKTypes": false,
+    "tsDisable": {
+      "disableAll": false
+    },
+    "eslintDisable": {
+      "disableAll": true
+    },
+    "bundle": {
+      "enabled": false
+    },
+    "prototypes": {
+      "includePackageVar": true,
+      "strictNullCheckForPrototypeMethods": true,
+      "paginationDefaultFromPartial": true,
+      "methods": {
+        "fromJSON": true,
+        "toJSON": true,
+        "fromAmino": false,
+        "toAmino": false,
+        "fromProto": false,
+        "toProto": false
+      },
+      "typingsFormat": {
+        "customTypes": {
+          "useCosmosSDKDec": false
+        },
+        "num64": "long",
+        "useDeepPartial": true,
+        "useExact": true,
+        "timestamp": "timestamp",
+        "duration": "duration"
+      }
+    },
+    "lcdClients": {
+      "enabled": false
+    },
+    "rpcClients": {
+      "enabled": true,
+      "inline": true,
+      "extensions": false,
+      "camelCase": false,
+      "enabledServices": [
+        "Msg",
+        "Query",
+        "Service",
+        "ReflectionService",
+        "ABCIApplication"
+      ]
+    },
+    "aminoEncoding": {
+      "enabled": false,
+      "useLegacyInlineEncoding": true
+    }
+  }
+}
